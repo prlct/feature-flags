@@ -1,0 +1,67 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "author": "Paralect",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "next",
+    "paralect"
+  ],
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev -p 3002",
+    "start": "next start -p 3002",
+    "storybook": "start-storybook -p 6007",
+    "build-storybook": "build-storybook",
+    "precommit": "lint-staged && next lint --fix"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "2.8.8",
+    "@mantine/core": "4.2.8",
+    "@mantine/dates": "4.2.8",
+    "@mantine/hooks": "4.2.8",
+    "@mantine/modals": "4.2.8",
+    "@mantine/next": "4.2.8",
+    "@mantine/notifications": "4.2.8",
+    "@svgr/webpack": "6.2.1",
+    "@tabler/icons": "1.71.0",
+    "axios": "0.26.0",
+    "dayjs": "1.11.3",
+    "lodash": "4.17.21",
+    "next": "12.1.0",
+    "prop-types": "15.8.1",
+    "qs": "6.10.3",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-hook-form": "7.27.1",
+    "react-query": "3.34.16",
+    "socket.io-client": "4.4.1",
+    "yup": "0.32.11"
+  },
+  "devDependencies": {
+    "@babel/core": "7.17.5",
+    "@react-theming/storybook-addon": "1.1.6",
+    "@storybook/addon-actions": "6.4.19",
+    "@storybook/addon-essentials": "6.4.19",
+    "@storybook/addon-links": "6.4.19",
+    "@storybook/builder-webpack5": "6.4.19",
+    "@storybook/manager-webpack5": "6.4.19",
+    "@storybook/react": "6.4.19",
+    "babel-loader": "8.2.3",
+    "chromatic": "6.5.1",
+    "css-loader": "6.6.0",
+    "eslint": "7.32.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-next": "12.1.0",
+    "eslint-config-prettier": "8.4.0",
+    "husky": "7.0.4",
+    "lint-staged": "12.3.4",
+    "style-loader": "3.3.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --ext js --ext jsx --fix"
+    ]
+  }
+}
