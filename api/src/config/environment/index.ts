@@ -18,6 +18,7 @@ const base = {
   sendgridApiKey: '',
   redis: 'redis://:@redis:6379',
   adminKey: '',
+  MAGIC_SECRET_KEY: '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);

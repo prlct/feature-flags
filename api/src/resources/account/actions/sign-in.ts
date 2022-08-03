@@ -1,67 +1,75 @@
 import Joi from 'joi';
+import { Magic, Claim } from '@magic-sdk/admin';
 
-import { securityUtil } from 'utils';
 import { authService } from 'services';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { userService, User } from 'resources/user';
+import config from 'config';
+
+const magic = new Magic(config.MAGIC_SECRET_KEY);
 
 const schema = Joi.object({
-  email: Joi.string()
-    .email()
-    .trim()
-    .lowercase()
+  DIDToken: Joi.string()
     .required()
     .messages({
-      'any.required': 'Email is required',
-      'string.empty': 'Email is required',
-      'string.email': 'Please enter a valid email address',
-    }),
-  password: Joi.string()
-    .min(6)
-    .max(50)
-    .required()
-    .messages({
-      'any.required': 'Password is required',
-      'string.empty': 'Password is required',
-      'string.min': 'Password must be 6-50 characters',
-      'string.max': 'Password must be 6-50 characters',
+      'any.required': 'DID token is required',
     }),
 });
 
 type ValidatedData = {
-  email: string;
-  password: string;
-  user: User;
+  DIDToken: string;
+  user?: User;
+  metadataEmail: string;
+  claim: Claim;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
-  const { email, password } = ctx.validatedData;
+  const { DIDToken } = ctx.validatedData;
 
-  const user = await userService.findOne({ email });
+  magic.token.validate(DIDToken);
+  const [, claim] =  magic.token.decode(DIDToken);
 
-  ctx.assertClientError(user, {
-    credentials: 'The email or password you have entered is invalid',
-  }, 401);
+  const [metadata, user] = await Promise.all([
+    magic.users.getMetadataByIssuer(claim.iss),
+    userService.findOne({ issuer: claim.iss }),
+  ]);
 
-  const isPasswordMatch = await securityUtil.compareTextWithHash(password, user.passwordHash);
-  ctx.assertClientError(isPasswordMatch, {
-    credentials: 'The email or password you have entered is invalid',
-  }, 401);
+  if (user) {
+    const lastLoginTimestampInSec = new Date(user.lastLoginOn).getTime() / 1000;
 
-  ctx.assertClientError(user.isEmailVerified, {
-    email: 'Please verify your email to sign in',
+    if (claim.iat <= lastLoginTimestampInSec) {
+      // TODO: Add notifications for dev team
+      console.log(`!!! Replay attack detected for user ${user.issuer}}. !!!`);
+
+      ctx.assertClientError(false, {
+        global: 'Invalid credentials',
+      }, 401);
+    }
+  }
+
+  ctx.assertClientError(metadata.email, {
+    global: 'Email not provided by Magic Link',
   });
 
-  ctx.validatedData.user = user;
+  ctx.validatedData.user = user || undefined;
+  ctx.validatedData.metadataEmail = metadata.email;
+  ctx.validatedData.claim = claim;
+
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { user } = ctx.validatedData;
+  const { user: oldUser, metadataEmail, claim } = ctx.validatedData;
+
+  const user = oldUser || await userService.insertOne({
+    issuer: claim.iss,
+    email: metadataEmail,
+    isEmailVerified: true,
+  });
 
   await Promise.all([
-    userService.updateLastRequest(user._id),
+    userService.updateLastLogin(user._id, claim.iat * 1000),
     authService.setTokens(ctx, user._id),
   ]);
 
