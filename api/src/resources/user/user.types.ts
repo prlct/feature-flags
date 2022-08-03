@@ -1,16 +1,22 @@
 export type User = {
   _id: string;
-  createdOn?: string;
-  updatedOn?: string;
-  deletedOn?: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+
+  issuer: string;
+  firstName: string | null;
+  lastName: string | null;
+  fullName: string | null;
   email: string;
-  passwordHash: string;
   isEmailVerified: boolean;
+  avatarUrl?: string | null;
+
+  passwordHash: string;
   signupToken: string | null;
   resetPasswordToken?: string | null;
-  avatarUrl?: string | null;
-  lastRequest?: string;
+  
+  lastRequestOn?: string;
+  lastLoginOn: string;
+
+  createdOn: string;
+  updatedOn: string;
+  deletedOn?: string;
 };

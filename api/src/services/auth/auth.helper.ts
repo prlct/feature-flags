@@ -20,7 +20,7 @@ export const setTokenCookies = ({
   ctx.cookies.set(COOKIES.ACCESS_TOKEN, accessToken, {
     httpOnly: true,
     domain: cookiesDomain,
-    expires: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days (The same as default Magic Link session)
   });
 };
 

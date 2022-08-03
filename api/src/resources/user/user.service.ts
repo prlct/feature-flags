@@ -12,7 +12,18 @@ const updateLastRequest = (_id: string) => service.atomic.updateOne(
   { _id },
   {
     $set: {
-      lastRequest: new Date().toISOString(),
+      lastRequestOn: new Date().toISOString(),
+      updatedOn: new Date().toISOString(),
+    },
+  },
+);
+
+const updateLastLogin = (_id: string, timestamp: number) => service.atomic.updateOne(
+  { _id },
+  {
+    $set: {
+      lastRequestOn: new Date().toISOString(),
+      lastLoginOn: new Date(timestamp).toISOString(),
       updatedOn: new Date().toISOString(),
     },
   },
@@ -28,5 +39,6 @@ const getPublic = (user: User | null) => _.omit(user, privateFields);
 
 export default Object.assign(service, {
   updateLastRequest,
+  updateLastLogin,
   getPublic,
 });

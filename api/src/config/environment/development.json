@@ -13,5 +13,6 @@
     "secretAccessKey": "yourSecretAccessKey",
     "bucket": "yourBucket"
   },
-  "adminKey": "replaceWithSecureApiKey"
+  "adminKey": "replaceWithSecureApiKey",
+  "MAGIC_SECRET_KEY": "yourSecretKey"
 }

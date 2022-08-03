@@ -33,6 +33,7 @@ const findTokenByValue = async (token: string) => {
   };
 };
 
+// TODO: Add TTL index for auth tokens
 const removeAuthTokens = async (accessToken: string) => {
   return service.deleteMany({ value: { $in: [accessToken] } });
 };
