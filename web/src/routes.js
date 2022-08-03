@@ -14,7 +14,9 @@ export const path = {
   home: '/',
   404: '/404',
   signIn: '/sign-in',
+  signInPassword: '/sign-in-password',
   signUp: '/sign-up',
+  magicLinkRedirect: '/magic-link-redirect',
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   expireToken: '/expire-token',
@@ -37,8 +39,18 @@ export const configuration = {
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
+  signInPassword: {
+    path: path.signInPassword,
+    scope: scope.PUBLIC,
+    layout: layout.UNAUTHORIZED,
+  },
   signUp: {
     path: path.signUp,
+    scope: scope.PUBLIC,
+    layout: layout.UNAUTHORIZED,
+  },
+  magicLinkRedirect: {
+    path: path.magicLinkRedirect,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
