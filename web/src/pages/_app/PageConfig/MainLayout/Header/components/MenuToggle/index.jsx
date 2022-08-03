@@ -8,8 +8,8 @@ const MenuToggle = forwardRef((props, ref) => {
   return (
     <UnstyledButton ref={ref} {...props}>
       <Avatar color="gray" radius="xl">
-        {user.firstName.charAt(0)}
-        {user.lastName.charAt(0)}
+        {/* {user.firstName?.charAt(0)} */}
+        {/* {user.lastName?.charAt(0)} */}
       </Avatar>
     </UnstyledButton>
   );
