@@ -21,6 +21,7 @@ export const path = {
   resetPassword: '/reset-password',
   expireToken: '/expire-token',
   profile: '/profile',
+  users: '/users',
 };
 
 export const configuration = {
@@ -71,6 +72,11 @@ export const configuration = {
   },
   profile: {
     path: path.profile,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  users: {
+    path: path.users,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
