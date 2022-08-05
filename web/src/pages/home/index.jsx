@@ -2,6 +2,7 @@ import { useCallback, useLayoutEffect, useState } from 'react';
 import Head from 'next/head';
 import {
   Select,
+  Button,
   TextInput,
   Group,
   Title,
@@ -10,87 +11,86 @@ import {
   Table,
   Text,
   Container,
-  Pagination,
+  Switch,
   Paper,
+  ScrollArea,
   UnstyledButton,
 } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconChevronDown, IconSearch, IconX } from '@tabler/icons';
-import { userApi } from 'resources/user';
-
-const selectOptions = [
-  {
-    value: 'newest',
-    label: 'Newest',
-  },
-  {
-    value: 'oldest',
-    label: 'Oldest',
-  },
-];
+import { featureFlagsApi } from 'resources/feature-flags';
 
 const columns = [
   {
-    width: '33.3%',
-    key: 'firstName',
-    title: 'First Name',
+    title: 'Feature name',
   },
   {
-    width: '33.3%',
-    key: 'lastName',
-    title: 'Last Name',
+    title: 'Development',
   },
   {
-    width: '33.4%',
-    key: 'email',
-    title: 'Email',
+    title: 'Staging',
+  },
+  {
+    title: 'Production',
+  },
+  {
+    title: 'Created on',
+  },
+  {
+    title: 'Customization',
   },
 ];
 
-const PER_PAGE = 5;
+const PER_PAGE = 3;
 
 const Home = () => {
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState(selectOptions[0].value);
+  const [newFeatureFlagName, setNewFeatureFlagName] = useState('');
+  const [debouncedSearch] = useDebouncedValue(search, 500);
 
   const [params, setParams] = useState({});
 
-  const [debouncedSearch] = useDebouncedValue(search, 500);
-
-  const onPageChange = useCallback((currentPage) => {
-    setPage(currentPage);
-    setParams((prev) => ({ ...prev, page: currentPage }));
-  }, []);
-
-  const handleSort = useCallback((value) => {
-    setSort(value);
-    setParams((prev) => ({
-      ...prev,
-      sort: value === 'newest' ? { createdOn: -1 } : { createdOn: 1 },
-    }));
-  }, [setParams]);
+  useLayoutEffect(() => {
+    setParams((prev) => ({ ...prev, page: 1, searchValue: debouncedSearch, perPage: PER_PAGE }));
+  }, [debouncedSearch]);
 
   const handleSearch = useCallback((event) => {
     setSearch(event.target.value);
   }, []);
 
-  useLayoutEffect(() => {
-    setParams((prev) => ({ ...prev, page: 1, searchValue: debouncedSearch, perPage: PER_PAGE }));
-    setPage(1);
-  }, [debouncedSearch]);
+  const handleFeatureFlagNameChange = useCallback((event) => {
+    setNewFeatureFlagName(event.target.value);
+  }, []);
+  
 
-  const { data, isLoading: isListLoading } = userApi.useList(params);
+  const { mutate: mutateFeatureEnvState, isLoading } = featureFlagsApi.useUpdateFeatureEnvState();
 
-  const totalPages = data?.count ? Math.ceil(data.count / PER_PAGE) : 1;
+  const handleSwitchChange = (id, field) => mutateFeatureEnvState({ id, field }, {
+    onSuccess: (data) => {
+      queryClient.setQueryData(['featureFlags'], data => { console.log('data', data);});
+      showNotification({
+        title: 'Success',
+        message: 'Your password have been successfully updated.',
+        color: 'green',
+      });
+    },
+    onError: (e) => handleError(e, setError),
+  });
+
+  const { data, isLoading: isListLoading } = featureFlagsApi.useList(params);
+
+  const handleFeatureFlagCreate = () => {
+
+  };
 
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>Feature flags</title>
       </Head>
       <Stack spacing="lg">
-        <Title order={2}>Users</Title>
+        <Title order={2}>Feature flags</Title>
         <Group position="apart">
           <Skeleton
             height={42}
@@ -102,7 +102,7 @@ const Home = () => {
             <TextInput
               value={search}
               onChange={handleSearch}
-              placeholder="Search by name or email"
+              placeholder="Search by feature name"
               icon={<IconSearch size={16} />}
               rightSection={search ? (
                 <UnstyledButton
@@ -119,25 +119,29 @@ const Home = () => {
             radius="sm"
             visible={isListLoading}
             width="auto"
-            sx={{ overflow: !isListLoading ? 'initial' : 'overflow' }}
+            sx={{ flexGrow: '0.25', overflow: !isListLoading ? 'initial' : 'overflow' }}
           >
-            <Select
-              data={selectOptions}
-              value={sort}
-              onChange={handleSort}
-              rightSection={<IconChevronDown size={16} />}
-              withinPortal={false}
-              transition="pop-bottom-right"
-              transitionDuration={210}
-              transitionTimingFunction="ease-out"
-            />
+            <Group grow="1">
+              <TextInput
+                value={newFeatureFlagName}
+                onChange={handleFeatureFlagNameChange}
+                placeholder="Enter new feature flag name"
+                rightSectionWidth="200"
+                rightSection={
+                  <Button onClick={handleFeatureFlagCreate}>
+                    Create
+                  </Button>
+                }
+              />
+            </Group>
           </Skeleton>
         </Group>
+
         {isListLoading && (
           <>
             {[1, 2, 3].map((item) => (
               <Skeleton
-                key={`sklton-${String(item)}`}
+                key={`skeleton-${String(item)}`}
                 height={50}
                 radius="sm"
                 mb="sm"
@@ -148,49 +152,33 @@ const Home = () => {
         {data?.items.length ? (
           <>
             <Paper radius="sm" withBorder>
-              <Table
-                horizontalSpacing="xl"
-                verticalSpacing="lg"
-              >
-                <thead>
-                  <tr>
-                    {columns.map(({ title }, index) => (
-                      <th key={`${title}-${String(index)}`}>{title}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map(({ firstName, lastName, email, _id }) => (
-                    <tr key={_id}>
-                      <td>{firstName}</td>
-                      <td>{lastName}</td>
-                      <td>{email}</td>
+              <ScrollArea>
+                <Table
+                  horizontalSpacing="xl"
+                  verticalSpacing="lg"
+                >
+                  <thead>
+                    <tr>
+                      {columns.map(({ title }) => (
+                        <th key={title}>{title}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {data.items.map(({ _id, name, development, staging, production, createdOn }) => (
+                      <tr key={_id}>
+                        <td>{name}</td>
+                        <td><Switch checked={development} onChange={() => handleSwitchChange(_id, 'development')} /></td>
+                        <td><Switch checked={staging} onChange={() => handleSwitchChange(_id, 'staging')} /></td>
+                        <td><Switch checked={production} onChange={() => handleSwitchChange(_id, 'production')} /></td>
+                        <td>{createdOn}</td>
+                        <td></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </ScrollArea>
             </Paper>
-            {data?.count > PER_PAGE && (
-              <Group position="right">
-                <Text size="sm" color="dimmed">
-                  Showing
-                  {' '}
-                  <b>{PER_PAGE}</b>
-                  {' '}
-                  of
-                  {' '}
-                  <b>{data?.count}</b>
-                  {' '}
-                  results
-                </Text>
-                <Pagination
-                  total={totalPages}
-                  page={page}
-                  onChange={onPageChange}
-                  color="black"
-                />
-              </Group>
-            )}
           </>
         ) : (
           <Container p={75}>
