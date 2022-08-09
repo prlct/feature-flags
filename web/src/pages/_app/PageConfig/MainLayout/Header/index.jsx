@@ -2,10 +2,9 @@ import { memo } from 'react';
 import * as routes from 'routes';
 import {
   Header as LayoutHeader,
-  Group,
+  Text,
 } from '@mantine/core';
 import { Link } from 'components';
-import { LogoImage } from 'public/images';
 
 import UserMenu from './components/UserMenu';
 
@@ -21,8 +20,8 @@ const Header = () => (
       flex: '0 1 auto',
     })}
   >
-    <Link type="router" href={routes.path.home} withoutUnderline>
-      <LogoImage />
+    <Link type="router" href={routes.route.home} underline={false}>
+      <Text color="white" size='lg' weight={700}>Feature flags</Text>
     </Link>
     <UserMenu />
   </LayoutHeader>
