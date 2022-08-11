@@ -10,7 +10,7 @@ export const layout = {
   NONE: null,
 };
 
-export const path = {
+export const route = {
   home: '/',
   404: '/404',
   signIn: '/sign-in',
@@ -22,61 +22,71 @@ export const path = {
   expireToken: '/expire-token',
   profile: '/profile',
   users: '/users',
+  featureFlag: '/feature-flags/[id]',
+};
+
+export const path = {
+  featureFlag: '/feature-flags',
 };
 
 export const configuration = {
   home: {
-    path: path.home,
+    route: route.home,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
   404: {
-    path: path['404'],
+    route: route['404'],
     scope: scope.NONE,
     layout: layout.UNAUTHORIZED,
   },
   signIn: {
-    path: path.signIn,
+    route: route.signIn,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   signInPassword: {
-    path: path.signInPassword,
+    route: route.signInPassword,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   signUp: {
-    path: path.signUp,
+    route: route.signUp,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   magicLinkRedirect: {
-    path: path.magicLinkRedirect,
+    route: route.magicLinkRedirect,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   forgotPassword: {
-    path: path.forgotPassword,
+    route: route.forgotPassword,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   resetPassword: {
-    path: path.resetPassword,
+    route: route.resetPassword,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   expireToken: {
-    path: path.expireToken,
+    route: route.expireToken,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
   profile: {
-    path: path.profile,
+    route: route.profile,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
   users: {
-    path: path.users,
+    route: route.users,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  featureFlag: {
+    route: route.featureFlag,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

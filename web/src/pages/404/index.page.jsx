@@ -12,7 +12,7 @@ import {
 
 const NotFound = () => {
   const handleClick = useCallback(() => {
-    router.push(routes.path.home);
+    router.push(routes.route.home);
   }, []);
 
   return (

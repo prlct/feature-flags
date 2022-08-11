@@ -53,7 +53,7 @@ const ForgotPassword = () => {
             . Please check your email inbox and follow the
             directions to reset your password.
           </Text>
-          <Button onClick={() => router.push(routes.path.signIn)}>
+          <Button onClick={() => router.push(routes.route.signIn)}>
             Back to Sign In
           </Button>
         </Stack>
@@ -96,7 +96,7 @@ const ForgotPassword = () => {
           Have an account?
           <Link
             type="router"
-            href={routes.path.signIn}
+            href={routes.route.signIn}
             inherit
           >
             Sign in

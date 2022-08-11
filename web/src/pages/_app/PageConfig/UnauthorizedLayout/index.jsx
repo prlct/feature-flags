@@ -11,7 +11,7 @@ const UnauthorizedLayout = ({ children }) => {
   return (
     <div className={classes.wrapper}>
       <header className={classes.header}>
-        <Link type="router" href={routes.path.home} underline={false}>
+        <Link type="router" href={routes.route.home} underline={false}>
           <LogoDarkImage />
         </Link>
 

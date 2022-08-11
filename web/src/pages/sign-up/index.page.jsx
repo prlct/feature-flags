@@ -131,7 +131,7 @@ const SignUp = () => {
           Have an account?
           <Link
             type="router"
-            href={routes.path.signIn}
+            href={routes.route.signIn}
             inherit
             underline={false}
           >
