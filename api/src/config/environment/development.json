@@ -14,5 +14,5 @@
     "bucket": "yourBucket"
   },
   "adminKey": "replaceWithSecureApiKey",
-  "MAGIC_SECRET_KEY": "yourSecretKey"
+  "MAGIC_SECRET_KEY": "sk_live_595FE1F176A41E38"
 }

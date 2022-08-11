@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { showNotification } from '@mantine/notifications';
 import * as yup from 'yup';
 
+import { handleError } from 'helpers';
 import { featureFlagsApi } from 'resources/feature-flags';
 
 const schema = yup.object().shape({
@@ -64,7 +65,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
         <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={20}>
           <TextInput
             {...register('name')}
-            label="Name"
+            label="Name (PascalCase)"
             placeholder="Enter a name"
             error={errors?.name?.message}
           />

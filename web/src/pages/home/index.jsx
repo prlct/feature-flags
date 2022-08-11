@@ -1,7 +1,6 @@
-import { useCallback, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Head from 'next/head';
 import {
-  Select,
   Button,
   TextInput,
   Group,
@@ -13,82 +12,72 @@ import {
   Container,
   Switch,
   Paper,
+  Badge,
   ScrollArea,
   UnstyledButton,
+  SegmentedControl,
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { useDebouncedValue } from '@mantine/hooks';
-import { IconChevronDown, IconSearch, IconX } from '@tabler/icons';
+import { IconPlus, IconSearch, IconX, IconSettings } from '@tabler/icons';
+import {
+  trim as _trim,
+  filter as _filter,
+} from 'lodash';
 import { featureFlagsApi } from 'resources/feature-flags';
 
-const columns = [
-  {
-    title: 'Feature name',
-  },
-  {
-    title: 'Development',
-  },
-  {
-    title: 'Staging',
-  },
-  {
-    title: 'Production',
-  },
-  {
-    title: 'Created on',
-  },
-  {
-    title: 'Customization',
-  },
-];
+import { Link } from 'components';
+import * as routes from 'routes';
+import { handleError } from 'helpers';
 
-const PER_PAGE = 3;
+import { environmentsList, dashboardColumns } from './index.constants';
+import FeatureFlagCreateModal from './components/feature-flag-create-modal';
 
 const Home = () => {
+  const [environment, setEnvironment] = useState(environmentsList[0].value);
+  const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [search, setSearch] = useState('');
-  const [newFeatureFlagName, setNewFeatureFlagName] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
+  const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
 
-  const [params, setParams] = useState({});
-
-  useLayoutEffect(() => {
-    setParams((prev) => ({ ...prev, page: 1, searchValue: debouncedSearch, perPage: PER_PAGE }));
-  }, [debouncedSearch]);
+  const { data, isLoading: isListLoading } = featureFlagsApi.useGetList();
 
   const handleSearch = useCallback((event) => {
     setSearch(event.target.value);
   }, []);
 
-  const handleFeatureFlagNameChange = useCallback((event) => {
-    setNewFeatureFlagName(event.target.value);
-  }, []);
-  
+  useEffect(() => {
+    const filteredFlags = _filter(data?.items, (item) => item.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
 
-  const { mutate: mutateFeatureEnvState, isLoading } = featureFlagsApi.useUpdateFeatureEnvState();
+    setFilteredFeatureFlags(filteredFlags || []);
+  }, [data?.items?.length, debouncedSearch]);
 
-  const handleSwitchChange = (id, field) => mutateFeatureEnvState({ id, field }, {
-    onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlags'], data => { console.log('data', data);});
+  const toggleFeatureStatusMutation = featureFlagsApi.useToggleFeatureStatus();
+
+  // TODO: Disable feature toggler during request / add loader ?
+  const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
+    onSuccess: ({ enabled }) => {
       showNotification({
         title: 'Success',
-        message: 'Your password have been successfully updated.',
+        message: `The feature was successfully ${enabled ? 'disabled' : 'enabled'}`,
         color: 'green',
       });
     },
     onError: (e) => handleError(e, setError),
   });
 
-  const { data, isLoading: isListLoading } = featureFlagsApi.useList(params);
-
-  const handleFeatureFlagCreate = () => {
-
-  };
-
   return (
     <>
       <Head>
         <title>Feature flags</title>
       </Head>
+      <Group position='right'>
+        <SegmentedControl
+          value={environment}
+          onChange={setEnvironment}
+          data={environmentsList}
+        />
+      </Group>
       <Stack spacing="lg">
         <Title order={2}>Feature flags</Title>
         <Group position="apart">
@@ -119,20 +108,12 @@ const Home = () => {
             radius="sm"
             visible={isListLoading}
             width="auto"
-            sx={{ flexGrow: '0.25', overflow: !isListLoading ? 'initial' : 'overflow' }}
+            sx={{ overflow: !isListLoading ? 'initial' : 'overflow' }}
           >
             <Group grow="1">
-              <TextInput
-                value={newFeatureFlagName}
-                onChange={handleFeatureFlagNameChange}
-                placeholder="Enter new feature flag name"
-                rightSectionWidth="200"
-                rightSection={
-                  <Button onClick={handleFeatureFlagCreate}>
-                    Create
-                  </Button>
-                }
-              />
+              <Button leftIcon={<IconPlus />} onClick={() => setIsFeatureCreateModalOpened(true)}>
+                Create feature flag
+              </Button>
             </Group>
           </Skeleton>
         </Group>
@@ -149,7 +130,7 @@ const Home = () => {
             ))}
           </>
         )}
-        {data?.items.length ? (
+        {filteredFeatureFlags.length ? (
           <>
             <Paper radius="sm" withBorder>
               <ScrollArea>
@@ -159,20 +140,40 @@ const Home = () => {
                 >
                   <thead>
                     <tr>
-                      {columns.map(({ title }) => (
+                      {dashboardColumns.map(({ title }) => (
                         <th key={title}>{title}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {data.items.map(({ _id, name, development, staging, production, createdOn }) => (
+                    {filteredFeatureFlags.map(({ _id, name, description, enabled, enabledForEveryone, createdOn, usersPercentage, users, tests }) => (
                       <tr key={_id}>
-                        <td>{name}</td>
-                        <td><Switch checked={development} onChange={() => handleSwitchChange(_id, 'development')} /></td>
-                        <td><Switch checked={staging} onChange={() => handleSwitchChange(_id, 'staging')} /></td>
-                        <td><Switch checked={production} onChange={() => handleSwitchChange(_id, 'production')} /></td>
-                        <td>{createdOn}</td>
-                        <td></td>
+                        <td>
+                          <Group>
+                            <Text size="md" weight={700}>
+                              {name}
+                            </Text>
+                            {tests.length && <Badge variant="gradient" gradient={{ from: 'lime', to: 'blue' }}>A/B testing</Badge>}
+                          </Group>
+                          <Text size="sm" color="grey">{description}</Text>
+                        </td>
+                        <td>
+                          <Stack>
+                            <Switch checked={enabled} onChange={() => handleSwitchChange({ _id, enabled })} />
+                            <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
+                          </Stack>   
+                        </td>
+                        <td>0 users</td>
+                        <td>{new Date(createdOn).toLocaleDateString("en-US")}</td>
+                        <td>
+                          <Group>
+                            <Link type="router" href={`${routes.path.featureFlag}/${_id}`} underline={false}>
+                              <Button size="sm" leftIcon={<IconSettings />}>
+                                Settings
+                              </Button>
+                            </Link>
+                          </Group>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -188,6 +189,11 @@ const Home = () => {
           </Container>
         )}
       </Stack>
+
+      <FeatureFlagCreateModal
+        opened={isFeatureCreateModalOpened}
+        onClose={() => setIsFeatureCreateModalOpened(false)}
+      />
     </>
   );
 };
