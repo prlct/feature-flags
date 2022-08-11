@@ -1,76 +1,148 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { find as _find} from 'lodash';
-
+import { useMutation, useQuery } from 'react-query';
+import {
+  find as _find,
+  remove as _remove,
+  cloneDeep as _cloneDeep,
+} from 'lodash';
 import queryClient from 'query-client';
-import { apiService } from 'services';
 
-export function useGetCurrent() {
-  const getCurrent = () => apiService.get('/users/current');
+import { getLetterByAlphabetNumber } from 'helpers';
+import { featureTemplate, listResponse } from './feature-flags.constants';
 
-  return useQuery(['currentUser'], getCurrent);
+const resource = '/feature-flags';
+
+export function useToggleFeatureStatus() {
+  const toggleFeatureStatus = (data) => new Promise((res) => { setTimeout(() => res(data), 300); });
+
+  return useMutation(toggleFeatureStatus, {
+    onSuccess: (data) => {
+      queryClient.setQueryData(['featureFlags'], (oldData) => {
+        const featureFlag = _find(oldData.items, { _id: data._id });
+        featureFlag.enabled = !featureFlag.enabled;
+
+        return oldData;
+      });
+    },
+  });
 }
 
-export function useUpdateFeatureEnvState(id, field) {
-  const updateCurrent = (data) => apiService.post('/users/currentttt', data);
+export function useCreateFeatureFlag() {
+  const createFeatureFlag = (data) => new Promise((res) => { setTimeout(() => res(data), 1000); });
 
-  return useMutation(updateCurrent);
+  return useMutation(createFeatureFlag, {
+    onSuccess: ({ name, description }) => {
+      queryClient.setQueryData(['featureFlags'], (oldData) => {
+        const newFeatureFlag = _cloneDeep(featureTemplate);
+        newFeatureFlag._id = Math.floor(Math.random() * 10000000000).toString();
+        newFeatureFlag.name = name;
+        newFeatureFlag.description = description;
+
+        oldData.items.unshift(newFeatureFlag);
+        return oldData;
+      });
+    },
+  });
 }
 
-const response = {
-  items: [
-      {
-        _id: '62eacd2aae77c8534d742939',
-        name: 'Feature one',
-        development: true,
-        staging: true,
-        production: false,
-        createdOn: '03/08/2022',
-        // createdOn: '2022-08-03 19:31:54.572Z',
-      },
-      {
-        _id: '62eacd2aae77c8534d742940',
-        name: 'Feature two',
-        development: false,
-        staging: false,
-        production: false,
-        createdOn: '23/07/2022',
-        // createdOn: '2022-08-03 19:31:54.572Z',
-      },
-      {
-        _id: '62eacd2aae77c8534d742941',
-        name: 'Cool feature',
-        development: true,
-        staging: false,
-        production: false,
-        createdOn: '20/07/2022',
-        // createdOn: '2022-08-03 19:31:54.572Z',
-      },
-      {
-        _id: '62eacd2aae77c8534d742942',
-        name: 'Email notifications',
-        development: false,
-        staging: true,
-        production: false,
-        createdOn: '03/07/2022',
-        // createdOn: '2022-08-03 19:31:54.572Z',
-      },
-      {
-        _id: '62eacd2aae77c8534d742943',
-        name: 'Dark mode',
-        development: true,
-        staging: true,
-        production: true,
-        createdOn: '03/06/2022',
-        // createdOn: '2022-08-03 19:31:54.572Z',
-      },
-  ],
-  totalPages: 1,
-  count: 8,
+export function useCreateConfiguration() {
+  const createConfiguration = (data) => new Promise((res) => { setTimeout(() => res(data), 1000); });
+
+  return useMutation(createConfiguration, {
+    onSuccess: ({ configurationId, configuration }) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        if (configurationId) {
+          const test = _find(oldData.tests, { _id: configurationId });
+          test.configuration = configuration;
+        } else {
+          const _id = Math.floor(Math.random() * 10000000000).toString();
+          const name = `Variant ${getLetterByAlphabetNumber(oldData.tests.length + 1).toUpperCase()}`;
+          oldData.tests.push({ _id, name, configuration });
+        }
+        return oldData;
+      });
+    },
+  });
+}
+
+export function useDeleteConfiguration() {
+  const deleteConfiguration = (data) => new Promise((res) => { setTimeout(() => res(data), 1000); });
+
+  return useMutation(deleteConfiguration, {
+    onSuccess: ({ configurationId }) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        _remove(oldData.tests, { _id: configurationId });
+        return oldData;
+      });
+    },
+  });
+}
+
+export function useChangeFeatureVisibility() {
+  const changeFeatureVisibility = (data) => new Promise((res) => { setTimeout(() => res(data), 100); });
+
+  return useMutation(changeFeatureVisibility, {
+    onSuccess: (data) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        oldData.enabledForEveryone = data === 'everyone' ? true : false;
+        return oldData;
+      });
+    },
+  });
+}
+
+export function useChangeUsersPercentage() {
+  const changeUsersPercentage = (data) => new Promise((res) => { setTimeout(() => res(data), 100); });
+
+  return useMutation(changeUsersPercentage, {
+    onSuccess: ({ usersPercentage }) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        oldData.usersPercentage = usersPercentage || 0;
+        return oldData;
+      });
+    },
+  });
+}
+
+export function useEnableFeatureForUsers() {
+  const enableFeatureForUsers = (data) => new Promise((res) => { setTimeout(() => res(data), 100); });
+
+  return useMutation(enableFeatureForUsers, {
+    onSuccess: ({ email }) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        // oldData.users = oldData.users.concat(data);
+        oldData.users.push(email);
+        return oldData;
+      });
+    },
+  });
+}
+
+export function useDisableFeatureForUser() {
+  const disableFeatureForUser = (data) => new Promise((res) => { setTimeout(() => res(data), 100); });
+
+  return useMutation(disableFeatureForUser, {
+    onSuccess: (email) => {
+      queryClient.setQueryData(['featureFlag'], (oldData) => {
+        _remove(oldData.users,(user) => user === email );
+        return oldData;
+      });
+    },
+  });
+}
+
+// TODO: Dix delay for Settings page content update
+export const useGetById = (_id) => {  
+  const state = queryClient.getQueryState('featureFlags');
+  const featureFlag = _find(state?.data?.items, { _id });
+
+  const getById = () => new Promise((res) => { setTimeout(() => res(featureFlag), 100); });
+  
+  return useQuery(['featureFlag'], getById);
 };
 
-export const useList = (params) => {
-  // const list = () => apiService.get('/users', params);
-  const list = () => response;
 
-  return useQuery(['featureFlags', params], list);
+export const useGetList = () => {
+  const getList = () => listResponse;
+
+  return useQuery(['featureFlags'], getList);
 };
