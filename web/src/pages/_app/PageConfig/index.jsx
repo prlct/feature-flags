@@ -32,17 +32,17 @@ const PageConfig = ({ children }) => {
 
   if (isCurrentUserLoading) return null;
 
-  const page = configurations.find((r) => r.path === router.route);
+  const page = configurations.find((r) => r.route === router.route);
   const Layout = layoutToComponent[page.layout];
   const Scope = scopeToComponent[page.scope];
 
   if (page.scope === routes.scope.PRIVATE && !currentUser) {
-    router.push(routes.path.signIn);
+    router.push(routes.route.signIn);
     return null;
   }
 
   if (page.scope === routes.scope.PUBLIC && currentUser) {
-    router.push(routes.path.home);
+    router.push(routes.route.home);
     return null;
   }
 

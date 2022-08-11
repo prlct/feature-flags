@@ -57,7 +57,7 @@ const SignInPassword = () => {
               Don’t have an account?
               <Link
                 type="router"
-                href={routes.path.signUp}
+                href={routes.route.signUp}
                 underline={false}
                 inherit
               >
@@ -65,7 +65,7 @@ const SignInPassword = () => {
               </Link>
             </Group>
             <Link
-              href={routes.path.forgotPassword}
+              href={routes.route.forgotPassword}
               type="router"
               underline={false}
               size="sm"
