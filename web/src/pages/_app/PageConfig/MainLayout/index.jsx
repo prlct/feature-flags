@@ -7,7 +7,7 @@ import Footer from './Footer';
 const MainLayout = ({ children }) => (
   <AppShell
     header={<Header />}
-    footer={<Footer />}
+    // footer={<Footer />}
     styles={(theme) => ({
       root: {
         display: 'flex',
