@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 
 import queryClient from 'query-client';
 import { apiService } from 'services';
@@ -46,3 +46,10 @@ export function useResendEmail() {
 
   return useMutation(resendEmail);
 }
+
+// TODO: move to company resource?
+export const useGetAccount = () => {
+  const getAccount = () => ({ apiKey: '123e4567-e89b-12d3-a456-426614174000' });
+
+  return useQuery(['account'], getAccount);
+};
