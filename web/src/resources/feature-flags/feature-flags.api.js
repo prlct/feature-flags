@@ -132,7 +132,7 @@ export function useDisableFeatureForUser() {
 
 // TODO: Dix delay for Settings page content update
 export const useGetById = (_id) => {  
-  const state = queryClient.getQueryState('featureFlags');
+  const state = queryClient.getQueryState(['featureFlags']);
   const featureFlag = _find(state?.data?.items, { _id });
 
   const getById = () => new Promise((res) => { setTimeout(() => res(featureFlag), 100); });
@@ -141,8 +141,8 @@ export const useGetById = (_id) => {
 };
 
 
-export const useGetList = () => {
-  const getList = () => listResponse;
+export const useGetList = (env) => {
+  const getList = () => new Promise((res) => { setTimeout(() => res(listResponse[env]), 1000); });
 
   return useQuery(['featureFlags'], getList);
 };

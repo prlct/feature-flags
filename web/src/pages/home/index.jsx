@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import Head from 'next/head';
 import {
   Button,
@@ -34,13 +34,22 @@ import { environmentsList, dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
 
 const Home = () => {
-  const [environment, setEnvironment] = useState(environmentsList[0].value);
+  const [env, setEnv] = useState(environmentsList[0].value);
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
 
-  const { data, isLoading: isListLoading } = featureFlagsApi.useGetList();
+  const { data, refetch, isRefetching, isLoading } = featureFlagsApi.useGetList(env);
+
+  const isListLoading = useMemo(
+    () => isLoading || isRefetching,
+    [isLoading, isRefetching
+  ]);
+
+  useEffect(() => {
+    refetch();
+  }, [env]);
 
   const handleSearch = useCallback((event) => {
     setSearch(event.target.value);
@@ -50,7 +59,8 @@ const Home = () => {
     const filteredFlags = _filter(data?.items, (item) => item.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
 
     setFilteredFeatureFlags(filteredFlags || []);
-  }, [data?.items?.length, debouncedSearch]);
+    // to update on env change and new item adding
+  }, [data, data?.items?.length, debouncedSearch]);
 
   const toggleFeatureStatusMutation = featureFlagsApi.useToggleFeatureStatus();
 
@@ -73,8 +83,8 @@ const Home = () => {
       </Head>
       <Group position='right'>
         <SegmentedControl
-          value={environment}
-          onChange={setEnvironment}
+          value={env}
+          onChange={setEnv}
           data={environmentsList}
         />
       </Group>
@@ -130,7 +140,7 @@ const Home = () => {
             ))}
           </>
         )}
-        {filteredFeatureFlags.length ? (
+        {(filteredFeatureFlags.length && !isListLoading) ? (
           <>
             <Paper radius="sm" withBorder>
               <ScrollArea>
@@ -146,7 +156,7 @@ const Home = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredFeatureFlags.map(({ _id, name, description, enabled, enabledForEveryone, createdOn, usersPercentage, users, tests }) => (
+                    {filteredFeatureFlags.map(({ _id, name, description, enabled, enabledForEveryone, createdOn, usersPercentage, users, tests, seenBy }) => (
                       <tr key={_id}>
                         <td>
                           <Group>
@@ -163,7 +173,7 @@ const Home = () => {
                             <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                           </Stack>   
                         </td>
-                        <td>0 users</td>
+                        <td>{seenBy} users</td>
                         <td>{new Date(createdOn).toLocaleDateString("en-US")}</td>
                         <td>
                           <Group>
