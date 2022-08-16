@@ -23,6 +23,7 @@ export const route = {
   profile: '/profile',
   users: '/users',
   featureFlag: '/feature-flags/[id]',
+  apiKey: '/api-key',
 };
 
 export const path = {
@@ -87,6 +88,11 @@ export const configuration = {
   },
   featureFlag: {
     route: route.featureFlag,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  apiKey: {
+    route: route.apiKey,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

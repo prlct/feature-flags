@@ -3,6 +3,7 @@ import * as routes from 'routes';
 import {
   Header as LayoutHeader,
   Text,
+  Group
 } from '@mantine/core';
 import { Link } from 'components';
 
@@ -20,9 +21,14 @@ const Header = () => (
       flex: '0 1 auto',
     })}
   >
-    <Link type="router" href={routes.route.home} underline={false}>
-      <Text color="white" size='lg' weight={700}>Feature flags</Text>
-    </Link>
+    <Group>
+      <Link type="router" href={routes.route.home} underline={false}>
+        <Text color="white" size='lg' weight={700}>Feature flags</Text>
+      </Link>
+      <Link type="router" href={routes.route.apiKey} underline={false}>
+        <Text color="white" size='lg' weight={700}>API key</Text>
+      </Link>
+    </Group>
     <UserMenu />
   </LayoutHeader>
 );
