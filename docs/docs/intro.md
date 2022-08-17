@@ -11,7 +11,7 @@ Let's discover **Feature Flags in less than 5 minutes**.
 Install Feature Flags sdk in the root of your web application
 
 ```
-npm i @paralect/feature-flags
+npm i @paralect/feature-flags-sdk
 ```
 
 ## Initialize Feature Flags SDK
@@ -19,9 +19,9 @@ npm i @paralect/feature-flags
 Initialize Feature Flags SDK to get flags for a specific user in your application
 
 ```
-import { init } from "feature-flags-sdk";
+import flags from "@paralect/feature-flags-sdk";
 
-await init(
+await flags.init(
   apiKey: '123e4567-e89b-12d3-a456-426614174000',
   env: 'staging',
   {
@@ -35,14 +35,14 @@ await init(
 ## Use Feature Flags
 
 ```
-import { isOn } from "feature-flags-sdk";
+import flags from "@paralect/feature-flags-sdk";
 
 
 const YourComponent = () => {
   return (
     <>
       ...
-      {isOn('RedesignedVideoPlayer') ? <RedesignedVideoPlayer /> : <VideoPlayer />}
+      {flags.isOn('RedesignedVideoPlayer') ? <RedesignedVideoPlayer /> : <VideoPlayer />}
     </>
   )
 };
@@ -51,11 +51,11 @@ const YourComponent = () => {
 ## Use configuration for A/B testing
 
 ```
-import { getConfig } from "feature-flags-sdk";
+import flags from "@paralect/feature-flags-sdk";
 
 
 const YourForm = () => {
-  const config = getConfig('NewFormDesign');
+  const config = flags.getConfig('NewFormDesign');
 
   return (
     <form>

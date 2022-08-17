@@ -34,9 +34,9 @@ User data is optional. You can pass it using the `identify()` method when the us
 ### Example
 
 ```
-import { init } from 'feature-flags-sdk';
+import flags from '@paralect/feature-flags-sdk';
 
-await init(
+await flags.init(
   apiKey: '123e4567-e89b-12d3-a456-426614174000',
   env: 'staging',
   {
@@ -68,9 +68,9 @@ identify({
 ### Example
 
 ```
-import { identify } from 'feature-flags-sdk';
+import flags from '@paralect/feature-flags-sdk';
 
-await identify({
+await flags.identify({
   id: '62eacd2aae77c8534d741247',
   email: 'john.smith@gmail.com',
   fullName: 'John Smith',
@@ -92,9 +92,9 @@ isOn(featureFlag)
 ### Example
 
 ```
-import { isOn } from 'feature-flags-sdk';
+import flags from '@paralect/feature-flags-sdk';
 
-const isNotificationBarEnabled = isOn('NotificationBar');
+const isNotificationBarEnabled = flags.isOn('NotificationBar');
 ```
 
 ## getConfig()
@@ -112,11 +112,11 @@ getConfig(featureFlag)
 ### Example
 
 ```
-import { isOn, getConfig } from 'feature-flags-sdk';
+import flags from '@paralect/feature-flags-sdk';
 
-if (isOn('NotificationBar')) {
-  const config = getConfig('NotificationBar');
+if (flags.isOn('NotificationBar')) {
+  const config = flags.getConfig('NotificationBar');
 
-  return <Button color="config.buttonColor" >Subscribe</Button>
+  return <Button color={config.buttonColor} >Subscribe</Button>
 }
 ```
