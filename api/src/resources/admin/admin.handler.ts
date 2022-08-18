@@ -14,9 +14,9 @@ eventBus.on(`${ADMINS}.updated`, (data: InMemoryEvent<Admin>) => {
   // ioEmitter.publishToAdmin(admin._id, 'admin:updated', admin);
 });
 
-eventBus.onUpdated(ADMINS, ['firstName', 'lastName'], async (data: InMemoryEvent<Admin>) => {
-  await adminService.atomic.updateOne(
-    { _id: data.doc._id },
-    { $set: { fullName: `${data.doc.firstName} ${data.doc.lastName}` } },
-  );
-});
+// eventBus.onUpdated(ADMINS, ['firstName', 'lastName'], async (data: InMemoryEvent<Admin>) => {
+//   await adminService.atomic.updateOne(
+//     { _id: data.doc._id },
+//     { $set: { fullName: `${data.doc.firstName} ${data.doc.lastName}` } },
+//   );
+// });

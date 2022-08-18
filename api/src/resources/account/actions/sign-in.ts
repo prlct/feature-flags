@@ -19,7 +19,7 @@ const schema = Joi.object({
 
 type ValidatedData = {
   DIDToken: string;
-  admin?: Admin;
+  admin: Admin;
   metadataEmail: string;
   claim: Claim;
 };
@@ -30,12 +30,19 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   magic.token.validate(DIDToken);
   const [, claim] =  magic.token.decode(DIDToken);
 
-  const [metadata, admin] = await Promise.all([
-    magic.users.getMetadataByIssuer(claim.iss),
-    adminService.findOne({ issuer: claim.iss }),
-  ]);
+  const metadata = await magic.users.getMetadataByIssuer(claim.iss);
 
-  if (admin) {
+  ctx.assertClientError(metadata.email, {
+    global: 'Email not provided by Magic Link',
+  });
+
+  const admin = await adminService.findOne({ email: metadata.email });
+
+  ctx.assertClientError(admin, {
+    global: 'Admin with such email does not exists',
+  });
+
+  if (admin.lastLoginOn) {
     const lastLoginTimestampInSec = new Date(admin.lastLoginOn).getTime() / 1000;
 
     if (claim.iat <= lastLoginTimestampInSec) {
@@ -48,25 +55,21 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
     }
   }
 
-  ctx.assertClientError(metadata.email, {
-    global: 'Email not provided by Magic Link',
-  });
-
-  ctx.validatedData.admin = admin || undefined;
-  ctx.validatedData.metadataEmail = metadata.email;
+  ctx.validatedData.admin = admin;
   ctx.validatedData.claim = claim;
 
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { admin: oldAdmin, metadataEmail, claim } = ctx.validatedData;
+  const { admin, claim } = ctx.validatedData;
 
-  const admin = oldAdmin || await adminService.insertOne({
-    issuer: claim.iss,
-    email: metadataEmail,
-    isEmailVerified: true,
-  });
+  if (!admin.issuer) {
+    adminService.updateOne({ _id: admin._id }, () => ({
+      issuer: claim.iss,
+      isEmailVerified: true,
+    }));
+  }
 
   await Promise.all([
     adminService.updateLastLogin(admin._id, claim.iat * 1000),
