@@ -29,10 +29,12 @@ const updateLastLogin = (_id: string, timestamp: number) => service.atomic.updat
   },
 );
 
+// TODO: pick public
 const privateFields = [
   'passwordHash',
   'signupToken',
   'resetPasswordToken',
+  'issuer',
 ];
 
 const getPublic = (admin: Admin | null) => _.omit(admin, privateFields);

@@ -1,10 +1,9 @@
 import * as yup from 'yup';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
+import { magic } from 'libs/magic';
 
-import config from 'config';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { Link } from 'components';
@@ -12,10 +11,8 @@ import {
   Button,
   Stack,
   TextInput,
-  PasswordInput,
   Group,
   Title,
-  Text,
 } from '@mantine/core';
 import { accountApi } from 'resources/account';
 
@@ -23,17 +20,9 @@ const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
   lastName: yup.string().max(100).required('Field is required.'),
   email: yup.string().max(64).email('Email format is incorrect.').required('Field is required.'),
-  password: yup.string().matches(
-    /^(?=.*[a-z])(?=.*\d)[A-Za-z\d\W]{6,}$/g,
-    'The password must contain 6 or more characters with at least one letter (a-z) and one number (0-9).',
-  ),
 });
 
 const SignUp = () => {
-  const [email, setEmail] = useState(null);
-  const [registered, setRegistered] = useState(false);
-  const [signupToken, setSignupToken] = useState();
-
   const {
     register,
     handleSubmit,
@@ -43,45 +32,27 @@ const SignUp = () => {
     resolver: yupResolver(schema),
   });
 
-  const { mutate: signUp, isLoading: isSignUpLoading } = accountApi.useSignUp();
+  const { mutate: signIn } = accountApi.useSignIn();
 
-  const onSubmit = (data) => signUp(data, {
-    onSuccess: (response) => {
-      if (response.signupToken) setSignupToken(response.signupToken);
-
-      setRegistered(true);
-      setEmail(data.email);
-    },
+  const handleSignInRequest = (data) => signIn(data, {
     onError: (e) => handleError(e, setError),
   });
 
-  if (registered) {
-    return (
-      <>
-        <Head>
-          <title>Sign up</title>
-        </Head>
-        <Stack sx={{ width: '450px' }}>
-          <Title order={2}>Thanks!</Title>
-          <Text size="md" sx={({ colors }) => ({ color: colors.gray[5] })}>
-            Please follow the instructions from the email to complete a sign up process.
-            We sent an email with a confirmation link to
-            {' '}
-            <b>{email}</b>
-          </Text>
-          {signupToken && (
-            <div>
-              You look like a cool developer.
-              {' '}
-              <Link size="sm" href={`${config.apiUrl}/account/verify-email?token=${signupToken}`}>
-                Verify email
-              </Link>
-            </div>
-          )}
-        </Stack>
-      </>
-    );
-  }
+  const { mutate: signUp, isLoading: isSignUpLoading } = accountApi.useSignUp();
+
+  const onSubmit = (data) => signUp(data, {
+    onSuccess: () => {
+      (async function doAsync() {
+        let DIDToken = await magic.auth.loginWithMagicLink({
+          email: data.email,
+          // redirectURI: new URL(routes.route.magicLinkRedirect, window.location.origin).href,
+        });
+
+        return handleSignInRequest({ DIDToken });
+      })()
+    },
+    onError: (e) => handleError(e, setError),
+  });
 
   return (
     <>
@@ -111,12 +82,6 @@ const SignUp = () => {
               label="Email Address"
               placeholder="Your email"
               error={errors?.email?.message}
-            />
-            <PasswordInput
-              {...register('password')}
-              label="Password"
-              placeholder="Your password"
-              error={errors?.password?.message}
             />
             <Button
               type="submit"

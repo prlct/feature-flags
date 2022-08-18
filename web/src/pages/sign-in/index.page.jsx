@@ -2,11 +2,13 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
-import { TextInput, Button, Stack, Title } from '@mantine/core';
+import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
+import { magic } from 'libs/magic';
 
+import { Link } from 'components';
+import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { accountApi } from 'resources/account';
-import { magic } from 'libs/magic';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.').required('Field is required.'),
@@ -25,9 +27,9 @@ const SignIn = () => {
 
   async function handleLoginWithEmail({ email }) {
     try {
-      let DIDToken = await magic.auth.loginWithMagicLink({
+      const DIDToken = await magic.auth.loginWithMagicLink({
         email,
-        redirectURI: new URL('/magic-link-redirect', window.location.origin).href,
+        // redirectURI: new URL(routes.route.magicLinkRedirect, window.location.origin).href,
       });
 
       return handleSignInRequest({ DIDToken });
@@ -58,6 +60,17 @@ const SignIn = () => {
             >
               Sign in
             </Button>
+            <Group sx={{ fontSize: '14px' }}>
+              Don’t have an account?
+              <Link
+                type="router"
+                href={routes.route.signUp}
+                underline={false}
+                inherit
+              >
+                Sign up
+              </Link>
+            </Group>
           </Stack>
         </form>
       </Stack>
