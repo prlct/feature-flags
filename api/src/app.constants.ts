@@ -1,5 +1,5 @@
 const DATABASE_DOCUMENTS = {
-  USERS: 'users',
+  ADMINS: 'admins',
   TOKENS: 'tokens',
 };
 

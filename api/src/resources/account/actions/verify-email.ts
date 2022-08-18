@@ -4,7 +4,7 @@ import config from 'config';
 import { authService } from 'services';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 const schema = Joi.object({
   token: Joi.string()
@@ -17,28 +17,28 @@ const schema = Joi.object({
 
 type ValidatedData = {
   token: string;
-  userId: string;
+  adminId: string;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
-  const user = await userService.findOne({ signupToken: ctx.validatedData.token });
+  const admin = await adminService.findOne({ signupToken: ctx.validatedData.token });
 
-  ctx.assertClientError(user, { token: 'Token is invalid' }, 404);
+  ctx.assertClientError(admin, { token: 'Token is invalid' }, 404);
 
-  ctx.validatedData.userId = user._id;
+  ctx.validatedData.adminId = admin._id;
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { userId } = ctx.validatedData;
+  const { adminId } = ctx.validatedData;
 
   await Promise.all([
-    userService.updateOne({ _id: userId }, () => ({
+    adminService.updateOne({ _id: adminId }, () => ({
       isEmailVerified: true,
       signupToken: null,
     })),
-    userService.updateLastRequest(userId),
-    authService.setTokens(ctx, userId),
+    adminService.updateLastRequest(adminId),
+    authService.setTokens(ctx, adminId),
   ]);
 
   ctx.redirect(config.webUrl);

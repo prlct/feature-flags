@@ -1,4 +1,4 @@
-export type User = {
+export type Admin = {
   _id: string;
 
   issuer: string;

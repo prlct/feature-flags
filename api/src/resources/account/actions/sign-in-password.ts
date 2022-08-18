@@ -4,7 +4,7 @@ import { securityUtil } from 'utils';
 import { authService } from 'services';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService, User } from 'resources/user';
+import { adminService, Admin } from 'resources/admin';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -32,40 +32,40 @@ const schema = Joi.object({
 type ValidatedData = {
   email: string;
   password: string;
-  user: User;
+  admin: Admin;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { email, password } = ctx.validatedData;
 
-  const user = await userService.findOne({ email });
+  const admin = await adminService.findOne({ email });
 
-  ctx.assertClientError(user, {
+  ctx.assertClientError(admin, {
     credentials: 'The email or password you have entered is invalid',
   }, 401);
 
-  const isPasswordMatch = await securityUtil.compareTextWithHash(password, user.passwordHash);
+  const isPasswordMatch = await securityUtil.compareTextWithHash(password, admin.passwordHash);
   ctx.assertClientError(isPasswordMatch, {
     credentials: 'The email or password you have entered is invalid',
   }, 401);
 
-  ctx.assertClientError(user.isEmailVerified, {
+  ctx.assertClientError(admin.isEmailVerified, {
     email: 'Please verify your email to sign in',
   });
 
-  ctx.validatedData.user = user;
+  ctx.validatedData.admin = admin;
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { user } = ctx.validatedData;
+  const { admin } = ctx.validatedData;
 
   await Promise.all([
-    userService.updateLastRequest(user._id),
-    authService.setTokens(ctx, user._id),
+    adminService.updateLastRequest(admin._id),
+    authService.setTokens(ctx, admin._id),
   ]);
 
-  ctx.body = userService.getPublic(user);
+  ctx.body = adminService.getPublic(admin);
 }
 
 export default (router: AppRouter) => {

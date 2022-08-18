@@ -3,10 +3,10 @@ import _ from 'lodash';
 import db from 'db';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
-import schema from './user.schema';
-import { User } from './user.types';
+import schema from './admin.schema';
+import { Admin } from './admin.types';
 
-const service = db.createService<User>(DATABASE_DOCUMENTS.USERS, { schema });
+const service = db.createService<Admin>(DATABASE_DOCUMENTS.ADMINS, { schema });
 
 const updateLastRequest = (_id: string) => service.atomic.updateOne(
   { _id },
@@ -35,7 +35,7 @@ const privateFields = [
   'resetPasswordToken',
 ];
 
-const getPublic = (user: User | null) => _.omit(user, privateFields);
+const getPublic = (admin: Admin | null) => _.omit(admin, privateFields);
 
 export default Object.assign(service, {
   updateLastRequest,

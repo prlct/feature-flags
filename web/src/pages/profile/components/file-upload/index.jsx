@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import { Group, Text, Button } from '@mantine/core';
 import { handleError } from 'helpers';
-import { userApi } from 'resources/user';
+import { adminApi } from 'resources/admin';
 import { AddIcon, PenIcon } from 'public/icons';
 
 import { useStyles } from './styles';
@@ -10,12 +10,12 @@ const PhotoUpload = () => {
   const [errorMessage, setErrorMessage] = useState(null);
   const { classes, cx } = useStyles();
 
-  const { data: currentUser } = userApi.useGetCurrent();
+  const { data: currentAdmin } = adminApi.useGetCurrent();
 
-  const { mutate: uploadProfilePhoto } = userApi.useUploadProfilePhoto({
+  const { mutate: uploadProfilePhoto } = adminApi.useUploadProfilePhoto({
     onError: (err) => handleError(err),
   });
-  const { mutate: removeProfilePhoto } = userApi.useRemoveProfilePhoto({
+  const { mutate: removeProfilePhoto } = adminApi.useRemoveProfilePhoto({
     onError: (err) => handleError(err),
   });
 
@@ -63,11 +63,11 @@ const PhotoUpload = () => {
             [classes.error]: errorMessage,
           })}
         >
-          {currentUser.avatarUrl ? (
+          {currentAdmin.avatarUrl ? (
             <div
               className={classes.avatar}
               style={{
-                backgroundImage: `url(${currentUser.avatarUrl}`,
+                backgroundImage: `url(${currentAdmin.avatarUrl}`,
               }}
             >
               <div className={classes.innerAvatar}>
@@ -88,7 +88,7 @@ const PhotoUpload = () => {
             JPG, JPEG or PNG
             Max size = 2MB
           </p>
-          {currentUser.avatarUrl && (
+          {currentAdmin.avatarUrl && (
             <Button
               type="submit"
               variant="subtle"

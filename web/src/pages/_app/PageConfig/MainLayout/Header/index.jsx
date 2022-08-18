@@ -7,7 +7,7 @@ import {
 } from '@mantine/core';
 import { Link } from 'components';
 
-import UserMenu from './components/UserMenu';
+import AdminMenu from './components/AdminMenu';
 
 const Header = () => (
   <LayoutHeader
@@ -29,7 +29,7 @@ const Header = () => (
         <Text color="white" size='lg' weight={700}>API key</Text>
       </Link>
     </Group>
-    <UserMenu />
+    <AdminMenu />
   </LayoutHeader>
 );
 

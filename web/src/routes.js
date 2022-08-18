@@ -21,7 +21,7 @@ export const route = {
   resetPassword: '/reset-password',
   expireToken: '/expire-token',
   profile: '/profile',
-  users: '/users',
+  admins: '/admins',
   featureFlag: '/feature-flags/[id]',
   apiKey: '/api-key',
 };
@@ -81,8 +81,8 @@ export const configuration = {
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
-  users: {
-    route: route.users,
+  admins: {
+    route: route.admins,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

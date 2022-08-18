@@ -3,7 +3,7 @@ import Joi from 'joi';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { securityUtil } from 'utils';
 import { validateMiddleware } from 'middlewares';
-import { userService, User } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 const schema = Joi.object({
   password: Joi.string()
@@ -23,10 +23,10 @@ type ValidatedData = {
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
-  const { user } = ctx.state;
+  const { admin } = ctx.state;
   const { password } = ctx.validatedData;
 
-  const isPasswordMatch = await securityUtil.compareTextWithHash(password, user.passwordHash);
+  const isPasswordMatch = await securityUtil.compareTextWithHash(password, admin.passwordHash);
   ctx.assertClientError(!isPasswordMatch, {
     password: 'The new password should be different from the previous one',
   });
@@ -35,14 +35,14 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { user } = ctx.state;
+  const { admin } = ctx.state;
   const { password } = ctx.validatedData;
 
   const passwordHash = await securityUtil.getHash(password);
 
-  const updatedUser = await userService.updateOne({ _id: user._id }, () => ({ passwordHash }));
+  const updatedAdmin = await adminService.updateOne({ _id: admin._id }, () => ({ passwordHash }));
 
-  ctx.body = userService.getPublic(updatedUser);
+  ctx.body = adminService.getPublic(updatedAdmin);
 }
 
 export default (router: AppRouter) => {

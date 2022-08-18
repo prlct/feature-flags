@@ -9,5 +9,5 @@ export type Token = {
   deletedOn?: string;
   type: TokenType;
   value: string;
-  userId: string;
+  adminId: string;
 };

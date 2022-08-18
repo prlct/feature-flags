@@ -5,7 +5,7 @@ import { NextLink } from '@mantine/next';
 import { IconUserCircle, IconLogout } from '@tabler/icons';
 import MenuToggle from '../MenuToggle';
 
-const UserMenu = () => {
+const AdminMenu = () => {
   const { mutate: signOut } = accountApi.useSignOut();
 
   return (
@@ -30,4 +30,4 @@ const UserMenu = () => {
   );
 };
 
-export default memo(UserMenu);
+export default memo(AdminMenu);

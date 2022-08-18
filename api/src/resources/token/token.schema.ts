@@ -9,7 +9,7 @@ const schema = Joi.object({
   deletedOn: Joi.date(),
   type: Joi.string().valid(...Object.values(TokenType)).required(),
   value: Joi.string().required(),
-  userId: Joi.string().required(),
+  adminId: Joi.string().required(),
 });
 
 export default schema;

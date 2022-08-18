@@ -1,10 +1,10 @@
 import Koa, { ParameterizedContext, Request, Next } from 'koa';
 import Router from '@koa/router';
 
-import { User } from 'resources/user';
+import { Admin } from 'resources/admin';
 
 export type AppKoaContextState = {
-  user: User;
+  admin: Admin;
   accessToken: string;
 };
 

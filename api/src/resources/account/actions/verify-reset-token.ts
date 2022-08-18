@@ -3,7 +3,7 @@ import Joi from 'joi';
 import config from 'config';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -28,9 +28,9 @@ type ValidatedData = {
 async function validator(ctx: AppKoaContext<ValidatedData>) {
   const { email, token } = ctx.validatedData;
 
-  const user = await userService.findOne({ resetPasswordToken: token });
+  const admin = await adminService.findOne({ resetPasswordToken: token });
 
-  const redirectUrl = user
+  const redirectUrl = admin
     ? `${config.webUrl}/reset-password?token=${token}`
     : `${config.webUrl}/expire-token?email=${email}`;
 

@@ -4,7 +4,7 @@ import { securityUtil } from 'utils';
 import { emailService } from 'services';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService, User } from 'resources/user';
+import { adminService, Admin } from 'resources/admin';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -21,29 +21,29 @@ const schema = Joi.object({
 
 type ValidatedData = {
   email: string;
-  user: User;
+  admin: Admin;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { email } = ctx.validatedData;
 
-  const user = await userService.findOne({ email });
+  const admin = await adminService.findOne({ email });
 
-  if (!user) return ctx.body = {};
+  if (!admin) return ctx.body = {};
 
-  ctx.validatedData.user = user;
+  ctx.validatedData.admin = admin;
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { user } = ctx.validatedData;
+  const { admin } = ctx.validatedData;
 
   const resetPasswordToken = await securityUtil.generateSecureToken();
 
   await Promise.all([
-    userService.updateOne({ _id: user._id }, () => ({ resetPasswordToken })),
-    emailService.sendForgotPassword(user.email, {
-      email: user.email,
+    adminService.updateOne({ _id: admin._id }, () => ({ resetPasswordToken })),
+    emailService.sendForgotPassword(admin.email, {
+      email: admin.email,
       resetPasswordToken,
     }),
   ]);
