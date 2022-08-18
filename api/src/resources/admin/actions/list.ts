@@ -3,7 +3,7 @@ import { SortDirection } from '@paralect/node-mongo';
 
 import { AppKoaContext, AppRouter } from 'types';
 import { validateMiddleware } from 'middlewares';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 const schema = Joi.object({
   page: Joi.number().default(1),
@@ -31,7 +31,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const validatedSearch = searchValue.split('\\').join('\\\\').split('.').join('\\.');
   const regExp = new RegExp(validatedSearch, 'gi');
 
-  const users = await userService.find(
+  const admins = await adminService.find(
     {
       $or: [
         { firstName: { $regex: regExp } },
@@ -47,9 +47,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   );
 
   ctx.body = {
-    items: users.results,
-    totalPages: users.pagesCount,
-    count: users.count,
+    items: admins.results,
+    totalPages: admins.pagesCount,
+    count: admins.count,
   };
 }
 

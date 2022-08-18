@@ -9,7 +9,7 @@ const handler = async (ctx: AppKoaContext) => {
   // TODO: Add TTL index for auth tokens
   await Promise.all([
     await authService.unsetTokens(ctx),
-    await magic.users.logoutByIssuer(ctx.state.user.issuer),
+    await magic.users.logoutByIssuer(ctx.state.admin.issuer),
   ]);
 
   ctx.body = {};

@@ -5,7 +5,7 @@ import { securityUtil } from 'utils';
 import { emailService } from 'services';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService, User } from 'resources/user';
+import { adminService, Admin } from 'resources/admin';
 
 const schema = Joi.object({
   firstName: Joi.string()
@@ -49,15 +49,15 @@ type ValidatedData = {
   lastName: string;
   email: string;
   password: string;
-  user: User;
+  admin: Admin;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { email } = ctx.validatedData;
 
-  const isUserExists = await userService.exists({ email });
-  ctx.assertClientError(!isUserExists, {
-    email: 'User with this email is already registered',
+  const isAdminExists = await adminService.exists({ email });
+  ctx.assertClientError(!isAdminExists, {
+    email: 'Admin with this email is already registered',
   });
 
   await next();
@@ -76,7 +76,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     securityUtil.generateSecureToken(),
   ]);
 
-  const user = await userService.insertOne({
+  const admin = await adminService.insertOne({
     email,
     firstName,
     lastName,
@@ -86,7 +86,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     signupToken,
   });
 
-  await emailService.sendSignUpWelcome(user.email, {
+  await emailService.sendSignUpWelcome(admin.email, {
     verifyEmailUrl: `${config.apiUrl}/account/verify-email?token=${signupToken}`,
   });
 

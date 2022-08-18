@@ -1,20 +1,20 @@
 import { promiseUtil } from 'utils';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 import { Migration } from 'migrator/types';
 
 const migration = new Migration(1, 'Example');
 
 migration.migrate = async () => {
-  const userIds = await userService.distinct('_id', {
+  const adminIds = await adminService.distinct('_id', {
     isEmailVerified: true,
   });
 
-  const updateFn = (userId: string) => userService.atomic.updateOne(
-    { _id: userId },
+  const updateFn = (adminId: string) => adminService.atomic.updateOne(
+    { _id: adminId },
     { $set: { isEmailVerified: false } },
   );
 
-  await promiseUtil.promiseLimit(userIds, 50, updateFn);
+  await promiseUtil.promiseLimit(adminIds, 50, updateFn);
 };
 
 export default migration;

@@ -8,7 +8,7 @@ export function useSignIn() {
 
   return useMutation(signIn, {
     onSuccess: (data) => {
-      queryClient.setQueryData(['currentUser'], data);
+      queryClient.setQueryData(['currentAdmin'], data);
     },
   });
 }
@@ -18,7 +18,7 @@ export function useSignOut() {
 
   return useMutation(signOut, {
     onSuccess: () => {
-      queryClient.setQueryData(['currentUser'], null);
+      queryClient.setQueryData(['currentAdmin'], null);
     },
   });
 }

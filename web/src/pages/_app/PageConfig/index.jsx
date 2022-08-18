@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 
 import * as routes from 'routes';
 import { Global } from '@mantine/core';
-import { userApi } from 'resources/user';
+import { adminApi } from 'resources/admin';
 
-import 'resources/user/user.handlers';
+import 'resources/admin/admin.handlers';
 import { globalStyles } from 'theme/globalStyles';
 
 import MainLayout from './MainLayout';
@@ -28,20 +28,20 @@ const scopeToComponent = {
 
 const PageConfig = ({ children }) => {
   const router = useRouter();
-  const { data: currentUser, isLoading: isCurrentUserLoading } = userApi.useGetCurrent();
+  const { data: currentAdmin, isLoading: isCurrentAdminLoading } = adminApi.useGetCurrent();
 
-  if (isCurrentUserLoading) return null;
+  if (isCurrentAdminLoading) return null;
 
   const page = configurations.find((r) => r.route === router.route);
   const Layout = layoutToComponent[page.layout];
   const Scope = scopeToComponent[page.scope];
 
-  if (page.scope === routes.scope.PRIVATE && !currentUser) {
+  if (page.scope === routes.scope.PRIVATE && !currentAdmin) {
     router.push(routes.route.signIn);
     return null;
   }
 
-  if (page.scope === routes.scope.PUBLIC && currentUser) {
+  if (page.scope === routes.scope.PUBLIC && currentAdmin) {
     router.push(routes.route.home);
     return null;
   }

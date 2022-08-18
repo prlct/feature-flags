@@ -26,12 +26,12 @@ const initClient = async () => {
   emitter = new Emitter(redisClient);
 };
 
-const getUserRoomId = (userId: string) => `user-${userId}`;
+const getAdminRoomId = (adminId: string) => `admin-${adminId}`;
 
 export default {
   initClient,
-  publishToUser: (userId: string, eventName: string, data: unknown): void => {
-    const roomId = getUserRoomId(userId);
+  publishToAdmin: (adminId: string, eventName: string, data: unknown): void => {
+    const roomId = getAdminRoomId(adminId);
     publish(roomId, eventName, data);
   },
 };

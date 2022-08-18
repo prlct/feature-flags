@@ -26,7 +26,7 @@ export default async (server: http.Server) => {
     const tokenData = await tokenService.findTokenByValue(accessToken || '');
     if (tokenData) {
       socket.data = {
-        userId: tokenData.userId,
+        adminId: tokenData.adminId,
       };
 
       return next();
@@ -37,8 +37,8 @@ export default async (server: http.Server) => {
 
   io.on('connection', (socket) => {
     socket.on('subscribe', (roomId: string) => {
-      const { userId } = socket.data;
-      const hasAccessToRoom = socketHelper.checkAccessToRoom(roomId, { userId });
+      const { adminId } = socket.data;
+      const hasAccessToRoom = socketHelper.checkAccessToRoom(roomId, { adminId });
 
       if (hasAccessToRoom) {
         socket.join(roomId);

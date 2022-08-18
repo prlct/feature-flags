@@ -16,7 +16,7 @@ import {
 } from '@mantine/core';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconChevronDown, IconSearch, IconX } from '@tabler/icons';
-import { userApi } from 'resources/user';
+import { adminApi } from 'resources/admin';
 
 const selectOptions = [
   {
@@ -49,7 +49,7 @@ const columns = [
 
 const PER_PAGE = 5;
 
-const Users = () => {
+const Admins = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState(selectOptions[0].value);
@@ -80,7 +80,7 @@ const Users = () => {
     setPage(1);
   }, [debouncedSearch]);
 
-  const { data, isLoading: isListLoading } = userApi.useList(params);
+  const { data, isLoading: isListLoading } = adminApi.useList(params);
 
   const totalPages = data?.count ? Math.ceil(data.count / PER_PAGE) : 1;
 
@@ -90,7 +90,7 @@ const Users = () => {
         <title>Home</title>
       </Head>
       <Stack spacing="lg">
-        <Title order={2}>Users</Title>
+        <Title order={2}>Admins</Title>
         <Group position="apart">
           <Skeleton
             height={42}
@@ -204,4 +204,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Admins;

@@ -13,13 +13,13 @@ function getCookie(cookieString: string, name: string) {
   return null;
 }
 
-function checkAccessToRoom(roomId: string, data: { userId: string }) {
+function checkAccessToRoom(roomId: string, data: { adminId: string }) {
   const [roomType, ...rest] = roomId.split('-');
   const id = rest.join('-');
 
   switch (roomType) {
-    case 'user':
-      return id === data.userId;
+    case 'admin':
+      return id === data.adminId;
     default:
       return false;
   }

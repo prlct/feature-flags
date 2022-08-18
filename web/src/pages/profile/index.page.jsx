@@ -13,7 +13,7 @@ import {
   Stack,
   Title,
 } from '@mantine/core';
-import { userApi } from 'resources/user';
+import { adminApi } from 'resources/admin';
 
 import PhotoUpload from './components/file-upload';
 
@@ -24,7 +24,7 @@ const schema = yup.object().shape({
 const Profile = () => {
   const queryClient = useQueryClient();
 
-  const { data: currentUser } = userApi.useGetCurrent();
+  const { data: currentAdmin } = adminApi.useGetCurrent();
 
   const {
     register,
@@ -35,11 +35,11 @@ const Profile = () => {
     resolver: yupResolver(schema),
   });
 
-  const { mutate: updateCurrent, isLoading: isUpdateCurrentLoading } = userApi.useUpdateCurrent();
+  const { mutate: updateCurrent, isLoading: isUpdateCurrentLoading } = adminApi.useUpdateCurrent();
 
   const onSubmit = ({ password }) => updateCurrent({ password }, {
     onSuccess: (data) => {
-      queryClient.setQueryData(['currentUser'], data);
+      queryClient.setQueryData(['currentAdmin'], data);
       showNotification({
         title: 'Success',
         message: 'Your password have been successfully updated.',
@@ -64,7 +64,7 @@ const Profile = () => {
           <TextInput
             {...register('email')}
             label="Email Address"
-            defaultValue={currentUser.email}
+            defaultValue={currentAdmin.email}
             disabled
           />
           <PasswordInput

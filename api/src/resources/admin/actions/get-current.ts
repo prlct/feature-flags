@@ -1,8 +1,8 @@
 import { AppKoaContext, AppRouter } from 'types';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 async function handler(ctx: AppKoaContext) {
-  ctx.body = userService.getPublic(ctx.state.user);
+  ctx.body = adminService.getPublic(ctx.state.admin);
 }
 
 export default (router: AppRouter) => {

@@ -1,15 +1,15 @@
 import config from 'config';
 import { cloudStorageService } from 'services';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService } from 'resources/user';
+import { adminService } from 'resources/admin';
 
 const getFileKey = (url: string) => url
   .replace(`https://${config.cloudStorage.bucket}.${config.cloudStorage.endpoint}/`, '');
 
 async function validator(ctx: AppKoaContext, next: Next) {
-  const { user } = ctx.state;
+  const { admin } = ctx.state;
 
-  ctx.assertClientError(user.avatarUrl, {
+  ctx.assertClientError(admin.avatarUrl, {
     global: 'You don\'t have avatar',
   });
 
@@ -17,11 +17,11 @@ async function validator(ctx: AppKoaContext, next: Next) {
 }
 
 async function handler(ctx: AppKoaContext) {
-  const { user } = ctx.state;
+  const { admin } = ctx.state;
 
   await Promise.all([
-    cloudStorageService.deleteObject(getFileKey(user.avatarUrl || '')),
-    userService.updateOne({ _id: user._id }, () => ({ avatarUrl: null })),
+    cloudStorageService.deleteObject(getFileKey(admin.avatarUrl || '')),
+    adminService.updateOne({ _id: admin._id }, () => ({ avatarUrl: null })),
   ]);
 
   ctx.body = {};

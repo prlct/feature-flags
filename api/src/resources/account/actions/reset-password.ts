@@ -3,7 +3,7 @@ import Joi from 'joi';
 import { securityUtil } from 'utils';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { userService, User } from 'resources/user';
+import { adminService, Admin } from 'resources/admin';
 
 const schema = Joi.object({
   token: Joi.string()
@@ -27,26 +27,26 @@ const schema = Joi.object({
 type ValidatedData = {
   token: string;
   password: string;
-  user: User;
+  admin: Admin;
 };
 
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { token } = ctx.validatedData;
 
-  const user = await userService.findOne({ resetPasswordToken: token });
+  const admin = await adminService.findOne({ resetPasswordToken: token });
 
-  if (!user) return ctx.body = {};
+  if (!admin) return ctx.body = {};
 
-  ctx.validatedData.user = user;
+  ctx.validatedData.admin = admin;
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { user, password } = ctx.validatedData;
+  const { admin, password } = ctx.validatedData;
 
   const passwordHash = await securityUtil.getHash(password);
 
-  await userService.updateOne({ _id: user._id }, () => ({
+  await adminService.updateOne({ _id: admin._id }, () => ({
     passwordHash,
     resetPasswordToken: null,
   }));
