@@ -141,7 +141,7 @@ const Home = () => {
             ))}
           </>
         )}
-        {(filteredFeatureFlags.length && !isListLoading) ? (
+        {(!!filteredFeatureFlags.length && !isListLoading) && (
           <>
             <Paper radius="sm" withBorder>
               <ScrollArea>
@@ -196,7 +196,8 @@ const Home = () => {
               </ScrollArea>
             </Paper>
           </>
-        ) : (
+        )}
+        {(!filteredFeatureFlags.length && !!search && !isListLoading) && (
           <Container p={75}>
             <Text size="xl" color="grey">
               No results found, try to adjust your search.
