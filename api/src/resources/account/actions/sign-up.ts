@@ -2,7 +2,11 @@ import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
+import { securityUtil } from 'utils';
+import { PUBLIC_API_KEY_SECURITY_LENGTH } from 'app.constants';
 import { adminService } from 'resources/admin';
+import { companyService } from 'resources/company';
+import { applicationService } from 'resources/application';
 
 const schema = Joi.object({
   firstName: Joi.string()
@@ -55,12 +59,28 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     email,
   } = ctx.validatedData;
 
-  await adminService.insertOne({
+  // TODO: Add collision check?
+  const publicApiKeyP = securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
+  const admin = await adminService.insertOne({
     email,
     firstName,
     lastName,
     isEmailVerified: false,
   });
+
+  const company = await companyService.insertOne({
+    ownerId: admin._id,
+    applicationIds: [],
+    adminIds: [admin._id],
+  });
+  
+  const publicApiKey = await publicApiKeyP;
+  const application = await applicationService.insertOne({
+    publicApiKey,
+    companyId: company._id,
+  });
+
+  await companyService.updateOne({ _id: company._id }, () => ({ applicationIds: [application._id] }));
 
   ctx.body = {};
 }

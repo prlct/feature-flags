@@ -33,13 +33,13 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const metadata = await magic.users.getMetadataByIssuer(claim.iss);
 
   ctx.assertClientError(metadata.email, {
-    global: 'Email not provided by Magic Link',
+    global: 'Email not provided by Magic Link.',
   });
 
   const admin = await adminService.findOne({ email: metadata.email });
 
   ctx.assertClientError(admin, {
-    global: 'Admin with such email does not exists',
+    global: 'Please, signup to create an account.',
   });
 
   if (admin.lastLoginOn) {
