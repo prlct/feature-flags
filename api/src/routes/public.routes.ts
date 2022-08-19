@@ -5,6 +5,7 @@ import { accountRoutes } from 'resources/account';
 
 const healthCheckRouter = new AppRouter();
 healthCheckRouter.get('/health', ctx => ctx.status = 200);
+healthCheckRouter.get('/', ctx => ctx.body = ':)');
 
 export default (app: AppKoa) => {
   app.use(healthCheckRouter.routes());
