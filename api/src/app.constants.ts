@@ -1,6 +1,8 @@
 const DATABASE_DOCUMENTS = {
   ADMINS: 'admins',
   TOKENS: 'tokens',
+  COMPANIES: 'companies',
+  APPLICATIONS: 'applications',
 };
 
 const COOKIES = {
@@ -8,9 +10,11 @@ const COOKIES = {
 };
 
 const TOKEN_SECURITY_LENGTH = 32;
+const PUBLIC_API_KEY_SECURITY_LENGTH = 32;
 
 export {
   DATABASE_DOCUMENTS,
   COOKIES,
   TOKEN_SECURITY_LENGTH,
+  PUBLIC_API_KEY_SECURITY_LENGTH,
 };
