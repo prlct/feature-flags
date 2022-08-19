@@ -6,9 +6,9 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Feature Flags',
-  tagline: 'Feature Flags are cool',
-  url: 'https://your-docusaurus-test-site.com',
+  title: 'GrowthFlags',
+  tagline: 'Double your software delivery speed',
+  url: 'https://docs.growthflags.io',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -16,8 +16,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'paralect', // Usually your GitHub org/user name.
+  projectName: 'growthflags', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -120,7 +120,7 @@ const config = {
         //     ],
         //   },
         // ],
-        copyright: `Copyright © ${new Date().getFullYear()} Feature Flags, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} GrowthFlags. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,
