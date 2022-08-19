@@ -5,7 +5,7 @@ const shipTheme = {
     fontFamily: 'Inter, sans-serif',
     fontWeight: 600,
   },
-  primaryColor: 'dark',
+  primaryColor: 'blue',
   primaryShade: 9,
   other: {
     transition: {

@@ -29,7 +29,7 @@ const App = ({ Component, pageProps }) => (
         withNormalizeCSS
       >
         <ModalsProvider>
-          <NotificationsProvider autoClose={10000}>
+          <NotificationsProvider autoClose={5000} limit={2}>
             <PageConfig>
               <Component {...pageProps} />
             </PageConfig>

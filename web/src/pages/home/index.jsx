@@ -66,10 +66,11 @@ const Home = () => {
 
   // TODO: Disable feature toggler during request / add loader ?
   const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
-    onSuccess: ({ enabled }) => {
+    onSuccess: (item) => {
+
       showNotification({
         title: 'Success',
-        message: `The feature was successfully ${enabled ? 'disabled' : 'enabled'}`,
+        message: `The ${item.name} feature flag is now ${item.enabled ? 'off' : 'on'}.`,
         color: 'green',
       });
     },
@@ -169,7 +170,7 @@ const Home = () => {
                         </td>
                         <td>
                           <Stack>
-                            <Switch checked={enabled} onChange={() => handleSwitchChange({ _id, enabled })} />
+                            <Switch checked={enabled} onChange={() => handleSwitchChange({ _id, enabled, name })} />
                             <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                           </Stack>   
                         </td>

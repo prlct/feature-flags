@@ -65,7 +65,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { admin, claim } = ctx.validatedData;
 
   if (!admin.issuer) {
-    adminService.updateOne({ _id: admin._id }, () => ({
+    await adminService.updateOne({ _id: admin._id }, () => ({
       issuer: claim.iss,
       isEmailVerified: true,
     }));

@@ -15,13 +15,32 @@ export function useToggleFeatureStatus() {
   const toggleFeatureStatus = (data) => new Promise((res) => { setTimeout(() => res(data), 300); });
 
   return useMutation(toggleFeatureStatus, {
-    onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlags'], (oldData) => {
-        const featureFlag = _find(oldData.items, { _id: data._id });
-        featureFlag.enabled = !featureFlag.enabled;
+    // Optimistically change state of the toggle without waiting server repy
+    onMutate: async (item) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries(['featureFlags']);
 
-        return oldData;
-      });
+      // Snapshot the previous value
+      let featureFlags = queryClient.getQueryData(['featureFlags']);
+      const previousFeatureFlags = {
+        items: [...featureFlags.items]
+      };
+
+      const featureFlag = _find(featureFlags.items, { _id: item._id });
+      featureFlag.enabled = !featureFlag.enabled;
+
+      // // Optimistically update to the new value
+      queryClient.setQueryData(['featureFlags'], {
+        items: [...featureFlags.items]
+      })
+  
+      // Return a context object with the snapshotted value 
+      return { previousFeatureFlags }
+    },
+    onError: (err, item, context) => {
+      queryClient.setQueryData(['featureFlags'], context.previousFeatureFlags)
+    },
+    onSuccess: (data) => {
     },
   });
 }

@@ -136,5 +136,6 @@ deploy();
 
 process.on('unhandledRejection', (error) => {
   console.error(error);
+  console.error(error.stack);
   process.exit(1);
 });

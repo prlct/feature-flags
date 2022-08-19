@@ -6,7 +6,7 @@ const routeErrorHandler = async (ctx: AppKoaContext, next: Next) => {
     await next();
   } catch (error: any) {
     const clientError = error.errors;
-    const serverError = { global: error.message };
+    const serverError = { global: error.stack || error.message };
 
     const errors = clientError || serverError;
     logger.error(errors);
