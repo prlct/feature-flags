@@ -6,7 +6,7 @@ const base = {
   port: process.env.PORT || 3001,
   isDev: env === 'development',
   mongo: {
-    connection: '',
+    connection: process.env.MONGO_CONNECTION || '',
     dbName: '',
   },
   cloudStorage: {
@@ -18,7 +18,7 @@ const base = {
   sendgridApiKey: '',
   redis: 'redis://:@redis:6379',
   adminKey: '',
-  MAGIC_SECRET_KEY: '',
+  MAGIC_SECRET_KEY: process.env.MAGIC_SECRET_KEY || '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);
