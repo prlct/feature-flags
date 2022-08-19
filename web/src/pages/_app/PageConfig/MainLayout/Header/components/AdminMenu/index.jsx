@@ -13,13 +13,13 @@ const AdminMenu = () => {
       sx={{ marginLeft: 'auto' }}
       control={<MenuToggle />}
     >
-      <Menu.Item
+      {/* <Menu.Item
         component={NextLink}
         href="/profile"
         icon={<IconUserCircle size={16} />}
       >
         Profile
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item
         onClick={() => signOut()}
         icon={<IconLogout size={16} />}
