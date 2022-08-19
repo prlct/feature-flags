@@ -200,6 +200,7 @@ const FeatureFlag = () => {
                     label={
                       <Title order={4}>{`Feature ${data?.enabled ? 'enabled' : 'disabled'}`}</Title>
                     }
+                    styles={{ input: { cursor: 'pointer' } }}
                     checked={data.enabled} onChange={() => handleSwitchChange({ _id: data._id, enabled: data.enabled })}
                   />
                 </Group>

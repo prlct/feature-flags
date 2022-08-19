@@ -170,7 +170,11 @@ const Home = () => {
                         </td>
                         <td>
                           <Stack>
-                            <Switch checked={enabled} onChange={() => handleSwitchChange({ _id, enabled, name })} />
+                              <Switch
+                                checked={enabled}
+                                styles={{ input: { cursor: 'pointer' } }}
+                                onChange={() => handleSwitchChange({ _id, enabled, name })}
+                              />
                             <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                           </Stack>   
                         </td>
