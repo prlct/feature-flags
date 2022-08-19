@@ -14,9 +14,9 @@ import requestLogger from 'koa-logger';
 
 import config from 'config';
 import logger from 'logger';
-import { socketService } from 'services';
+// import { socketService } from 'services';
 import routes from 'routes';
-import ioEmitter from 'io-emitter';
+// import ioEmitter from 'io-emitter';
 import { AppKoa } from 'types';
 
 const initKoa = () => {
@@ -43,10 +43,10 @@ const initKoa = () => {
 const app = initKoa();
 (async () => {
   const server = http.createServer(app.callback());
-  await Promise.all([
-    ioEmitter.initClient(),
-    socketService(server),
-  ]);
+  // await Promise.all([
+  //   ioEmitter.initClient(),
+  //   socketService(server),
+  // ]);
 
   const message = `Api server listening on ${config.port}, in ${config.env} mode and ${process.env.APP_ENV} env`;
   server.listen(config.port, () => {
