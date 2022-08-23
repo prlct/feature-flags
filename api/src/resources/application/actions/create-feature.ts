@@ -4,6 +4,7 @@ import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { featureService, FeatureEnv } from 'resources/feature';
 import { applicationService } from 'resources/application';
+import applicationAuth from '../middlewares/application-auth.middleware';
 
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 300;
@@ -33,16 +34,6 @@ type ValidatedData = {
 async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { name } = ctx.validatedData;
   const { applicationId } = ctx.params;
-
-  ctx.assertClientError(applicationId, {
-    global: 'Application Id not provided',
-  });
-
-  // TODO: Make this check global
-  const application = await applicationService.exists({ _id: applicationId });
-  ctx.assertClientError(application, {
-    global: 'Application not exists',
-  });
 
   const feature = await featureService.exists({ name, applicationId });
   ctx.assertClientError(!feature, {
@@ -85,9 +76,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     (doc) => ({ featureIds: [...doc.featureIds, feature._id] }),
   );
 
+  // TODO: Fix response?
   ctx.body = {};
 }
 
 export default (router: AppRouter) => {
-  router.post('/:applicationId/features', validateMiddleware(schema), validator, handler);
+  router.post('/:applicationId/features', applicationAuth, validateMiddleware(schema), validator, handler);
 };
