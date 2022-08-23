@@ -9,14 +9,14 @@ import {
   ActionIcon,
 } from '@mantine/core';
 import { IconCopy, IconCheck } from '@tabler/icons';
-import { accountApi } from 'resources/account';
+import { applicationApi } from 'resources/application';
 
 const ApiKey = () => {
   const [isCopied, setIsCopied] = useState(false);
-  const { data, isLoading } = accountApi.useGetAccount();
+  const { data, isLoading } = applicationApi.useGetApplication();
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(data?.apiKey);
+    navigator.clipboard.writeText(data?.publicApiKey);
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
@@ -32,9 +32,9 @@ const ApiKey = () => {
         <Stack spacing="lg">
           <Title order={2}>API key</Title>
           <TextInput
-            sx={{ width: 400 }}
+            sx={{ width: 680 }}
             label="Publishable API key"
-            value={data?.apiKey}
+            value={data?.publicApiKey}
             disabled
             rightSection={
               <Tooltip label={isCopied ? 'Copied' : 'Copy'} withArrow position="right">

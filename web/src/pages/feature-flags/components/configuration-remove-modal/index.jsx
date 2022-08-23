@@ -9,10 +9,10 @@ import PropTypes from 'prop-types';
 import { showNotification } from '@mantine/notifications';
 
 import { handleError } from 'helpers';
-import { featureFlagsApi } from 'resources/feature-flags';
+import { featureFlagApi } from 'resources/feature-flag';
 
 const ConfigurationRemoveModal = ({ opened, onClose, configurationId }) => {
-  const deleteConfigurationMutation = featureFlagsApi.useDeleteConfiguration();
+  const deleteConfigurationMutation = featureFlagApi.useDeleteConfiguration();
 
   const handleDelete = () => deleteConfigurationMutation.mutate({ configurationId }, {
     onSuccess: () => {

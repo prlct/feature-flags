@@ -24,7 +24,8 @@ import {
   trim as _trim,
   filter as _filter,
 } from 'lodash';
-import { featureFlagsApi } from 'resources/feature-flags';
+import { featureFlagApi } from 'resources/feature-flag';
+import { applicationApi } from 'resources/application';
 
 import { Link } from 'components';
 import * as routes from 'routes';
@@ -40,7 +41,7 @@ const Home = () => {
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
 
-  const { data, refetch, isRefetching, isLoading } = featureFlagsApi.useGetList(env);
+  const { data, refetch, isRefetching, isLoading } = applicationApi.useGetFeaturesList(env);
 
   const isListLoading = useMemo(
     () => isLoading || isRefetching,
@@ -56,21 +57,20 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    const filteredFlags = _filter(data?.items, (item) => item.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
+    const filteredFlags = _filter(data, (item) => item.name.toLowerCase().includes(debouncedSearch.toLowerCase()));
 
     setFilteredFeatureFlags(filteredFlags || []);
     // to update on env change and new item adding
-  }, [data, data?.items?.length, debouncedSearch]);
+  }, [data, data?.length, debouncedSearch]);
 
-  const toggleFeatureStatusMutation = featureFlagsApi.useToggleFeatureStatus();
+  const toggleFeatureStatusMutation = featureFlagApi.useToggleFeatureStatus();
 
   // TODO: Disable feature toggler during request / add loader ?
   const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: (item) => {
-
       showNotification({
         title: 'Success',
-        message: `The ${item.name} feature flag is now ${item.enabled ? 'off' : 'on'}.`,
+        message: `The ${item.name} feature flag is now ${item.enabled ? 'on' : 'off'}.`,
         color: 'green',
       });
     },
@@ -157,7 +157,7 @@ const Home = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredFeatureFlags.map(({ _id, name, description, enabled, enabledForEveryone, createdOn, usersPercentage, users, tests, seenBy }) => (
+                    {filteredFeatureFlags.map(({ _id, name, description, enabled, enabledForEveryone, createdOn, usersPercentage, users, tests, seenBy, env }) => (
                       <tr key={_id}>
                         <td>
                           <Group>
@@ -173,7 +173,7 @@ const Home = () => {
                               <Switch
                                 checked={enabled}
                                 styles={{ input: { cursor: 'pointer' } }}
-                                onChange={() => handleSwitchChange({ _id, enabled, name })}
+                                onChange={() => handleSwitchChange({ _id, enabled, name, env })}
                               />
                             <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                           </Stack>   
@@ -182,7 +182,7 @@ const Home = () => {
                         <td>{new Date(createdOn).toLocaleDateString("en-US")}</td>
                         <td>
                           <Group>
-                            <Link type="router" href={`${routes.path.featureFlag}/${_id}`} underline={false}>
+                            <Link type="router" href={`${routes.path.featureFlag}/${_id}?env=${env}`} underline={false}>
                               <Button size="sm" leftIcon={<IconSettings />}>
                                 Settings
                               </Button>
