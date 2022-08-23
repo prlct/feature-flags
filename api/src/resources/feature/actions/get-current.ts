@@ -2,8 +2,9 @@ import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv } from 'resources/feature';
+import { featureService, FeatureEnv, Feature } from 'resources/feature';
 import { getFlatFeature } from '../utils/get-flat-feature';
+import featureAuth from '../middlewares/feature-auth.middleware';
 
 // TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
 const featureEnvValues = ['development', 'staging', 'production'];
@@ -26,12 +27,12 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { featureId } = ctx.params;
   const { env } = ctx.validatedData;
 
-  const feature = await featureService.findOne({ _id: featureId });
+  // TODO: Get rid from this request (featureAuth)
+  const feature = await featureService.findOne({ _id: featureId }) as Feature;
 
-  // TODO: Add feature null error
-  ctx.body = feature ? getFlatFeature(feature, env) : {};
+  ctx.body = getFlatFeature(feature, env);
 }
 
 export default (router: AppRouter) => {
-  router.get('/:featureId', validateMiddleware(schema), handler);
+  router.get('/:featureId', featureAuth, validateMiddleware(schema), handler);
 };
