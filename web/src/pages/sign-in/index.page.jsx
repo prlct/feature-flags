@@ -25,6 +25,7 @@ const SignIn = () => {
     onError: (e) => handleError(e, setError),
   });
 
+  // TODO: Do check if email exists before login with magic.link
   async function handleLoginWithEmail({ email }) {
     try {
       const DIDToken = await magic.auth.loginWithMagicLink({

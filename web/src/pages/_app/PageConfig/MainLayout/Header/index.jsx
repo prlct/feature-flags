@@ -26,7 +26,7 @@ const Header = () => (
         <Text color="white" size='lg' weight={700}>Feature flags</Text>
       </Link>
       <Link type="router" href={routes.route.apiKey} underline={false}>
-        <Text color="white" size='lg' weight={700}>Api Key</Text>
+        <Text color="white" size='lg' weight={700}>Api Keys</Text>
       </Link>
     </Group>
     <AdminMenu />
