@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
  *
  * @return {string} - random string
  */
-export const generateSecureToken = async (tokenLength = 48) => {
+export const generateSecureToken = (tokenLength = 48) => {
   const buf = crypto.randomBytes(tokenLength);
   return buf.toString('hex');
 };
