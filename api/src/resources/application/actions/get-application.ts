@@ -1,5 +1,6 @@
 import { AppKoaContext, AppRouter } from 'types';
 import { applicationService } from 'resources/application';
+import applicationAuth from '../middlewares/application-auth.middleware';
 
 async function handler(ctx: AppKoaContext) {
   const { applicationId } = ctx.params;
@@ -9,5 +10,5 @@ async function handler(ctx: AppKoaContext) {
 }
 
 export default (router: AppRouter) => {
-  router.get('/:applicationId', handler);
+  router.get('/:applicationId', applicationAuth, handler);
 };
