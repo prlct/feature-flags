@@ -3,8 +3,9 @@ import { find } from 'lodash';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv } from 'resources/feature';
+import { featureService, FeatureEnv, Feature } from 'resources/feature';
 import { getFlatFeature } from '../utils/get-flat-feature';
+import featureAuth from '../middlewares/feature-auth.middleware';
 
 // TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
 const featureEnvValues = ['development', 'staging', 'production'];
@@ -54,12 +55,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       doc.envSettings[env].users = newUsersList;
       return doc;
     },
-  );
+  ) as Feature;
 
-  // TODO: Add feature null error
-  ctx.body = updatedFeature ? getFlatFeature(updatedFeature, env) : {};
+  ctx.body = getFlatFeature(updatedFeature, env);
 }
 
 export default (router: AppRouter) => {
-  router.post('/:featureId/users', validateMiddleware(schema), handler);
+  router.post('/:featureId/users', featureAuth, validateMiddleware(schema), handler);
 };
