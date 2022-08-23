@@ -8,7 +8,7 @@ import { Token, TokenType } from './token.types';
 const service = db.createService<Token>(DATABASE_DOCUMENTS.TOKENS, { schema });
 
 const createToken = async (adminId: string, type: TokenType) => {
-  const value = await securityUtil.generateSecureToken(TOKEN_SECURITY_LENGTH);
+  const value = securityUtil.generateSecureToken(TOKEN_SECURITY_LENGTH);
 
   return service.insertOne({
     type, value, adminId,
