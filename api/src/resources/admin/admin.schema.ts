@@ -9,6 +9,7 @@ const schema = Joi.object({
   email: Joi.string().email().required(),
   isEmailVerified: Joi.boolean().required().default(false),
   avatarUrl: Joi.string().allow(null),
+  applicationIds: Joi.array().items(Joi.string()).unique(),
 
   lastRequestOn: Joi.date(),
   lastLoginOn: Joi.date(),

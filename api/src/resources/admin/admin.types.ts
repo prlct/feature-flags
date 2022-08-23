@@ -7,6 +7,7 @@ export type Admin = {
   email: string;
   isEmailVerified: boolean;
   avatarUrl?: string | null;
+  applicationIds: string[];
 
   lastRequestOn?: string;
   lastLoginOn: string;
