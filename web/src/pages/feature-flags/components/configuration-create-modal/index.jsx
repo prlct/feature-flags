@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { showNotification } from '@mantine/notifications';
 
 import { handleError } from 'helpers';
-import { featureFlagsApi } from 'resources/feature-flags';
+import { featureFlagApi } from 'resources/feature-flag';
 
 const ConfigurationCreateModal = ({
   opened,
@@ -31,7 +31,7 @@ const ConfigurationCreateModal = ({
     onClose();
   }, []);
 
-  const createConfigurationMutation = featureFlagsApi.useCreateConfiguration();
+  const createConfigurationMutation = featureFlagApi.useCreateConfiguration();
 
   const onSubmit = () => createConfigurationMutation.mutate({ configurationId, configuration }, {
     onSuccess: () => {

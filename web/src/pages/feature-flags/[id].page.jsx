@@ -28,9 +28,10 @@ import {
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import {  IconX,  IconTool, IconPlus, IconTrash } from '@tabler/icons';
-import { featureFlagsApi } from 'resources/feature-flags';
+import { featureFlagApi } from 'resources/feature-flag';
 import { Link } from 'components';
 import * as routes from 'routes';
+import { handleError } from 'helpers';
 
 import { useRouter } from 'next/router'
 
@@ -51,9 +52,9 @@ const FeatureFlag = () => {
   const [editConfigurationId, setEditConfigurationId] = useState('');
   const [editConfiguration, setEditConfiguration] = useState('');
   const [usersPercentageValue, setUsersPercentageValue] = useState('');
-  const { id } = router.query;
+  const { id, env } = router.query;
 
-  const { data } = featureFlagsApi.useGetById(id);
+  const { data } = featureFlagApi.useGetById({ _id: id, env });
 
   useEffect(() => {
       setUsersPercentageValue((data?.usersPercentage || '').toString());
@@ -63,14 +64,13 @@ const FeatureFlag = () => {
     register, handleSubmit, formState: { errors }, setError, reset,
   } = useForm({ resolver: yupResolver(schema) });
 
-  const enableFeatureForUsersMutation = featureFlagsApi.useEnableFeatureForUsers();
+  const enableFeatureForUsersMutation = featureFlagApi.useEnableFeatureForUsers();
 
-  // TODO: Add validation for duplications
-  const handleEmailsAdd = (data) => {
-    const email = _trim(data.email);
+  const handleEmailsAdd = ({ email }) => {
+    const trimmedEmail = _trim(email);
 
-    if (email) {
-      enableFeatureForUsersMutation.mutate(data, {
+    if (trimmedEmail) {
+      enableFeatureForUsersMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
         onSuccess: ({ email }) => {
           reset({ email: '' });
           showNotification({
@@ -79,54 +79,81 @@ const FeatureFlag = () => {
             color: 'green',
           });
         },
+        onError: (e) => handleError(e, setError),
       });
     }
   };
 
-  const toggleFeatureStatusMutation = featureFlagsApi.useToggleFeatureStatus();
+  const disableFeatureForUserMutation = featureFlagApi.useDisableFeatureForUser();
+
+  const handleEmailDelete = (email) => {
+    const trimmedEmail = _trim(email);
+
+    if (trimmedEmail) {
+      disableFeatureForUserMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
+        onSuccess: ({ email }) => {
+          reset({ email: '' });
+          showNotification({
+            title: 'Success',
+            message: `The feature has been successfully disabled to the user ${email}.`,
+            color: 'green',
+          });
+        },
+        onError: (e) => handleError(e, setError),
+      });
+    }
+  };
+
+  const toggleFeatureStatusMutation = featureFlagApi.useToggleFeatureStatusOnSettingsPage();
 
   // TODO: Disable feature toggler during request / add loader?
   const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: ({ enabled }) => {
       showNotification({
         title: 'Success',
-        message: `The feature was successfully ${enabled ? 'disabled' : 'enabled'}`,
+        message: `The feature was successfully ${enabled ? 'enabled' : 'disabled'}`,
         color: 'green',
       });
     },
     onError: (e) => handleError(e, setError),
   });
 
-  const changeFeatureVisibilityMutation = featureFlagsApi.useChangeFeatureVisibility();
+  const changeFeatureVisibilityMutation = featureFlagApi.useChangeFeatureVisibility();
 
-  const handleFeatureVisibilityChange = (visibility) => changeFeatureVisibilityMutation.mutate(visibility, {
-    onSuccess: (visibility) => {
-      if (!data.enabled) {
-        return;
-      }
+  const handleFeatureVisibilityChange = (visibility) => {
+    const enabledForEveryone = visibility === 'everyone';
+    const reqData = { _id: data._id, enabledForEveryone, env: data.env };
 
-      if (visibility === 'everyone') {
-        showNotification({
-          title: 'Success',
-          message: `Feature ${data.name} is now visible for all users.`,
-          color: 'green',
-        });
-      }
+    return changeFeatureVisibilityMutation.mutate(reqData, {
+      onSuccess: (visibility) => {
+        if (!data.enabled) {
+          return;
+        }
+  
+        if (visibility === 'everyone') {
+          showNotification({
+            title: 'Success',
+            message: `Feature ${data.name} is now visible for all users.`,
+            color: 'green',
+          });
+        }
+  
+        if (visibility === 'group') {
+          showNotification({
+            title: 'Success',
+            message: `Feature ${data.name} is now visible only for some user.`,
+            color: 'green',
+          });
+        }
+      },
+      onError: (e) => handleError(e, setError),
+    })
+  };
 
-      if (visibility === 'group') {
-        showNotification({
-          title: 'Success',
-          message: `Feature ${data.name} is now visible only for some user.`,
-          color: 'green',
-        });
-      }
-    },
-    onError: (e) => handleError(e, setError),
-  });
+  const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const changeUsersPercentageMutation = featureFlagsApi.useChangeUsersPercentage();
-
-  const handleUsersPercentageChange = (usersPercentage) => changeUsersPercentageMutation.mutate({ usersPercentage }, {
+  const handleUsersPercentageChange = (percentage) =>
+    changeUsersPercentageMutation.mutate({ _id: data._id, percentage, env: data.env }, {
     onSuccess: ({ usersPercentage }) => {
       showNotification({
         title: 'Success',
@@ -154,9 +181,6 @@ const FeatureFlag = () => {
     setDeleteConfigurationId(configurationId);
     setIsConfigurationRemoveModalOpened(true);
   }, []);
-
-  const disableFeatureForUserMutation = featureFlagsApi.useDisableFeatureForUser();
-  const handleEmailDelete = (email) => disableFeatureForUserMutation.mutate(email);
 
   const breadcrumbItems = [
     { title: 'Feature flags', href: routes.route.home },
@@ -201,7 +225,8 @@ const FeatureFlag = () => {
                       <Title order={4}>{`Feature ${data?.enabled ? 'enabled' : 'disabled'}`}</Title>
                     }
                     styles={{ input: { cursor: 'pointer' } }}
-                    checked={data.enabled} onChange={() => handleSwitchChange({ _id: data._id, enabled: data.enabled })}
+                    checked={data.enabled}
+                    onChange={() => handleSwitchChange({ _id: data._id, enabled: data.enabled, env: data.env })}
                   />
                 </Group>
 

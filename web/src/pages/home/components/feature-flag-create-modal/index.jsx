@@ -14,7 +14,7 @@ import { showNotification } from '@mantine/notifications';
 import * as yup from 'yup';
 
 import { handleError } from 'helpers';
-import { featureFlagsApi } from 'resources/feature-flags';
+import { applicationApi } from 'resources/application';
 
 const schema = yup.object().shape({
   name: yup.string().trim().max(100).required('Field is required.'),
@@ -37,7 +37,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
     onClose();
   }, []);
 
-  const createFeatureFlagMutation = featureFlagsApi.useCreateFeatureFlag();
+  const createFeatureFlagMutation = applicationApi.useCreateFeatureFlag();
 
   const onSubmit = (data) => createFeatureFlagMutation.mutate(data, {
     onSuccess: () => {
