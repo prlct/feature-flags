@@ -2,7 +2,10 @@
 const axios = require('axios');
 const qs = require('qs');
 
-const API_URL = 'http://localhost:3001'
+const DEV_API_URL = 'http://localhost:3001';
+const PROD_API_URL = 'https://api.growthflags.com';
+
+const API_URL = PROD_API_URL;
 
 class ApiError extends Error {
   constructor(data, status = 500, statusText = 'Internal Server Error') {
