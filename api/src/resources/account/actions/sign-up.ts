@@ -59,6 +59,15 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     email,
   } = ctx.validatedData;
 
+  const publicApiKey = securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
+  const privateApiKey = securityUtil.generateSecureToken(PRIVATE_API_KEY_SECURITY_LENGTH);
+
+  const isKeysExist = await applicationService.exists({ $or: [{ publicApiKey }, { privateApiKey }] });
+
+  ctx.assertClientError(!isKeysExist, {
+    global: 'Keys generation error. Please try again',
+  });
+
   const admin = await adminService.insertOne({
     email,
     firstName,
@@ -71,10 +80,6 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     applicationIds: [],
     adminIds: [admin._id],
   });
-
-  // TODO: Add collision check?
-  const publicApiKey = securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
-  const privateApiKey = securityUtil.generateSecureToken(PRIVATE_API_KEY_SECURITY_LENGTH);
 
   const application = await applicationService.insertOne({
     publicApiKey,

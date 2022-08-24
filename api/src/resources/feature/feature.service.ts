@@ -3,7 +3,7 @@ import { map, omit } from 'lodash';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import schema from './feature.schema';
-import { Feature, FeatureEnv } from './feature.types';
+import { Feature, FeatureEnv, FlatFeature } from './feature.types';
 
 const service = db.createService<Feature>(DATABASE_DOCUMENTS.FEATURES, { schema });
 
@@ -19,7 +19,7 @@ const getFeaturesForEnv = async (applicationId: string, env: FeatureEnv) => {
     return omit({ ...item, ...envSettings, env }, ['envSettings']);
   });
 
-  return featuresForEnv;
+  return featuresForEnv as FlatFeature[];
 };
 
 export default Object.assign(service, { getFeaturesForEnv });

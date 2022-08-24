@@ -28,3 +28,5 @@ export type Feature = {
   updatedOn: string;
   deletedOn?: string;
 };
+
+export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: FeatureEnv };

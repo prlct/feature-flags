@@ -2,10 +2,13 @@ import Koa, { ParameterizedContext, Request, Next } from 'koa';
 import Router from '@koa/router';
 
 import { Admin } from 'resources/admin';
+import { Application } from 'resources/application';
 
 export type AppKoaContextState = {
   admin: Admin;
+  application: Application;
   accessToken: string;
+  sdkAccessToken: string;
 };
 
 export type CustomErrors = {

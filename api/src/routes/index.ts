@@ -1,7 +1,7 @@
 import { AppKoa } from 'types';
 
 import tryToAttachAdmin from './middlewares/try-to-attach-admin.middleware';
-import extractTokens from './middlewares/extract-tokens.middleware';
+import extractAdminToken from './middlewares/extract-admin-token.middleware';
 import attachCustomErrors from './middlewares/attach-custom-errors.middleware';
 import routeErrorHandler from './middlewares/route-error-handler.middleware';
 import publicRoutes from './public.routes';
@@ -11,7 +11,7 @@ const defineRoutes = (app: AppKoa) => {
   app.use(attachCustomErrors);
   app.use(routeErrorHandler);
 
-  app.use(extractTokens);
+  app.use(extractAdminToken);
   app.use(tryToAttachAdmin);
 
   publicRoutes(app);
