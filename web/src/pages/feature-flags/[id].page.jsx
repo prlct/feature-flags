@@ -232,7 +232,7 @@ const FeatureFlag = () => {
 
                 <Text size='sm' mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
                 <Divider my="sm"  mt={0}/>
-                <Stack sx={{ maxWidth: '200px' }}>
+                {/* <Stack sx={{ maxWidth: '200px' }}>
                   <Select
                     label={
                       <Title order={4}>Percentage of users</Title>
@@ -244,7 +244,7 @@ const FeatureFlag = () => {
                     disabled={data.enabledForEveryone}
                     onChange={handleUsersPercentageChange}
                   />
-                </Stack>
+                </Stack> */}
 
                 <TextInput
                   label={
@@ -292,7 +292,7 @@ const FeatureFlag = () => {
               </Stack>
             </Tabs.Tab>
 
-            <Tabs.Tab label="A/B testing">
+            {/* <Tabs.Tab label="A/B testing">
               <Stack>
                 <Group grow="1">
                   <Title order={4}>Configurations</Title>
@@ -356,7 +356,7 @@ const FeatureFlag = () => {
                   </ScrollArea>
                 </Paper>
               </Stack>
-            </Tabs.Tab>
+            </Tabs.Tab> */}
           </Tabs>
         </Stack>
         ) : (
