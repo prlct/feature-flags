@@ -15,7 +15,7 @@ export const dashboardColumns = [
     title: 'Seen by',
   },
   {
-    title: 'Last modified',
+    title: 'Created on',
   },
   {
     title: 'Customization',
