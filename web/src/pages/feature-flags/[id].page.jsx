@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import pluralize from 'pluralize';
 import Head from 'next/head';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -267,7 +268,7 @@ const FeatureFlag = () => {
                 />
                 
                 <Text component="p" m={0}>
-                  Enabled for {data.users.length} users
+                  Enabled for {data.users.length} {pluralize('user', data.users.length)}
                 </Text>
                 <ScrollArea style={{ height: 300 }}>
                   <Group spacing="sm">
