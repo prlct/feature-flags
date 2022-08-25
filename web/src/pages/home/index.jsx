@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
+import pluralize from 'pluralize';
 import Head from 'next/head';
 import {
   Button,
@@ -178,7 +179,7 @@ const Home = () => {
                             <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                           </Stack>   
                         </td>
-                        <td>{seenBy} users</td>
+                        <td>{seenBy} {pluralize('user',seenBy )}</td>
                         <td>{new Date(createdOn).toLocaleDateString("en-US")}</td>
                         <td>
                           <Group>
