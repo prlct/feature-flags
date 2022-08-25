@@ -14,7 +14,7 @@ const schema = Joi.object({
     .trim()
     .required()
     .max(NAME_MAX_LENGTH)
-    .regex(/^[A-Za-z]*$/)
+    .regex(/^[A-Za-z0-9_]*$/)
     .messages({
       'any.required': 'Feature name is required',
       'string.empty': 'Feature name is required',
