@@ -30,7 +30,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
 
-  ctx.body = features;
+  ctx.body = { results: features };
 }
 
 export default (router: AppRouter) => {
