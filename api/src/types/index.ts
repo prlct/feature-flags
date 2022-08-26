@@ -8,7 +8,6 @@ export type AppKoaContextState = {
   admin: Admin;
   application: Application;
   accessToken: string;
-  sdkAccessToken: string;
 };
 
 export type CustomErrors = {

@@ -1,14 +1,14 @@
 import { AppKoaContext, Next } from 'types';
 import { applicationService } from 'resources/application';
 
-const jsSdkPublicAuth = async (ctx: AppKoaContext, next: Next) => {
-  if (!ctx.state.sdkAccessToken) {
+const publicTokenAuth = async (ctx: AppKoaContext, next: Next) => {
+  if (!ctx.state.accessToken) {
     ctx.status = 401;
     ctx.body = {};
     return null;
   }
 
-  const application = await applicationService.findOne({ publicApiKey: ctx.state.sdkAccessToken });
+  const application = await applicationService.findOne({ publicApiKey: ctx.state.accessToken });
 
   if (application) {
     ctx.state.application = application;
@@ -20,4 +20,4 @@ const jsSdkPublicAuth = async (ctx: AppKoaContext, next: Next) => {
   return null;
 };
 
-export default jsSdkPublicAuth;
+export default publicTokenAuth;
