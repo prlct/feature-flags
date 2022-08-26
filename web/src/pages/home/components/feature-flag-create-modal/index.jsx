@@ -65,7 +65,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
         <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={20}>
           <TextInput
             {...register('name')}
-            label="Name (PascalCase)"
+            label="Name"
             placeholder="Enter a name"
             error={errors?.name?.message}
           />

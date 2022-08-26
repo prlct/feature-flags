@@ -2,74 +2,43 @@
 sidebar_position: 1
 ---
 
-# Introduction
+# Getting Started Guide
 
-Let's discover **Feature Flags in less than 5 minutes**.
+Let's discover **GrowthFlags in less than 5 minutes**.
 
 ## Installation
 
-Install Feature Flags sdk in the root of your web application
+Install GrowthFlags SDK in the root of your web application
 
 ```
-npm i @paralect/feature-flags-sdk
+npm i @growthflags/js-sdk
 ```
 
-## Initialize Feature Flags SDK
+## Initialize GrowthFlags SDK
 
-Initialize Feature Flags SDK to get flags for a specific user in your application
-
-```
-import flags from "@paralect/feature-flags-sdk";
-
-await flags.init(
-  apiKey: '123e4567-e89b-12d3-a456-426614174000',
-  env: 'staging',
-  {
-    id: '62eacd2aae77c8534d741247',
-    email: 'john.smith@gmail.com',
-    fullName: 'John Smith',
-  },
-);
-```
-
-## Use Feature Flags
+Initialize SDK
 
 ```
-import flags from "@paralect/feature-flags-sdk";
+import GrowthFlags from "@growthflags/js-sdk";
 
-
-const YourComponent = () => {
-  return (
-    <>
-      ...
-      {flags.isOn('RedesignedVideoPlayer') ? <RedesignedVideoPlayer /> : <VideoPlayer />}
-    </>
-  )
-};
+const flags = GrowthFlags.create({
+  env: 'development',
+  publicApiKey: 'pk_3a693ae7b88bf3afb8d9eca2304e7d66ff484a41bba6e211'
+})
 ```
 
-## Use configuration for A/B testing
+## Add method to fetch GrowthFlags on page load, pass the user
 
 ```
-import flags from "@paralect/feature-flags-sdk";
+await flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
+```
 
+## Use flags
 
-const YourForm = () => {
-  const config = flags.getConfig('NewFormDesign');
-
-  return (
-    <form>
-      <TextInput
-        label={config.input.label}
-        placeholder={config.input.placeholder}
-      />
-      <Textarea
-        label={config.textarea.label}
-        placeholder={config.textarea.placeholder}
-        color={config.textarea.color}
-      />
-      <Button color={config.button.color}>{config.button.text}</Button>
-    </form>
-  )
-};
+```
+const Page = () => (
+  <Layout mode={flags.isOn("DarkMode") ? 'dark' : 'light'}>
+    ...
+  </Layout>
+)
 ```
