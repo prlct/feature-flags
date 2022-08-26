@@ -1,6 +1,6 @@
 const apiService = require('./api.service');
 
-const resource = '/js-sdk/public/v1';
+const resource = '/feature-flags';
 const storagePath = '@growthflags/js-sdk';
 const consoleLogPrefix = '@growthflags/js-sdk error:';
 

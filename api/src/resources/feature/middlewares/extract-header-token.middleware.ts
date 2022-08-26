@@ -4,8 +4,8 @@ const storeTokenToState = async (ctx: AppKoaContext, next: Next) => {
   const { authorization } = ctx.headers;
 
   if (authorization) {
-    const sdkAccessToken = authorization.replace('Bearer', '').trim();
-    ctx.state.sdkAccessToken = sdkAccessToken;
+    const accessToken = authorization.replace('Bearer', '').trim();
+    ctx.state.accessToken = accessToken;
   }
 
   await next();

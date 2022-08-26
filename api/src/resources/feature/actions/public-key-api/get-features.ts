@@ -4,6 +4,8 @@ import { forEach, includes } from 'lodash';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService, FeatureEnv, FlatFeature } from 'resources/feature';
+import extractToken from '../../middlewares/extract-header-token.middleware';
+import publicTokenAuth from '../../middlewares/public-token-auth.middleware';
 
 // TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
 const featureEnvValues = ['development', 'staging', 'production'];
@@ -64,5 +66,5 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.get('/features', validateMiddleware(schema), handler);
+  router.get('/features', extractToken, publicTokenAuth, validateMiddleware(schema), handler);
 };
