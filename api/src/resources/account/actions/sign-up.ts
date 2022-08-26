@@ -59,8 +59,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     email,
   } = ctx.validatedData;
 
-  const publicApiKey = securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
-  const privateApiKey = securityUtil.generateSecureToken(PRIVATE_API_KEY_SECURITY_LENGTH);
+  const publicApiKey = 'pk_' + securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
+  const privateApiKey = 'sk_' + securityUtil.generateSecureToken(PRIVATE_API_KEY_SECURITY_LENGTH);
 
   const isKeysExist = await applicationService.exists({ $or: [{ publicApiKey }, { privateApiKey }] });
 
