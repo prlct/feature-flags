@@ -57,9 +57,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Feature Flags',
+        title: 'GrowthFlags',
         logo: {
-          alt: 'Feature Flags Logo',
+          alt: 'GrowthFlags Logo',
           src: 'img/logo.svg',
         },
         items: [
