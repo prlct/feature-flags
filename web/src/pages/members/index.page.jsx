@@ -133,6 +133,7 @@ const Members = () => {
               rightSectionWidth="200"
               rightSection={
                 <Button
+                  loading={inviteMemberMutation.isLoading}
                   sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0  }}
                   onClick={handleSubmit(handleInvite)}
                 >
