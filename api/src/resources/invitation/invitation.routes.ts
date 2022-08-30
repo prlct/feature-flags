@@ -1,9 +1,9 @@
 import { routeUtil } from 'utils';
 
-import confirmInvitation from './actions/confirm-invitation';
+import acceptInvitation from './actions/accept-invitation';
 
 const publicRoutes = routeUtil.getRoutes([
-  confirmInvitation,
+  acceptInvitation,
 ]);
 
 export default {

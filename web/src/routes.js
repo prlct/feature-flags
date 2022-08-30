@@ -20,7 +20,7 @@ export const route = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   expireToken: '/expire-token',
-  confirmInvitation: '/confirm-invitation',
+  acceptInvitation: '/accept-invitation',
   profile: '/profile',
   admins: '/admins',
   featureFlag: '/feature-flags/[id]',
@@ -78,8 +78,8 @@ export const configuration = {
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
-  confirmInvitation: {
-    route: route.confirmInvitation,
+  acceptInvitation: {
+    route: route.acceptInvitation,
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },

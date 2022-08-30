@@ -1,11 +1,32 @@
 import moment from 'moment';
+import Joi from 'joi';
 
+import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter, Next } from 'types';
 import { invitationService } from 'resources/invitation';
 import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 
+const schema = Joi.object({
+  firstName: Joi.string()
+    .trim()
+    .required()
+    .messages({
+      'any.required': 'First name is required',
+      'string.empty': 'First name is required',
+    }),
+  lastName: Joi.string()
+    .trim()
+    .required()
+    .messages({
+      'any.required': 'Last name is required',
+      'string.empty': 'Last name is required',
+    }),
+});
+
 type ValidatedData = {
+  firstName: string;
+  lastName: string;
   email: string;
   companyId: string;
 };
@@ -30,16 +51,14 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
     global: 'You already have an account',
   });
 
-  ctx.validatedData = {
-    email: invitation.email,
-    companyId: invitation.companyId,
-  };
+  ctx.validatedData.email = invitation.email;
+  ctx.validatedData.companyId = invitation.companyId;
 
   await next();
 }
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { email, companyId } = ctx.validatedData;
+  const { email, companyId, firstName, lastName } = ctx.validatedData;
 
   const company = await companyService.findOne({ _id: companyId });
 
@@ -50,9 +69,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const admin = await adminService.insertOne({
     email,
-    // TODO: fix !!!
-    // firstName,
-    // lastName,
+    firstName,
+    lastName,
     companyIds: [company._id],
     applicationIds: [company.applicationIds[0]],
     isEmailVerified: true,
@@ -75,5 +93,5 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/:token', validator, handler);
+  router.post('/:token', validateMiddleware(schema), validator, handler);
 };

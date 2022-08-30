@@ -48,7 +48,7 @@ const createCompanyMemberInvitation = async ({ companyId, email, adminId }: Crea
 
 // TODO: Add TTL index for invitations
 const removeAdminInvitations = async (email: string) => {
-  return service.deleteSoft({ email });
+  return service.deleteSoft({ email, deletedOn: { $exists: false } });
 };
 
 export default Object.assign(service, {
