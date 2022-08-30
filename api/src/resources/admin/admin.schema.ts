@@ -9,7 +9,9 @@ const schema = Joi.object({
   email: Joi.string().email().required(),
   isEmailVerified: Joi.boolean().required().default(false),
   avatarUrl: Joi.string().allow(null),
-  applicationIds: Joi.array().items(Joi.string()).unique(),
+  ownCompanyId: Joi.string().allow(null),
+  companyIds: Joi.array().items(Joi.string()).max(1).unique(),
+  applicationIds: Joi.array().items(Joi.string()).max(1).unique(),
 
   lastRequestOn: Joi.date(),
   lastLoginOn: Joi.date(),
