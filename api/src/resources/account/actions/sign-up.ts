@@ -95,7 +95,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     ),
     adminService.updateOne(
       { _id: admin._id },
-      () => ({ applicationIds: [application._id] }),
+      () => ({
+        ownCompanyId: company._id,
+        companyIds: [company._id],
+        applicationIds: [application._id],
+      }),
     ),
   ]);
 

@@ -20,10 +20,12 @@ export const route = {
   forgotPassword: '/forgot-password',
   resetPassword: '/reset-password',
   expireToken: '/expire-token',
+  confirmInvitation: '/confirm-invitation',
   profile: '/profile',
   admins: '/admins',
   featureFlag: '/feature-flags/[id]',
   apiKey: '/api-key',
+  members: '/members',
 };
 
 export const path = {
@@ -76,6 +78,11 @@ export const configuration = {
     scope: scope.PUBLIC,
     layout: layout.UNAUTHORIZED,
   },
+  confirmInvitation: {
+    route: route.confirmInvitation,
+    scope: scope.PUBLIC,
+    layout: layout.UNAUTHORIZED,
+  },
   profile: {
     route: route.profile,
     scope: scope.PRIVATE,
@@ -93,6 +100,11 @@ export const configuration = {
   },
   apiKey: {
     route: route.apiKey,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  members: {
+    route: route.members,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

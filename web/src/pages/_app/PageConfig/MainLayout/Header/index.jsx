@@ -28,6 +28,9 @@ const Header = () => (
       <Link type="router" href={routes.route.apiKey} underline={false}>
         <Text color="white" size='lg' weight={700}>Api Keys</Text>
       </Link>
+      <Link type="router" href={routes.route.members} underline={false}>
+        <Text color="white" size='lg' weight={700}>Team members</Text>
+      </Link>
     </Group>
     <AdminMenu />
   </LayoutHeader>

@@ -41,7 +41,7 @@ const ApiKey = () => {
   return (
     <>
       <Head>
-        <title>API Key</title>
+        <title>API keys</title>
       </Head>
       {isLoading ? <Loader /> : (
         <Stack spacing="lg">

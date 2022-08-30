@@ -2,6 +2,7 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
 import { magic } from 'libs/magic';
 
@@ -15,6 +16,8 @@ const schema = yup.object().shape({
 });
 
 const SignIn = () => {
+  const router = useRouter();
+  const { email } = router.query;
   const {
     register, handleSubmit, formState: { errors }, setError,
   } = useForm({ resolver: yupResolver(schema) });
@@ -49,6 +52,7 @@ const SignIn = () => {
         <form onSubmit={handleSubmit(handleLoginWithEmail)}>
           <Stack>
             <TextInput
+              defaultValue={email}
               {...register('email')}
               label="Email Address"
               placeholder="Email"
