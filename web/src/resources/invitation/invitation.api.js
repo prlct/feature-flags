@@ -3,9 +3,9 @@ import { apiService } from 'services';
 
 const resource = '/invitations';
 
-export function useConfirmInvitation() {
-  const confirmInvitation = (token) => apiService.post(`${resource}/${token}`);
+export function useAcceptInvitation() {
+  const acceptInvitation = ({ firstName, lastName, token}) => apiService.post(`${resource}/${token}`, { firstName, lastName });
 
-  return useMutation(confirmInvitation);
+  return useMutation(acceptInvitation);
 }
 
