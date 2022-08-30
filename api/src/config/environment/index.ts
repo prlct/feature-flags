@@ -15,7 +15,7 @@ const base = {
   },
   apiUrl: '',
   webUrl: '',
-  sendgridApiKey: '',
+  sendgridApiKey: process.env.SENDGRID_API_KEY || '',
   redis: 'redis://:@redis:6379',
   adminKey: '',
   MAGIC_SECRET_KEY: process.env.MAGIC_SECRET_KEY || '',

@@ -1,33 +1,27 @@
-import { join } from 'path';
-
 import config from 'config';
 
 import EmailService from './email.helper';
 
+// Do not send emails on development env
+const apiKey = config.isDev ? '' : config.sendgridApiKey;
+
 const emailService = new EmailService({
-  apiKey: config.sendgridApiKey,
-  templatesDir: join(__dirname, '../../assets/emails/dist'),
+  apiKey,
   from: {
-    email: 'notifications@ship.com',
-    name: 'SHIP',
+    email: 'team@growthflags.com',
+    name: 'GrowthFlags',
   },
 });
 
-const sendSignUpWelcome = (to: string, dynamicTemplateData: unknown) => emailService.sendTemplate({
+const sentCompanyInvitation = (
+  to: string,
+  dynamicTemplateData: { [key: string]: unknown; },
+) => emailService.sendSendgridTemplate({
   to,
-  subject: 'Sign Up',
-  template: 'signup-welcome.html',
-  dynamicTemplateData,
-});
-
-const sendForgotPassword = (to: string, dynamicTemplateData: { [key: string]: unknown; }) => emailService.sendSendgridTemplate({
-  to,
-  subject: 'Welcome',
-  templateId: 'your-template-id',
+  templateId: 'd-d4aef0ea033349a4a2c5c6da5071b181',
   dynamicTemplateData,
 });
 
 export default {
-  sendSignUpWelcome,
-  sendForgotPassword,
+  sentCompanyInvitation,
 };

@@ -1,9 +1,11 @@
 import Joi from 'joi';
+import config from 'config';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { adminService } from 'resources/admin';
 import { invitationService } from 'resources/invitation';
+import { emailService } from 'services';
 import companyAuth from '../middlewares/company-auth.middleware';
 
 const schema = Joi.object({
@@ -36,11 +38,25 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { companyId } = ctx.params;
-  const adminId = ctx.state.admin._id;
+  const { admin } = ctx.state;
   const { email } = ctx.validatedData;
 
-  const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId });
-  // TODO: sendGrid
+  const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId: admin._id });
+  try {
+    await emailService.sentCompanyInvitation(
+      email,
+      {
+        fullName: `${admin.firstName} ${admin.lastName}`,
+        acceptInvitationLink: `${config.webUrl}/accept-invitation/?token=${invitation.token}`,
+      },
+    );
+  } catch (error) {
+    console.log('Send email error', error);
+    ctx.assertClientError(false, {
+      global: 'Failed to send invitation email',
+    });
+  }
+
 
   ctx.body = {};
 }
