@@ -11,7 +11,6 @@ async function handler(ctx: AppKoaContext) {
 
   const company = await companyService.findOne({ _id: companyId }) as Company;
 
-  // TODO: Show owner
   const membersP = adminService.aggregate([
     { $match: { _id: { $in: company.adminIds } } },
     { $project: { _id: 1, firstName: 1, lastName: 1, email: 1, createdOn: 1 } },

@@ -82,7 +82,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     return doc;
   });
 
-  const removeAdminInvitationsP = invitationService.removeAdminInvitations(email);
+  const removeAdminInvitationsP = invitationService.removeAdminInvitations({ email, companyId });
 
   await Promise.all([
     updateCompanyP,

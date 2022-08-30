@@ -17,6 +17,30 @@ export function useInviteMember() {
   });
 }
 
+export function useCancelInvitation() {
+  const admin = queryClient.getQueryData(['currentAdmin']);
+  const companyId = admin.companyIds[0];
+  const cancelInvitation = (data) => apiService.delete(`${resource}/${companyId}/invitations`, data);
+
+  return useMutation(cancelInvitation, {
+    onSuccess() {
+      queryClient.invalidateQueries(['companyMembers']);
+    },
+  });
+}
+
+export function useRemoveMember() {
+  const admin = queryClient.getQueryData(['currentAdmin']);
+  const companyId = admin.companyIds[0];
+  const removeMember = ({ _id }) => apiService.delete(`${resource}/${companyId}/members/${_id}`);
+
+  return useMutation(removeMember, {
+    onSuccess() {
+      queryClient.invalidateQueries(['companyMembers']);
+    },
+  });
+}
+
 export function useGetMembers() {
   const admin = queryClient.getQueryData(['currentAdmin']);
   const companyId = admin.companyIds[0];
