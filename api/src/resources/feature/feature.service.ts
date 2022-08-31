@@ -1,5 +1,4 @@
 import db from 'db';
-import { Filter, UpdateOptions, QueryDefaultsOptions } from '@paralect/node-mongo';
 import { map, omit } from 'lodash';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
@@ -23,16 +22,4 @@ const getFeaturesForEnv = async (applicationId: string, env: FeatureEnv) => {
   return featuresForEnv as FlatFeature[];
 };
 
-const updateOne = async (
-  query: Filter<Feature>,
-  updateFn: (doc: Feature) => Partial<Feature>,
-  options: UpdateOptions & QueryDefaultsOptions = {},
-) => {
-  if (query.name && !query.applicationId) {
-    throw new Error('Forbidden to update feature without applicationId');
-  }
-
-  return service.updateOne(query, updateFn, options);
-};
-
-export default Object.assign(service, { getFeaturesForEnv, updateOne });
+export default Object.assign(service, { getFeaturesForEnv });
