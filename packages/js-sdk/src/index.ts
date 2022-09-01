@@ -6,8 +6,6 @@ const consoleLogPrefix = '@growthflags/js-sdk error:';
 
 const REFETCH_INTERVAL_IN_MS = 30 * 1000;
 
-type Env = 'development' | 'staging' | 'production';
-
 interface User {
   email: string;
 }
@@ -24,7 +22,7 @@ type JSONValue =
     | Array<JSONValue>;
 
 interface FetchFlagsParams {
-  env: Env;
+  env: string;
   email?: string;
 }
 
@@ -35,12 +33,12 @@ interface MainData {
 
 interface Constructor {
   publicApiKey: string;
-  env: Env;
+  env: string;
 }
 
 class FeatureFlags {
   private _apiKey: string;
-  private _env: Env;
+  private _env: string;
   private _user?: User;
   private _intervalId?: NodeJS.Timer;
   private _features: { [key in string]: boolean }
