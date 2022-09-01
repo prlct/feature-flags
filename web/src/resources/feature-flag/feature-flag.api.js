@@ -12,7 +12,7 @@ import { getLetterByAlphabetNumber } from 'helpers';
 const resource = '/features';
 
 export function useToggleFeatureStatus() {
-  const toggleFeatureStatus = (data) =>  apiService.post(`${resource}/${data._id}/toggler`, { env: data.env });
+  const toggleFeatureStatus = (data) => apiService.post(`${resource}/${data._id}/toggler`, { env: data.env });
 
   return useMutation(toggleFeatureStatus, {
     // Optimistically change state of the toggle without waiting server reply
@@ -28,19 +28,19 @@ export function useToggleFeatureStatus() {
       featureFlag.enabled = !featureFlag.enabled;
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['featureFlags'], featureFlags)
-  
-      // Return a context object with the snapshotted value 
-      return { previousFeatureFlags }
+      queryClient.setQueryData(['featureFlags'], featureFlags);
+
+      // Return a context object with the snapshotted value
+      return { previousFeatureFlags };
     },
     onError: (err, item, context) => {
-      queryClient.setQueryData(['featureFlags'], context.previousFeatureFlags)
+      queryClient.setQueryData(['featureFlags'], context.previousFeatureFlags);
     },
   });
 }
 
 export function useToggleFeatureStatusOnSettingsPage() {
-  const toggleFeatureStatus = (data) =>  apiService.post(`${resource}/${data._id}/toggler`, { env: data.env });
+  const toggleFeatureStatus = (data) => apiService.post(`${resource}/${data._id}/toggler`, { env: data.env });
 
   return useMutation(toggleFeatureStatus, {
     onMutate: async (item) => {
@@ -50,19 +50,18 @@ export function useToggleFeatureStatusOnSettingsPage() {
       const previousFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.enabled = !featureFlag.enabled;
-      queryClient.setQueryData(['featureFlag'], featureFlag)
-  
-      return { previousFeatureFlag }
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
     },
     onError: (err, item, context) => {
-      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag)
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
     },
   });
 }
 
 export function useChangeFeatureVisibility() {
-  const changeFeatureVisibility = ({ _id, enabledForEveryone, env }) =>
-    apiService.put(`${resource}/${_id}/visibility`, { enabledForEveryone, env });
+  const changeFeatureVisibility = ({ _id, enabledForEveryone, env }) => apiService.put(`${resource}/${_id}/visibility`, { enabledForEveryone, env });
 
   return useMutation(changeFeatureVisibility, {
     onMutate: async (item) => {
@@ -72,19 +71,18 @@ export function useChangeFeatureVisibility() {
       const previousFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.enabledForEveryone = item.enabledForEveryone;
-      queryClient.setQueryData(['featureFlag'], featureFlag)
-  
-      return { previousFeatureFlag }
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
     },
     onError: (err, item, context) => {
-      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag)
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
     },
   });
 }
 
 export function useChangeUsersPercentage() {
-  const changeUsersPercentage = ({ _id, percentage, env }) =>
-    apiService.put(`${resource}/${_id}/users-percentage`, { percentage: percentage || 0, env });
+  const changeUsersPercentage = ({ _id, percentage, env }) => apiService.put(`${resource}/${_id}/users-percentage`, { percentage: percentage || 0, env });
 
   return useMutation(changeUsersPercentage, {
     onMutate: async (item) => {
@@ -94,12 +92,12 @@ export function useChangeUsersPercentage() {
       const previousFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.usersPercentage = item.percentage;
-      queryClient.setQueryData(['featureFlag'], featureFlag)
-  
-      return { previousFeatureFlag }
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
     },
     onError: (err, item, context) => {
-      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag)
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
     },
   });
 }
@@ -109,7 +107,7 @@ export function useEnableFeatureForUsers() {
 
   return useMutation(enableFeatureForUsers, {
     onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlag'], data );
+      queryClient.setQueryData(['featureFlag'], data);
     },
   });
 }
@@ -119,7 +117,7 @@ export function useDisableFeatureForUser() {
 
   return useMutation(enableFeatureForUsers, {
     onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlag'], data );
+      queryClient.setQueryData(['featureFlag'], data);
     },
   });
 }
@@ -163,3 +161,24 @@ export const useGetById = ({ _id, env }) => {
 
   return useQuery(['featureFlag'], getById, { enabled: !!_id });
 };
+
+export function useUpdate() {
+  const updateFeatureFlag = (data) => apiService.put(`${resource}/${data._id}`, data);
+
+  return useMutation(updateFeatureFlag, {
+    onMutate: async (item) => {
+      await queryClient.cancelQueries(['featureFlag']);
+
+      const featureFlag = queryClient.getQueryData(['featureFlag']);
+      const previousFeatureFlag = cloneDeep(featureFlag);
+
+      featureFlag.description = item.description;
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
+    },
+    onError: (err, item, context) => {
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
+    },
+  });
+}
