@@ -135,9 +135,9 @@ class FeatureFlags {
 
   private _getFromLocalStorage() {
     try {
-      const stringData = localStorage.getItem(`${storagePath}`) || '';
-
-      return JSON.parse(stringData);
+      const localStorageData = localStorage.getItem(`${storagePath}`);
+      
+      return localStorageData ? JSON.parse(localStorageData): {};
     } catch (error) {
       console.log(consoleLogPrefix, error);
     }
