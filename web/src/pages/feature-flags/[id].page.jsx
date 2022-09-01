@@ -3,10 +3,8 @@ import pluralize from 'pluralize';
 import Head from 'next/head';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import {
-  trim as _trim,
-  find as _find,
-} from 'lodash';
+import _trim from 'lodash/trim';
+import _find from 'lodash/find';
 import { useForm } from 'react-hook-form';
 import {
   Title,
@@ -28,16 +26,17 @@ import {
   Table,
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
-import {  IconX,  IconTool, IconPlus, IconTrash } from '@tabler/icons';
+import { IconX, IconTool, IconPlus, IconTrash } from '@tabler/icons';
 import { featureFlagApi } from 'resources/feature-flag';
 import { Link } from 'components';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 import TestConfigurationCreateModal from './components/configuration-create-modal';
 import ConfigurationRemoveModal from './components/configuration-remove-modal';
+import FeatureFlagUpdateForm from './components/update-form';
 
 import { testingColumns, percentageSelectList } from './index.constants';
 
@@ -58,7 +57,7 @@ const FeatureFlag = () => {
   const { data } = featureFlagApi.useGetById({ _id: id, env });
 
   useEffect(() => {
-      setUsersPercentageValue((data?.usersPercentage || '').toString());
+    setUsersPercentageValue((data?.usersPercentage || '').toString());
   }, [data?.usersPercentage]);
 
   const {
@@ -130,7 +129,7 @@ const FeatureFlag = () => {
         if (!data.enabled) {
           return;
         }
-  
+
         if (visibility === 'everyone') {
           showNotification({
             title: 'Success',
@@ -138,7 +137,7 @@ const FeatureFlag = () => {
             color: 'green',
           });
         }
-  
+
         if (visibility === 'group') {
           showNotification({
             title: 'Success',
@@ -148,13 +147,12 @@ const FeatureFlag = () => {
         }
       },
       onError: (e) => handleError(e, setError),
-    })
+    });
   };
 
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const handleUsersPercentageChange = (percentage) =>
-    changeUsersPercentageMutation.mutate({ _id: data._id, percentage, env: data.env }, {
+  const handleUsersPercentageChange = (percentage) => changeUsersPercentageMutation.mutate({ _id: data._id, percentage, env: data.env }, {
     onSuccess: ({ usersPercentage }) => {
       showNotification({
         title: 'Success',
@@ -166,7 +164,7 @@ const FeatureFlag = () => {
   });
 
   const handelConfigurationEdit = useCallback((configurationId) => () => {
-    const test =_find(data?.tests, { _id: configurationId });
+    const test = _find(data?.tests, { _id: configurationId });
     setEditConfiguration(test.configuration);
     setEditConfigurationId(configurationId);
     setIsConfigurationCreateModalOpened(true);
@@ -187,7 +185,7 @@ const FeatureFlag = () => {
     { title: 'Feature flags', href: routes.route.home },
     { title: data?.name, href: '#' },
   ].map((item, index) => (
-    <Link type="router" size='xl' href={item.href} key={index} underline={false}>
+    <Link type="router" size="xl" href={item.href} key={index} underline={false}>
       {item.title}
     </Link>
   ));
@@ -206,6 +204,11 @@ const FeatureFlag = () => {
           <Tabs>
             <Tabs.Tab label="Settings">
               <Stack sx={{ maxWidth: '520px' }}>
+                <Stack>
+                  <Title order={4}>Info</Title>
+                  <FeatureFlagUpdateForm featureFlag={data} />
+                </Stack>
+
                 <Group position="apart" align="flex-end">
                   <Stack sx={{ maxWidth: '200px' }}>
                     <Select
@@ -231,8 +234,8 @@ const FeatureFlag = () => {
                   />
                 </Group>
 
-                <Text size='sm' mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
-                <Divider my="sm"  mt={0}/>
+                <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
+                <Divider my="sm" mt={0} />
                 {/* <Stack sx={{ maxWidth: '200px' }}>
                   <Select
                     label={
@@ -255,36 +258,45 @@ const FeatureFlag = () => {
                   placeholder="Enter user email"
                   error={errors?.email?.message}
                   rightSectionWidth="200"
-                  rightSection={
+                  rightSection={(
                     <Button
                       disabled={data.enabledForEveryone}
-                      sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0  }}
+                      sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                       onClick={handleSubmit(handleEmailsAdd)}
                     >
                       Add
                     </Button>
-                  }
+                  )}
                   disabled={data.enabledForEveryone}
                 />
-                
+
                 <Text component="p" m={0}>
-                  Enabled for {data.users.length} {pluralize('user', data.users.length)}
+                  Enabled for
+                  {' '}
+                  {data.users.length}
+                  {' '}
+                  {pluralize('user', data.users.length)}
                 </Text>
                 <ScrollArea style={{ height: 300 }}>
                   <Group spacing="sm">
                     {data.users.map((user) => (
-                      <Badge sx={{ height: 26 }} key={user} variant="outline" rightSection={
-                        <ActionIcon
-                          disabled={data.enabledForEveryone}
-                          size="xs"
-                          color="blue"
-                          radius="xl"
-                          variant="transparent"
-                          onClick={() => handleEmailDelete(user)}
-                        >
-                          <IconX size={16} />
-                        </ActionIcon>
-                      }>
+                      <Badge
+                        sx={{ height: 26 }}
+                        key={user}
+                        variant="outline"
+                        rightSection={(
+                          <ActionIcon
+                            disabled={data.enabledForEveryone}
+                            size="xs"
+                            color="blue"
+                            radius="xl"
+                            variant="transparent"
+                            onClick={() => handleEmailDelete(user)}
+                          >
+                            <IconX size={16} />
+                          </ActionIcon>
+                      )}
+                      >
                         {user}
                       </Badge>
                     ))}
@@ -360,8 +372,8 @@ const FeatureFlag = () => {
             </Tabs.Tab> */}
           </Tabs>
         </Stack>
-        ) : (
-          <Loader />
+      ) : (
+        <Loader />
       )}
 
       <TestConfigurationCreateModal
