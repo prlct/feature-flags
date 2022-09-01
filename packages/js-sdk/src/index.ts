@@ -39,12 +39,12 @@ interface Constructor {
 }
 
 class FeatureFlags {
-  _apiKey: string;
-  _env: Env;
-  _user?: User;
-  _intervalId?: NodeJS.Timer;
-  _features: { [key in string]: boolean }
-  _configs: { [key in string]: JSONObject }
+  private _apiKey: string;
+  private _env: Env;
+  private _user?: User;
+  private _intervalId?: NodeJS.Timer;
+  private _features: { [key in string]: boolean }
+  private _configs: { [key in string]: JSONObject }
 
   constructor({ publicApiKey, env }: Constructor)
   {
@@ -84,7 +84,7 @@ class FeatureFlags {
     return this._configs[featureName];
   }
 
-  async _fetchFlags() {
+  private async _fetchFlags() {
     const params: FetchFlagsParams = { env: this._env };
 
     if (this._user && this._user.email) {
@@ -110,7 +110,7 @@ class FeatureFlags {
   }
 
   // Currently not in use
-  async _reportFeatureShown(featureName: string) {
+  private async _reportFeatureShown(featureName: string) {
     const data = { featureName };
     const config = {
       headers: {
@@ -126,7 +126,7 @@ class FeatureFlags {
     }
   }
 
-  _saveToLocalStorage(data: MainData) {
+  private _saveToLocalStorage(data: MainData) {
     try {
       const stringData = JSON.stringify(data);
       localStorage.setItem(`${storagePath}`, stringData);
@@ -135,7 +135,7 @@ class FeatureFlags {
     }
   }
 
-  _getFromLocalStorage() {
+  private _getFromLocalStorage() {
     try {
       const stringData = localStorage.getItem(`${storagePath}`) || '';
 
