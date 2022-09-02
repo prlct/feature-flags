@@ -9,6 +9,8 @@ import { ModalsProvider } from '@mantine/modals';
 import queryClient from 'query-client';
 import shipTheme from 'theme/ship-theme';
 
+import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
+
 import PageConfig from './PageConfig';
 
 const App = ({ Component, pageProps }) => (
@@ -31,7 +33,9 @@ const App = ({ Component, pageProps }) => (
         <ModalsProvider>
           <NotificationsProvider autoClose={5000} limit={2}>
             <PageConfig>
-              <Component {...pageProps} />
+              <GrowthFlagsContextProvider>
+                <Component {...pageProps} />
+              </GrowthFlagsContextProvider>
             </PageConfig>
           </NotificationsProvider>
         </ModalsProvider>
