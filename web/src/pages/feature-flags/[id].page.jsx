@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import _trim from 'lodash/trim';
 import _find from 'lodash/find';
 import { useForm } from 'react-hook-form';
+import { useQueryClient } from 'react-query';
 import {
   Title,
   Loader,
@@ -27,6 +28,7 @@ import {
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconX, IconTool, IconPlus, IconTrash } from '@tabler/icons';
+import GrowthFlags from '@growthflags/js-sdk';
 import { featureFlagApi } from 'resources/feature-flag';
 import { Link } from 'components';
 import * as routes from 'routes';
@@ -44,6 +46,11 @@ const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
 });
 
+const growthFlags = GrowthFlags.create({
+  env: process.env.NEXT_PUBLIC_APP_ENV,
+  publicApiKey: process.env.NEXT_PUBLIC_GROWTHFLAGS_PUBLIC_KEY,
+});
+
 const FeatureFlag = () => {
   const router = useRouter();
   const [isConfigurationCreateModalOpened, setIsConfigurationCreateModalOpened] = useState(false);
@@ -52,9 +59,21 @@ const FeatureFlag = () => {
   const [editConfigurationId, setEditConfigurationId] = useState('');
   const [editConfiguration, setEditConfiguration] = useState('');
   const [usersPercentageValue, setUsersPercentageValue] = useState('');
+  const [isABTestingEnabled, setIsABTestingEnabled] = useState(growthFlags.isOn('abTesting'));
+  const queryClient = useQueryClient();
   const { id, env } = router.query;
 
   const { data } = featureFlagApi.useGetById({ _id: id, env });
+
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+
+  useEffect(() => {
+    const getFlags = async () => {
+      await growthFlags.fetchFeatureFlags({ email: currentAdmin.email });
+      setIsABTestingEnabled(growthFlags.isOn('abTesting'));
+    };
+    getFlags();
+  }, [currentAdmin.email]);
 
   useEffect(() => {
     setUsersPercentageValue((data?.usersPercentage || '').toString());
@@ -305,11 +324,12 @@ const FeatureFlag = () => {
               </Stack>
             </Tabs.Tab>
 
-            {/* <Tabs.Tab label="A/B testing">
+            {isABTestingEnabled && (
+            <Tabs.Tab label="A/B testing">
               <Stack>
                 <Group grow="1">
                   <Title order={4}>Configurations</Title>
-                  <Group position='right'>
+                  <Group position="right">
                     <Button width="auto" leftIcon={<IconPlus />} onClick={() => setIsConfigurationCreateModalOpened(true)}>
                       Add configuration
                     </Button>
@@ -369,7 +389,8 @@ const FeatureFlag = () => {
                   </ScrollArea>
                 </Paper>
               </Stack>
-            </Tabs.Tab> */}
+            </Tabs.Tab>
+            )}
           </Tabs>
         </Stack>
       ) : (
