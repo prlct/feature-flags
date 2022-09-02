@@ -38,7 +38,7 @@ import { useRouter } from 'next/router';
 
 import TestConfigurationCreateModal from './components/configuration-create-modal';
 import ConfigurationRemoveModal from './components/configuration-remove-modal';
-import FeatureFlagUpdateForm from './components/update-form';
+import FeatureFlagDescription from './components/feature-flag-description';
 
 import { testingColumns, percentageSelectList } from './index.constants';
 
@@ -223,11 +223,6 @@ const FeatureFlag = () => {
           <Tabs>
             <Tabs.Tab label="Settings">
               <Stack sx={{ maxWidth: '520px' }}>
-                <Stack>
-                  <Title order={4}>Info</Title>
-                  <FeatureFlagUpdateForm featureFlag={data} />
-                </Stack>
-
                 <Group position="apart" align="flex-end">
                   <Stack sx={{ maxWidth: '200px' }}>
                     <Select
@@ -252,6 +247,11 @@ const FeatureFlag = () => {
                     onChange={() => handleSwitchChange({ _id: data._id, enabled: data.enabled, env: data.env })}
                   />
                 </Group>
+
+                <Stack>
+                  <Title order={4}>Info</Title>
+                  <FeatureFlagDescription featureFlag={data} />
+                </Stack>
 
                 <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
                 <Divider my="sm" mt={0} />

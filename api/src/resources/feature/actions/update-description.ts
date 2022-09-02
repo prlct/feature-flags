@@ -34,5 +34,5 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.put('/:featureId', featureAuth, validateMiddleware(schema), handler);
+  router.put('/:featureId/description', featureAuth, validateMiddleware(schema), handler);
 };

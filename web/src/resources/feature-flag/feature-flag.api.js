@@ -1,9 +1,7 @@
 import { useMutation, useQuery } from 'react-query';
-import {
-  find as _find,
-  remove as _remove,
-  cloneDeep,
-} from 'lodash';
+import _find from 'lodash/find';
+import _remove from 'lodash/remove';
+import cloneDeep from 'lodash/cloneDeep';
 import queryClient from 'query-client';
 import { apiService } from 'services';
 
@@ -162,10 +160,10 @@ export const useGetById = ({ _id, env }) => {
   return useQuery(['featureFlag'], getById, { enabled: !!_id });
 };
 
-export function useUpdate() {
-  const updateFeatureFlag = (data) => apiService.put(`${resource}/${data._id}`, data);
+export function useUpdateDescription() {
+  const updateDescription = (data) => apiService.put(`${resource}/${data._id}/description`, data);
 
-  return useMutation(updateFeatureFlag, {
+  return useMutation(updateDescription, {
     onMutate: async (item) => {
       await queryClient.cancelQueries(['featureFlag']);
 
