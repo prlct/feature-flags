@@ -1,6 +1,6 @@
 import { routeUtil } from 'utils';
 
-import update from './actions/update';
+import updateDescription from './actions/update-description';
 import toggle from './actions/toggle';
 import changeVisibility from './actions/change-visibility';
 import changeUsersPercentage from './actions/change-users-percentage';
@@ -15,7 +15,7 @@ import removeUsers from './actions/private-key-api/remove-users';
 import getFeaturesPublicKey from './actions/public-key-api/get-features';
 
 const privateRoutes = routeUtil.getRoutes([
-  update,
+  updateDescription,
   toggle,
   changeVisibility,
   changeUsersPercentage,
