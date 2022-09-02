@@ -90,7 +90,7 @@ const FeatureFlag = () => {
 
     if (trimmedEmail) {
       enableFeatureForUsersMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
-        onSuccess: ({ email }) => {
+        onSuccess: () => {
           reset({ email: '' });
           showNotification({
             title: 'Success',
@@ -110,7 +110,7 @@ const FeatureFlag = () => {
 
     if (trimmedEmail) {
       disableFeatureForUserMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
-        onSuccess: ({ email }) => {
+        onSuccess: () => {
           reset({ email: '' });
           showNotification({
             title: 'Success',
