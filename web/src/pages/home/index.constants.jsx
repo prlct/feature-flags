@@ -18,6 +18,6 @@ export const dashboardColumns = [
     title: 'Created on',
   },
   {
-    title: 'Customization',
+    title: '',
   },
 ];

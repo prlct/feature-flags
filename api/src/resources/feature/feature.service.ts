@@ -9,7 +9,7 @@ const service = db.createService<Feature>(DATABASE_DOCUMENTS.FEATURES, { schema 
 
 const getFeaturesForEnv = async (applicationId: string, env: FeatureEnv) => {
   const features = await service.aggregate([
-    { $match: { applicationId } },
+    { $match: { applicationId, deletedOn: { $exists: false }  } },
     { $sort: { createdOn: -1 } },
   ]);
 
