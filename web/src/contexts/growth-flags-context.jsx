@@ -12,20 +12,21 @@ const GrowthFlagsContext = createContext(null);
 
 export const GrowthFlagsContextProvider = ({ children }) => {
   const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
 
   useEffect(() => {
     const fetchFeatureFlags = async () => {
+      if (!currentAdmin) return;
       await growthFlags.fetchFeatureFlags({ email: currentAdmin.email });
-      setIsLoading(false);
+      setIsLoaded(true);
     };
     fetchFeatureFlags();
   }, [currentAdmin]);
 
   return (
-    <GrowthFlagsContext.Provider value={isLoading ? null : growthFlags}>
+    <GrowthFlagsContext.Provider value={isLoaded ? growthFlags : null}>
       {children}
     </GrowthFlagsContext.Provider>
   );
