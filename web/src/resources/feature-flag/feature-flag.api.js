@@ -180,3 +180,13 @@ export function useUpdateDescription() {
     },
   });
 }
+
+export function useDeleteFeature() {
+  const deleteFeature = ({ _id }) => apiService.delete(`${resource}/${_id}`);
+
+  return useMutation(deleteFeature, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['featureFlags']);
+    },
+  });
+}

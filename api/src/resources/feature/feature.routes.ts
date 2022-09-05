@@ -1,5 +1,6 @@
 import { routeUtil } from 'utils';
 
+import deleteFeature from './actions/delete-feature';
 import updateDescription from './actions/update-description';
 import toggle from './actions/toggle';
 import changeVisibility from './actions/change-visibility';
@@ -15,6 +16,7 @@ import removeUsers from './actions/private-key-api/remove-users';
 import getFeaturesPublicKey from './actions/public-key-api/get-features';
 
 const privateRoutes = routeUtil.getRoutes([
+  deleteFeature,
   updateDescription,
   toggle,
   changeVisibility,
