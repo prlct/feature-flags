@@ -22,7 +22,7 @@ const createInvitation = async ({ companyId, email, adminId, type }: CreateInvit
   // TODO: Use token hash
   // TODO: Add collision check
   const token = securityUtil.generateSecureToken(INVITATION_TOKEN_SECURITY_LENGTH);
-  const expirationOn = moment().add(INVITATION_EXPIRATION_TIME_IN_DAYS, 'd').toISOString();
+  const expirationOn = moment().add(INVITATION_EXPIRATION_TIME_IN_DAYS, 'd').toDate();
 
   return service.insertOne({
     type,

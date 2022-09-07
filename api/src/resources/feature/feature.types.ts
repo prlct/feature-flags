@@ -24,9 +24,9 @@ export type Feature = {
     [FeatureEnv.STAGING]: EnvSettings,
     [FeatureEnv.PRODUCTION]: EnvSettings,
   }
-  createdOn: string;
-  updatedOn: string;
-  deletedOn?: string;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };
 
 export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: FeatureEnv };

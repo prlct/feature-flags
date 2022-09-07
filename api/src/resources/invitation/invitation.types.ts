@@ -9,8 +9,8 @@ export type Invitation = {
   email: string;
   adminId: string;
   token: string;
-  expirationOn: string;
-  createdOn: string;
-  updatedOn: string;
-  deletedOn?: string;
+  expirationOn: Date;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };

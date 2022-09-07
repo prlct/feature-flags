@@ -4,7 +4,7 @@ export type Application = {
   publicApiKey: string;
   privateApiKey: string;
   featureIds: string[];
-  createdOn: string;
-  updatedOn: string;
-  deletedOn?: string;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };

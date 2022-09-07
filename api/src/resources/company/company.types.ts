@@ -3,7 +3,7 @@ export type Company = {
   ownerId: string;
   applicationIds: string[];
   adminIds: string[];
-  createdOn: string;
-  updatedOn: string;
-  deletedOn?: string;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };

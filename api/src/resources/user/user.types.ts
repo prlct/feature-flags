@@ -5,6 +5,7 @@ export type User = {
   externalId: string;
   email: string;
   fullName: string;
-  createdOn: string;
-  updatedOn: string;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };
