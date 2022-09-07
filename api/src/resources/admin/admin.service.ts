@@ -12,8 +12,8 @@ const updateLastRequest = (_id: string) => service.atomic.updateOne(
   { _id },
   {
     $set: {
-      lastRequestOn: new Date().toISOString(),
-      updatedOn: new Date().toISOString(),
+      lastRequestOn: new Date(),
+      updatedOn: new Date(),
     },
   },
 );
@@ -22,9 +22,9 @@ const updateLastLogin = (_id: string, timestamp: number) => service.atomic.updat
   { _id },
   {
     $set: {
-      lastRequestOn: new Date().toISOString(),
-      lastLoginOn: new Date(timestamp).toISOString(),
-      updatedOn: new Date().toISOString(),
+      lastRequestOn: new Date(),
+      lastLoginOn: new Date(timestamp),
+      updatedOn: new Date(),
     },
   },
 );

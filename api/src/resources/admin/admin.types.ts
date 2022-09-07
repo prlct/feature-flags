@@ -11,10 +11,10 @@ export type Admin = {
   companyIds: string[];
   applicationIds: string[];
 
-  lastRequestOn?: string;
-  lastLoginOn: string;
+  lastRequestOn?: Date;
+  lastLoginOn: Date;
 
-  createdOn: string;
-  updatedOn: string;
-  deletedOn?: string;
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };
