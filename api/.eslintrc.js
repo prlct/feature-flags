@@ -27,6 +27,7 @@ module.exports = {
       ],
     }],
     'max-len': ['warn', { code: 120 }],
+    'import/no-cycle': [2, { ignoreExternal: true }],
   },
   settings: {
     "import/resolver": {

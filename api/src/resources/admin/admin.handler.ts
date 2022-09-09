@@ -4,7 +4,7 @@ import { eventBus, InMemoryEvent } from '@paralect/node-mongo';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import { Admin } from './admin.types';
-import { adminService } from './index';
+import adminService from './admin.service';
 
 const { ADMINS } = DATABASE_DOCUMENTS;
 
