@@ -7,6 +7,7 @@ import { PUBLIC_API_KEY_SECURITY_LENGTH, PRIVATE_API_KEY_SECURITY_LENGTH } from 
 import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 import { applicationService } from 'resources/application';
+import slackService from 'services/slack.service';
 
 const schema = Joi.object({
   firstName: Joi.string()
@@ -102,6 +103,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       }),
     ),
   ]);
+
+
+  slackService.send(`${firstName} ${lastName} just signed up! Reach out by email: ${email}.`);
 
   ctx.body = {};
 }

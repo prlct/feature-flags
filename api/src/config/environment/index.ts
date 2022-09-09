@@ -19,6 +19,7 @@ const base = {
   redis: 'redis://:@redis:6379',
   adminKey: '',
   MAGIC_SECRET_KEY: process.env.MAGIC_SECRET_KEY || '',
+  slackWebhookUrl: process.env.SLACK_WEBHOOK_URL || '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);
