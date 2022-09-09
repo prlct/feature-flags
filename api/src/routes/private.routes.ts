@@ -2,10 +2,10 @@ import mount from 'koa-mount';
 import compose from 'koa-compose';
 
 import { AppKoa } from 'types';
-import { adminRoutes } from 'resources/admin';
-import { featureRoutes } from 'resources/feature';
-import { applicationRoutes } from 'resources/application';
-import { companyRoutes } from 'resources/company';
+import adminRoutes from 'resources/admin/admin.routes';
+import featureRoutes from 'resources/feature/feature.routes';
+import applicationRoutes from 'resources/application/application.routes';
+import companyRoutes from 'resources/company/company.routes';
 
 import auth from './middlewares/auth.middleware';
 
