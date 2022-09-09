@@ -74,7 +74,6 @@ class FeatureFlags {
   }
   
   isOn(featureName: string): boolean {
-    // TODO: this._reportFeatureShown(featureName);
     return Boolean(this._features[featureName]);
   }
   
@@ -107,23 +106,6 @@ class FeatureFlags {
     }
   }
 
-  // Currently not in use
-  private async _reportFeatureShown(featureName: string) {
-    const data = { featureName };
-    const config = {
-      headers: {
-        Authorization: 'Bearer ' + this._apiKey,
-      },
-    };
-
-    try {
-      // TODO: save data to local storage and remove on success
-      await apiService.post(`${resource}/features-shown`, data, config);
-    } catch(error) {
-      console.log(consoleLogPrefix, error);
-    }
-  }
-
   private _saveToLocalStorage(data: MainData) {
     try {
       const stringData = JSON.stringify(data);
@@ -149,13 +131,11 @@ let instance: FeatureFlags;
 export default {
   create: ({ publicApiKey, env }: Constructor) => {
     if (instance) {
-      console.log(consoleLogPrefix, 'Attempting to create a second instance');
-
-      return instance;
-    } else {
-      instance = new FeatureFlags({ publicApiKey, env });
-
       return instance;
     }
+
+    instance = new FeatureFlags({ publicApiKey, env });
+
+    return instance;
   }
 };
