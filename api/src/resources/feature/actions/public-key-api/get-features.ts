@@ -3,11 +3,9 @@ import { forEach, includes } from 'lodash';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv, FlatFeature } from 'resources/feature';
+import { featureService, FlatFeature } from 'resources/feature';
+import { Env } from 'resources/application';
 import { publicTokenAuth } from 'resources/application';
-
-// TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
-const featureEnvValues = ['development', 'staging', 'production'];
 
 const formatFlatFeaturesToSdkResponse = (items: FlatFeature[], email?: string) => {
   const features: { [key: string]: boolean } = {};
@@ -41,7 +39,7 @@ const formatFlatFeaturesToSdkResponse = (items: FlatFeature[], email?: string) =
 
 const schema = Joi.object({
   env: Joi.string()
-    .valid(...featureEnvValues)
+    .valid(...Object.values(Env))
     .required()
     .messages({
       'any.required': 'env is required',
@@ -51,7 +49,7 @@ const schema = Joi.object({
 });
 
 type ValidatedData = {
-  env: FeatureEnv;
+  env: Env;
   email?: string;
 };
 

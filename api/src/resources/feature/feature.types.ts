@@ -1,9 +1,4 @@
-// Fix featureEnvValues array in other files if you change FeatureEnv enum
-export enum FeatureEnv {
-  DEVELOPMENT = 'development',
-  STAGING = 'staging',
-  PRODUCTION = 'production',
-}
+import { Env } from 'resources/application';
 
 type EnvSettings = {
   enabled: boolean;
@@ -20,13 +15,13 @@ export type Feature = {
   name: string;
   description: string;
   envSettings: {
-    [FeatureEnv.DEVELOPMENT]: EnvSettings,
-    [FeatureEnv.STAGING]: EnvSettings,
-    [FeatureEnv.PRODUCTION]: EnvSettings,
+    [Env.DEVELOPMENT]: EnvSettings,
+    [Env.STAGING]: EnvSettings,
+    [Env.PRODUCTION]: EnvSettings,
   }
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;
 };
 
-export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: FeatureEnv };
+export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: Env };

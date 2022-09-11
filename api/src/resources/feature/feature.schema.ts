@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { FeatureEnv } from './feature.types';
+import { Env } from 'resources/application';
 
 const envSettingsSchema = Joi.object({
   enabled: Joi.boolean().required().default(false),
@@ -17,9 +17,9 @@ const schema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required().allow(''),
   envSettings: Joi.object({
-    [FeatureEnv.DEVELOPMENT]: envSettingsSchema,
-    [FeatureEnv.STAGING]: envSettingsSchema,
-    [FeatureEnv.PRODUCTION]: envSettingsSchema,
+    [Env.DEVELOPMENT]: envSettingsSchema,
+    [Env.STAGING]: envSettingsSchema,
+    [Env.PRODUCTION]: envSettingsSchema,
   }),
 
   createdOn: Joi.date(),

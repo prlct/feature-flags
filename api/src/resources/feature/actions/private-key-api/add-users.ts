@@ -3,17 +3,14 @@ import { uniq } from 'lodash';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv, Feature } from 'resources/feature';
-import { privateTokenAuth } from 'resources/application';
+import { Env, privateTokenAuth } from 'resources/application';
+import { featureService, Feature } from 'resources/feature';
 import { getFlatFeature } from '../../utils/get-flat-feature';
 import featureExists from '../../middlewares/feature-exists.middleware';
 
-// TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
-const featureEnvValues = ['development', 'staging', 'production'];
-
 const schema = Joi.object({
   env: Joi.string()
-    .valid(...featureEnvValues)
+    .valid(...Object.values(Env))
     .required()
     .messages({
       'any.required': 'env is required',
@@ -27,7 +24,7 @@ const schema = Joi.object({
 });
 
 type ValidatedData = {
-  env: FeatureEnv;
+  env: Env;
   users: string[];
 };
 
