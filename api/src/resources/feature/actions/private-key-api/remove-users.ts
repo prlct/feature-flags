@@ -1,12 +1,11 @@
 import Joi from 'joi';
 import { pullAll } from 'lodash';
 
-import { validateMiddleware } from 'middlewares';
+import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService, FeatureEnv, Feature } from 'resources/feature';
+import { privateTokenAuth } from 'resources/application';
 import { getFlatFeature } from '../../utils/get-flat-feature';
-import extractToken from '../../middlewares/extract-header-token.middleware';
-import privateTokenAuth from '../../middlewares/private-token-auth.middleware';
 import featureExists from '../../middlewares/feature-exists.middleware';
 
 // TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
@@ -54,7 +53,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 export default (router: AppRouter) => {
   router.delete(
     '/:featureName/users',
-    extractToken,
+    extractTokenFromHeader,
     privateTokenAuth,
     validateMiddleware(schema),
     featureExists,
