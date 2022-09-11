@@ -1,11 +1,10 @@
 import Joi from 'joi';
 
-import { validateMiddleware } from 'middlewares';
+import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService, FeatureEnv } from 'resources/feature';
 
-import extractToken from '../../middlewares/extract-header-token.middleware';
-import privateTokenAuth from '../../middlewares/private-token-auth.middleware';
+import { privateTokenAuth } from 'resources/application';
 
 // TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
 const featureEnvValues = ['development', 'staging', 'production'];
@@ -34,5 +33,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.get('/', extractToken, privateTokenAuth, validateMiddleware(schema), handler);
+  router.get(
+    '/', 
+    extractTokenFromHeader,
+    privateTokenAuth,
+    validateMiddleware(schema),
+    handler,
+  );
 };

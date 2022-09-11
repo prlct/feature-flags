@@ -1,5 +1,5 @@
-import { AppKoaContext, Next } from 'types';
-import { applicationService } from 'resources/application';
+import type { AppKoaContext, Next } from 'types';
+import applicationService from '../application.service';
 
 const privateTokenAuth = async (ctx: AppKoaContext, next: Next) => {
   if (!ctx.state.accessToken) {
