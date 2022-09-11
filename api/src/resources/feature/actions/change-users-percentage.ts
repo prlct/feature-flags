@@ -2,16 +2,14 @@ import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv, Feature } from 'resources/feature';
+import { featureService, Feature } from 'resources/feature';
+import { Env } from 'resources/application';
 import { getFlatFeature } from '../utils/get-flat-feature';
 import featureAuth from '../middlewares/feature-auth.middleware';
 
-// TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
-const featureEnvValues = ['development', 'staging', 'production'];
-
 const schema = Joi.object({
   env: Joi.string()
-    .valid(...featureEnvValues)
+    .valid(...Object.values(Env))
     .required()
     .messages({
       'any.required': 'env is required',
@@ -28,7 +26,7 @@ const schema = Joi.object({
 });
 
 type ValidatedData = {
-  env: FeatureEnv;
+  env: Env;
   percentage: number;
 };
 

@@ -1,7 +1,8 @@
 import { omit } from 'lodash';
-import { FeatureEnv, Feature } from 'resources/feature';
+import { Env } from 'resources/application';
+import { Feature } from 'resources/feature';
 
-export const getFlatFeature = (feature: Feature, env: FeatureEnv) => {
+export const getFlatFeature = (feature: Feature, env: Env) => {
   const envSettings = feature.envSettings[env];
 
   return omit({ ...feature, ...envSettings, env }, ['envSettings']);

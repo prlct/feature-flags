@@ -2,16 +2,12 @@ import Joi from 'joi';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import { featureService, FeatureEnv } from 'resources/feature';
-
-import { privateTokenAuth } from 'resources/application';
-
-// TODO: !!! Fix this. undefined when import FeatureEnv or array of FeatureEnv values from resources/feature
-const featureEnvValues = ['development', 'staging', 'production'];
+import { featureService } from 'resources/feature';
+import { Env, privateTokenAuth } from 'resources/application';
 
 const schema = Joi.object({
   env: Joi.string()
-    .valid(...featureEnvValues)
+    .valid(...Object.values(Env))
     .required()
     .messages({
       'any.required': 'env is required',
@@ -20,7 +16,7 @@ const schema = Joi.object({
 });
 
 type ValidatedData = {
-  env: FeatureEnv;
+  env: Env;
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {

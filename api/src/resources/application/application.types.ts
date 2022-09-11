@@ -1,3 +1,9 @@
+export enum Env {
+  DEVELOPMENT = 'development',
+  STAGING = 'staging',
+  PRODUCTION = 'production',
+}
+
 export type Application = {
   _id: string;
   companyId: string;

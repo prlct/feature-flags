@@ -2,8 +2,8 @@ import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
-import { featureService, FeatureEnv } from 'resources/feature';
-import { applicationService } from 'resources/application';
+import { featureService } from 'resources/feature';
+import { applicationService, Env } from 'resources/application';
 import applicationAuth from '../middlewares/application-auth.middleware';
 
 const NAME_MAX_LENGTH = 100;
@@ -65,9 +65,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     description,
     applicationId,
     envSettings: {
-      [FeatureEnv.DEVELOPMENT]: featureEnvSettings,
-      [FeatureEnv.STAGING]: featureEnvSettings,
-      [FeatureEnv.PRODUCTION]: featureEnvSettings,
+      [Env.DEVELOPMENT]: featureEnvSettings,
+      [Env.STAGING]: featureEnvSettings,
+      [Env.PRODUCTION]: featureEnvSettings,
     },
   });
 

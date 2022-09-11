@@ -3,7 +3,6 @@ import { featureService } from 'resources/feature';
 
 import featureAuth from '../middlewares/feature-auth.middleware';
 
-// TODO: Add TTL index for deletedOn
 async function handler(ctx: AppKoaContext) {
   const { featureId } = ctx.params;
   
