@@ -1,10 +1,11 @@
+import { Env } from 'resources/application';
+
 export type User = {
   _id: string;
   applicationId: string;
-  sessionId: string;
-  externalId: string;
   email: string;
-  fullName: string;
+  env: Env,
+  lastVisitedOn: Date,
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;
