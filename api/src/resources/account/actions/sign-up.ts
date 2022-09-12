@@ -6,7 +6,7 @@ import { securityUtil } from 'utils';
 import { PUBLIC_API_KEY_SECURITY_LENGTH, PRIVATE_API_KEY_SECURITY_LENGTH } from 'app.constants';
 import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
-import { applicationService } from 'resources/application';
+import { applicationService, Env } from 'resources/application';
 import slackService from 'services/slack.service';
 
 const schema = Joi.object({
@@ -87,6 +87,17 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     privateApiKey,
     companyId: company._id,
     featureIds: [],
+    envs: {
+      [Env.DEVELOPMENT]: {
+        totalUsersCount: 0,
+      },
+      [Env.STAGING]: {
+        totalUsersCount: 0,
+      },
+      [Env.PRODUCTION]: {
+        totalUsersCount: 0,
+      },
+    },
   });
 
   await Promise.all([
