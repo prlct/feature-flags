@@ -3,11 +3,13 @@ import Router from '@koa/router';
 
 import type { Admin } from 'resources/admin';
 import type { Application } from 'resources/application';
+import type { Feature } from 'resources/feature';
 
 export type AppKoaContextState = {
   admin: Admin;
   application: Application;
   accessToken: string;
+  feature?: Feature
 };
 
 export type CustomErrors = {

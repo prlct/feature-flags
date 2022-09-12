@@ -6,6 +6,7 @@ const DATABASE_DOCUMENTS = {
   FEATURES: 'features',
   USERS: 'users',
   INVITATIONS: 'invitations',
+  USER_EVENTS: 'user-events',
 };
 
 const COOKIES = {
