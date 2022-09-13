@@ -36,21 +36,28 @@ interface Constructor {
   env: string;
 }
 
+export type FeatureOverride = {
+  name: string;
+  enabled: boolean;
+}
+
 class FeatureFlags {
   private _apiKey: string;
   private _env: string;
   private _user?: User;
   private _intervalId?: NodeJS.Timer;
   private _features: { [key in string]: boolean }
+  // custom feature ovverrides set by users to ovveride on the specific environment (e.x. dev)
+  private _featureOverrides: FeatureOverride[];
   private _configs: { [key in string]: JSONObject }
 
-  constructor({ publicApiKey, env }: Constructor)
-  {
+  constructor({ publicApiKey, env }: Constructor) {
     this._apiKey = publicApiKey;
     this._env = env;
 
 
     this._features = {};
+    this._featureOverrides = []
     this._configs = {};
   }
   
@@ -76,6 +83,21 @@ class FeatureFlags {
   isOn(featureName: string): boolean {
     return Boolean(this._features[featureName]);
   }
+
+  private mergeFeatures(features: { [key in string]: boolean }) {
+    let newFeatures = features;
+    this._featureOverrides.forEach((featureOvveride: FeatureOverride) => {
+      newFeatures[featureOvveride.name] = featureOvveride.enabled;
+    });
+
+    return newFeatures;
+  }
+
+  setFeatures(featureOvverides: FeatureOverride[]) {
+    this._featureOverrides = featureOvverides;
+
+    this._features = this.mergeFeatures(this._features)
+  }
   
   getConfig(featureName: string): JSONObject {
     return this._configs[featureName];
@@ -97,7 +119,8 @@ class FeatureFlags {
     try {
       const response = await apiService.get(`${resource}/features`, params, config);
 
-      this._features = response.features || {};
+      const features = response.features || {};
+      this._features = this.mergeFeatures(features);
       this._configs = response.configs || {};
 
       this._saveToLocalStorage(response);
