@@ -4,8 +4,6 @@ const resource = '/feature-flags';
 const storagePath = '@growthflags/js-sdk';
 const consoleLogPrefix = '@growthflags/js-sdk error:';
 
-const REFETCH_INTERVAL_IN_MS = 30 * 1000;
-
 interface User {
   email: string;
 }
@@ -45,7 +43,6 @@ class FeatureFlags {
   private _apiKey: string;
   private _env: string;
   private _user?: User;
-  private _intervalId?: NodeJS.Timer;
   private _features: { [key in string]: boolean }
   // custom feature overrides set by users to override on the specific environment (e.g. dev)
   private _featureOverrides: FeatureOverride[];
@@ -64,18 +61,12 @@ class FeatureFlags {
   async fetchFeatureFlags(user: User)  {
     this._user = user;
 
-    if (this._intervalId) {
-      clearInterval(this._intervalId);
-    }
-
     const storageData = this._getFromLocalStorage();
 
     if (storageData) {
       this._features = storageData.features || {};
       this._configs = storageData.configs || {};
     }
-
-    this._intervalId = setInterval(() => this._fetchFlags(), REFETCH_INTERVAL_IN_MS);
     
     return this._fetchFlags();
   }
