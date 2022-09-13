@@ -47,7 +47,7 @@ class FeatureFlags {
   private _user?: User;
   private _intervalId?: NodeJS.Timer;
   private _features: { [key in string]: boolean }
-  // custom feature ovverrides set by users to ovveride on the specific environment (e.x. dev)
+  // custom feature overrides set by users to override on the specific environment (e.g. dev)
   private _featureOverrides: FeatureOverride[];
   private _configs: { [key in string]: JSONObject }
 
@@ -86,15 +86,15 @@ class FeatureFlags {
 
   private mergeFeatures(features: { [key in string]: boolean }) {
     let newFeatures = features;
-    this._featureOverrides.forEach((featureOvveride: FeatureOverride) => {
-      newFeatures[featureOvveride.name] = featureOvveride.enabled;
+    this._featureOverrides.forEach((featureOverride: FeatureOverride) => {
+      newFeatures[featureOverride.name] = featureOverride.enabled;
     });
 
     return newFeatures;
   }
 
-  setFeatures(featureOvverides: FeatureOverride[]) {
-    this._featureOverrides = featureOvverides;
+  setFeatures(featureOverrides: FeatureOverride[]) {
+    this._featureOverrides = featureOverrides;
 
     this._features = this.mergeFeatures(this._features)
   }

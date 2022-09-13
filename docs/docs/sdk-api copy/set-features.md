@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # setFeatures(features[])
 
-Ovveride features returned by API. Often used to implement
+Override features returned by API. Often used to implement
 
 ```
 setFeatures(features[])
@@ -12,7 +12,7 @@ setFeatures(features[])
 
 ### Arguments
 
-- `features[]` - Array of features to ovveride. **Required**
+- `features[]` - Array of features to override. **Required**
 
 Feature type:
 ```
