@@ -14,6 +14,7 @@ export type Application = {
   publicApiKey: string;
   privateApiKey: string;
   featureIds: string[];
+  trackEnabled: boolean;
   envs: {
     [Env.DEVELOPMENT]: EnvData,
     [Env.STAGING]: EnvData,

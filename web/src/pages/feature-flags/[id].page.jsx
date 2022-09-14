@@ -24,6 +24,7 @@ import {
   Paper,
   Breadcrumbs,
   Table,
+  Alert,
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import { IconX, IconTool, IconPlus, IconTrash } from '@tabler/icons';
@@ -35,6 +36,7 @@ import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import { useRouter } from 'next/router';
 
+import { applicationApi } from 'resources/application';
 import TestConfigurationCreateModal from './components/configuration-create-modal';
 import ConfigurationRemoveModal from './components/configuration-remove-modal';
 import FeatureFlagDescription from './components/feature-flag-description';
@@ -56,11 +58,12 @@ const FeatureFlag = () => {
   const growthFlags = useGrowthFlags();
   const { id, env } = router.query;
 
-  const { data } = featureFlagApi.useGetById({ _id: id, env });
+  const { data: feature } = featureFlagApi.useGetById({ _id: id, env });
+  const { data: application } = applicationApi.useGetApplication();
 
   useEffect(() => {
-    setUsersPercentageValue((data?.usersPercentage || '').toString());
-  }, [data?.usersPercentage]);
+    setUsersPercentageValue((feature?.usersPercentage || '').toString());
+  }, [feature?.usersPercentage]);
 
   const {
     register, handleSubmit, formState: { errors }, setError, reset,
@@ -72,7 +75,11 @@ const FeatureFlag = () => {
     const trimmedEmail = _trim(email);
 
     if (trimmedEmail) {
-      enableFeatureForUsersMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
+      enableFeatureForUsersMutation.mutate({
+        email: trimmedEmail,
+        env: feature.env,
+        _id: feature._id,
+      }, {
         onSuccess: () => {
           reset({ email: '' });
           showNotification({
@@ -92,7 +99,11 @@ const FeatureFlag = () => {
     const trimmedEmail = _trim(email);
 
     if (trimmedEmail) {
-      disableFeatureForUserMutation.mutate({ email: trimmedEmail, env: data.env, _id: data._id }, {
+      disableFeatureForUserMutation.mutate({
+        email: trimmedEmail,
+        env: feature.env,
+        _id: feature._id,
+      }, {
         onSuccess: () => {
           reset({ email: '' });
           showNotification({
@@ -124,18 +135,18 @@ const FeatureFlag = () => {
 
   const handleFeatureVisibilityChange = (visibility) => {
     const enabledForEveryone = visibility === 'everyone';
-    const reqData = { _id: data._id, enabledForEveryone, env: data.env };
+    const reqData = { _id: feature._id, enabledForEveryone, env: feature.env };
 
     return changeFeatureVisibilityMutation.mutate(reqData, {
       onSuccess: (visibility) => {
-        if (!data.enabled) {
+        if (!feature.enabled) {
           return;
         }
 
         if (visibility === 'everyone') {
           showNotification({
             title: 'Success',
-            message: `Feature ${data.name} is now visible for all users.`,
+            message: `Feature ${feature.name} is now visible for all users.`,
             color: 'green',
           });
         }
@@ -143,7 +154,7 @@ const FeatureFlag = () => {
         if (visibility === 'group') {
           showNotification({
             title: 'Success',
-            message: `Feature ${data.name} is now visible only for some user.`,
+            message: `Feature ${feature.name} is now visible only for some user.`,
             color: 'green',
           });
         }
@@ -154,7 +165,11 @@ const FeatureFlag = () => {
 
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const handleUsersPercentageChange = (percentage) => changeUsersPercentageMutation.mutate({ _id: data._id, percentage, env: data.env }, {
+  const handleUsersPercentageChange = (percentage) => changeUsersPercentageMutation.mutate({
+    _id: feature._id,
+    percentage,
+    env: feature.env,
+  }, {
     onSuccess: ({ usersPercentage }) => {
       showNotification({
         title: 'Success',
@@ -166,11 +181,11 @@ const FeatureFlag = () => {
   });
 
   const handelConfigurationEdit = useCallback((configurationId) => () => {
-    const test = _find(data?.tests, { _id: configurationId });
+    const test = _find(feature?.tests, { _id: configurationId });
     setEditConfiguration(test.configuration);
     setEditConfigurationId(configurationId);
     setIsConfigurationCreateModalOpened(true);
-  }, [data?.tests]);
+  }, [feature?.tests]);
 
   const handleConfigurationCreateModalClose = useCallback(() => {
     setIsConfigurationCreateModalOpened(false);
@@ -185,7 +200,7 @@ const FeatureFlag = () => {
 
   const breadcrumbItems = [
     { title: 'Feature flags', href: routes.route.home },
-    { title: data?.name, href: '#' },
+    { title: feature?.name, href: '#' },
   ].map((item, index) => (
     <Link type="router" size="xl" href={item.href} key={index} underline={false}>
       {item.title}
@@ -195,10 +210,10 @@ const FeatureFlag = () => {
   return (
     <>
       <Head>
-        <title>{data?.name}</title>
+        <title>{feature?.name}</title>
       </Head>
 
-      {data?.name ? (
+      {feature?.name ? (
         <Stack spacing="sm">
           <Breadcrumbs>{breadcrumbItems}</Breadcrumbs>
 
@@ -213,7 +228,7 @@ const FeatureFlag = () => {
                         <Title order={4}>Enable for</Title>
                       }
                       placeholder="Choose for whom to show the feature"
-                      value={data.enabledForEveryone ? 'everyone' : 'group'}
+                      value={feature.enabledForEveryone ? 'everyone' : 'group'}
                       data={[
                         { value: 'everyone', label: 'All users' },
                         { value: 'group', label: 'Some users' },
@@ -223,22 +238,22 @@ const FeatureFlag = () => {
                   </Stack>
                   <Switch
                     label={
-                      <Title order={4}>{`Feature ${data?.enabled ? 'enabled' : 'disabled'}`}</Title>
+                      <Title order={4}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Title>
                     }
                     styles={{ input: { cursor: 'pointer' } }}
-                    checked={data.enabled}
-                    onChange={() => handleSwitchChange({ _id: data._id, enabled: data.enabled, env: data.env })}
+                    checked={feature.enabled}
+                    onChange={() => handleSwitchChange({ _id: feature._id, enabled: feature.enabled, env: feature.env })}
                   />
                 </Group>
 
                 <Stack>
                   <Title order={4}>Info</Title>
-                  <FeatureFlagDescription featureFlag={data} />
+                  <FeatureFlagDescription featureFlag={feature} />
                 </Stack>
 
                 <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
                 <Divider my="sm" mt={0} />
-                {/* <Stack sx={{ maxWidth: '200px' }}>
+                <Stack sx={{ maxWidth: '200px' }}>
                   <Select
                     label={
                       <Title order={4}>Percentage of users</Title>
@@ -247,10 +262,14 @@ const FeatureFlag = () => {
                     clearable
                     value={usersPercentageValue}
                     data={percentageSelectList}
-                    disabled={data.enabledForEveryone}
+                    disabled={feature.enabledForEveryone}
                     onChange={handleUsersPercentageChange}
                   />
-                </Stack> */}
+                </Stack>
+
+                {/* TODO: add link to the docs */}
+                { !feature.enabledForEveryone && application && !application.trackEnabled
+                  && <Alert color="yellow">% of users can not be used, before implementing feature tracking</Alert>}
 
                 <TextInput
                   label={
@@ -262,33 +281,33 @@ const FeatureFlag = () => {
                   rightSectionWidth="200"
                   rightSection={(
                     <Button
-                      disabled={data.enabledForEveryone}
+                      disabled={feature.enabledForEveryone}
                       sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                       onClick={handleSubmit(handleEmailsAdd)}
                     >
                       Add
                     </Button>
                   )}
-                  disabled={data.enabledForEveryone}
+                  disabled={feature.enabledForEveryone}
                 />
 
                 <Text component="p" m={0}>
                   Enabled for
                   {' '}
-                  {data.users.length}
+                  {feature.users.length}
                   {' '}
-                  {pluralize('user', data.users.length)}
+                  {pluralize('user', feature.users.length)}
                 </Text>
                 <ScrollArea style={{ height: 300 }}>
                   <Group spacing="sm">
-                    {data.users.map((user) => (
+                    {feature.users.map((user) => (
                       <Badge
                         sx={{ height: 26 }}
                         key={user}
                         variant="outline"
                         rightSection={(
                           <ActionIcon
-                            disabled={data.enabledForEveryone}
+                            disabled={feature.enabledForEveryone}
                             size="xs"
                             color="blue"
                             radius="xl"
@@ -333,7 +352,7 @@ const FeatureFlag = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.tests.map(({ _id, name, configuration }) => (
+                        {feature.tests.map(({ _id, name, configuration }) => (
                           <tr key={_id}>
                             <td>
                               <Text sx={{ width: 200 }} size="md" weight={700}>

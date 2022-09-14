@@ -2,28 +2,29 @@ import Joi from 'joi';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
-import userEventService from '../../user-event.service';
 import { publicTokenAuth } from 'resources/application/middlewares';
-import { EventType } from '../../user-event.types';
+import userEventService from '../../user-event.service';
+import { UserEventType } from '../../user-event.types';
 import { featureValidation } from '../../middlewares';
+import userService from 'resources/user/user.service';
 
 const schema = Joi.object({
   userId: Joi.string().required(),
-  event: Joi.string()
-    .valid(...Object.values(EventType))
+  type: Joi.string()
+    .valid(...Object.values(UserEventType))
     .required(),
   data: Joi.object({
     featureName: Joi.string(),
   })
-    .when('event', {
-      is: EventType.FeatureViewed,
+    .when('type', {
+      is: UserEventType.FeatureViewed,
       then: Joi.object({ featureName: Joi.required() }).required(),
     }),
 });
 
 type ValidatedData = {
-  userId: string,
-  event: EventType,
+  userId: string;
+  type: UserEventType;
   data: {
     featureName?: string
   }
@@ -35,8 +36,10 @@ type EventData = {
 }; 
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
-  const { feature } = ctx.state;
-  const { userId, event, data } = ctx.validatedData;
+  const { application, feature } = ctx.state;
+  const { userId, type, data } = ctx.validatedData;
+
+  const user = await userService.findOne({ _id: userId });
 
   let eventData: EventData = data;
   
@@ -48,7 +51,13 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     eventData.featureName = feature.name;
   }
   
-  const userEvent = await userEventService.insertOne({ userId, event, data: eventData });
+  const userEvent = await userEventService.insertOne({
+    userId, 
+    type, 
+    applicationId: application._id,
+    env: user?.env,
+    data: eventData,
+  });
 
   ctx.body = userEvent;
 }

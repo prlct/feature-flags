@@ -56,7 +56,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     enabledForEveryone: false,
     users: [],
     usersPercentage: 0,
-    seenBy: 0,
+    usersViewedCount: 0,
     tests: [],
   };
 
