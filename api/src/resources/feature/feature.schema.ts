@@ -6,8 +6,9 @@ const envSettingsSchema = Joi.object({
   enabledForEveryone: Joi.boolean().required().default(false),
   users: Joi.array().items(Joi.string()).unique().required().default([]),
   usersPercentage: Joi.number().min(0).max(100).required().default(0),
-  seenBy: Joi.number().required().default(0),
+  usersViewedCount: Joi.number().required().default(0),
   tests: Joi.array().items(Joi.string()).unique().required().default([]),
+  visibilityChangedOn: Joi.date(), 
 });
 
 const schema = Joi.object({

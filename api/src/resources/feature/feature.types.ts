@@ -5,8 +5,9 @@ type EnvSettings = {
   enabledForEveryone: boolean;
   users: string[];
   usersPercentage: number;
-  seenBy: number;
+  usersViewedCount: number;
   tests: string[];
+  visibilityChangedOn?: Date;
 };
 
 export type Feature = {

@@ -12,11 +12,13 @@ const schema = Joi.object({
   publicApiKey: Joi.string().required(),
   privateApiKey: Joi.string().required(),
   featureIds: Joi.array().items(Joi.string()).unique().required().default([]),
+  trackEnabled: Joi.boolean(),
   envs: Joi.object({
     [Env.DEVELOPMENT]: envDataSchema,
     [Env.STAGING]: envDataSchema,
     [Env.PRODUCTION]: envDataSchema,
   }),
+ 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),

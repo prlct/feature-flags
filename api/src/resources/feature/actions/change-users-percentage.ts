@@ -38,6 +38,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     { _id: featureId },
     (doc) => {
       doc.envSettings[env].usersPercentage = percentage;
+      doc.envSettings[env].visibilityChangedOn = new Date();
       return doc;
     },
   ) as Feature;
