@@ -12,12 +12,14 @@ import shipTheme from 'theme/ship-theme';
 import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
 
 import PageConfig from './PageConfig';
+import CrispChat from './CrispChat';
 
 const App = ({ Component, pageProps }) => (
   <>
     <Head>
       <title>Ship</title>
     </Head>
+    <CrispChat />
     <QueryClientProvider client={queryClient}>
       <MantineProvider
         theme={shipTheme}
