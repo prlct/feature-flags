@@ -22,6 +22,8 @@ import {
   Modal,
   Menu,
 } from '@mantine/core';
+import { useModals } from '@mantine/modals';
+
 import { showNotification } from '@mantine/notifications';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconPlus, IconSearch, IconX, IconSettings, IconTrash, IconTool } from '@tabler/icons';
@@ -36,6 +38,8 @@ import { environmentsList, dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
 
 const Home = () => {
+  const modals = useModals();
+
   const [env, setEnv] = useState(environmentsList[0].value);
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [isFeatureDeleteModalOpened, setIsFeatureDeleteModalOpened] = useState(false);
@@ -74,7 +78,7 @@ const Home = () => {
   const deleteFeatureMutation = featureFlagApi.useDeleteFeature();
 
   // TODO: Disable feature toggler during request / add loader ?
-  const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
+  const updateEnabled = (data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: (item) => {
       showNotification({
         title: 'Success',
@@ -84,6 +88,24 @@ const Home = () => {
     },
     onError: (e) => handleError(e),
   });
+
+  const handleSwitchChange = ({ _id, enabled, enabledForEveryone, name, env }) => {
+    const value = { _id, enabled, name, env };
+    if (enabledForEveryone) {
+      return updateEnabled(value);
+    }
+
+    return modals.openConfirmModal({
+      title: `${enabled ? 'Disable' : 'Enable'} feature`,
+      centered: true,
+      children: (
+        <Text size="sm">
+          This will reset access for all currently enabled users. Are you sure?
+        </Text>),
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onConfirm: () => updateEnabled(value),
+    });
+  };
 
   const handleSelectFeatureToDelete = (feature) => {
     setSelectedFeature(feature);
@@ -215,7 +237,12 @@ const Home = () => {
                               <Switch
                                 checked={enabled}
                                 styles={{ input: { cursor: 'pointer' } }}
-                                onChange={() => handleSwitchChange({ _id, enabled, name, env })}
+                                onChange={() => handleSwitchChange({
+                                  _id,
+                                  enabled,
+                                  enabledForEveryone,
+                                  name,
+                                  env })}
                               />
                               <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
                             </Stack>
