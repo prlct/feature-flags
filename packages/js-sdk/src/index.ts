@@ -1,11 +1,28 @@
 import apiService from './api.service';
 
-const resource = '/feature-flags';
+const featureFlagResource = '/feature-flags';
+const userResource = '/users';
+const userEventResource = '/user-events';
 const storagePath = '@growthflags/js-sdk';
 const consoleLogPrefix = '@growthflags/js-sdk error:';
 
+enum UserEventType {
+  FeatureViewed = 'featureViewed',
+}
+
+interface AppUser {
+  email?: string;
+}
+
 interface User {
+  _id: string;
+  applicationId: string;
   email: string;
+  env: string,
+  lastVisitedOn: Date,
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 }
 
 interface JSONObject {
@@ -22,11 +39,26 @@ type JSONValue =
 interface FetchFlagsParams {
   env: string;
   email?: string;
+  userId?: string
 }
 
-interface MainData {
+interface CreateUserData {
+  env: string;
+  email: string;
+}
+
+interface CreateUserEventData {
+  userId: string;
+  type: UserEventType;
+  data: {
+    featureName?: string
+  }
+};
+
+interface LocalStorageData {
   features: { [key in string]: boolean };
   configs: { [key in string]: JSONObject };
+  user?: User
 }
 
 interface Constructor {
@@ -58,8 +90,10 @@ class FeatureFlags {
     this._configs = {};
   }
   
-  async fetchFeatureFlags(user: User)  {
-    this._user = user;
+  async fetchFeatureFlags(user: AppUser)  {
+    if (user?.email) {
+        await this._createUser(user.email);
+    } 
 
     const storageData = this._getFromLocalStorage();
 
@@ -94,6 +128,31 @@ class FeatureFlags {
     return this._configs[featureName];
   }
 
+  async trackFeatureView(featureName: string) {
+    console.log(featureName)
+    if (!this._user) return;
+
+    const data: CreateUserEventData = { 
+      userId: this._user?._id,
+      type: UserEventType.FeatureViewed,
+      data: {
+        featureName
+      }
+    } ;
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + this._apiKey,
+      },
+    };
+
+    try {
+       await apiService.post(`${userEventResource}`, data, config);
+    } catch(error) {
+      console.log(consoleLogPrefix, error);
+    }
+  }
+
   private async _fetchFlags() {
     const params: FetchFlagsParams = { env: this._env };
 
@@ -108,7 +167,7 @@ class FeatureFlags {
     };
 
     try {
-      const response = await apiService.get(`${resource}/features`, params, config);
+      const response = await apiService.get(`${featureFlagResource}/features`, params, config);
 
       const features = response.features || {};
       this._features = this.mergeFeatures(features);
@@ -120,9 +179,31 @@ class FeatureFlags {
     }
   }
 
-  private _saveToLocalStorage(data: MainData) {
+  private async _createUser(email: string) {
+    const data: CreateUserData = { env: this._env, email: email };
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + this._apiKey,
+      },
+    };
+
     try {
-      const stringData = JSON.stringify(data);
+      const response = await apiService.post(`${userResource}`, data, config);
+
+      this._user = response;
+      this._saveToLocalStorage({ user: response })
+    } catch(error) {
+      console.log(consoleLogPrefix, error);
+    }
+  }
+
+  private _saveToLocalStorage(data: JSONObject) {
+    try {
+      const localStorageData : LocalStorageData = this._getFromLocalStorage();
+      const updatedData = {...localStorageData, ...data};
+      const stringData = JSON.stringify(updatedData);
+      
       localStorage.setItem(`${storagePath}`, stringData);
     } catch (error) {
       console.log(consoleLogPrefix, error);
