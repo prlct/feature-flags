@@ -21,6 +21,7 @@
     "build:tcs": "tsc",
     "build:email": "npm run copy-assets && mjml dist/src/assets/emails/*.mjml -o dist/src/assets/emails/dist/",
     "test": "run-s test:**",
+    "test:jest": "jest",
     "test:lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "dev": "nodemon --watch src -e ts,tsx --exec ts-node --project tsconfig.json src/app.ts",
     "start": "node dist/src/app.js",
@@ -68,6 +69,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.2",
+    "@types/jest": "29.0.2",
     "@types/koa": "2.13.4",
     "@types/koa__cors": "3.1.1",
     "@types/koa__multer": "2.0.4",
@@ -88,8 +90,10 @@
     "eslint-config-airbnb-typescript": "16.1.4",
     "eslint-plugin-import": "2.25.4",
     "husky": "7.0.4",
+    "jest": "29.0.3",
     "lint-staged": "12.3.4",
-    "npm-run-all": "4.1.5"
+    "npm-run-all": "4.1.5",
+    "ts-jest": "29.0.1"
   },
   "lint-staged": {
     "*.{js,ts}": [

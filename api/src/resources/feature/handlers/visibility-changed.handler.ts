@@ -8,7 +8,6 @@ import type { Feature } from '../feature.types';
 const { FEATURES } = DATABASE_DOCUMENTS;
 
 eventBus.on(`${FEATURES}.updated`, async (data: InMemoryEvent<Feature>) => {
-  console.log(data);
   const feature  = data.doc;
   const prevFeature = data.prevDoc;
   

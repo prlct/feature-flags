@@ -18,6 +18,7 @@ import logger from 'logger';
 import routes from 'routes';
 // import ioEmitter from 'io-emitter';
 import { AppKoa } from 'types';
+import db from 'db';
 
 const initKoa = () => {
   const app = new AppKoa();
@@ -42,6 +43,7 @@ const initKoa = () => {
 
 const app = initKoa();
 (async () => {
+  db.database.connect();
   const server = http.createServer(app.callback());
   // await Promise.all([
   //   ioEmitter.initClient(),

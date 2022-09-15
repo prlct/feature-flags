@@ -13,7 +13,7 @@ import getFeatures from './actions/private-key-api/get-features';
 import changeEnabled from './actions/private-key-api/change-enabled';
 import addUsers from './actions/private-key-api/add-users';
 import removeUsers from './actions/private-key-api/remove-users';
-import getFeaturesPublicKey from './actions/public-key-api/get-features';
+import getFeaturesForUserPublicKey from './actions/public-key-api/get-features-for-user';
 
 const privateRoutes = routeUtil.getRoutes([
   deleteFeature,
@@ -34,7 +34,7 @@ const privateKeyRoutes = [
 ];
 
 const publicKeyRoutes = [
-  getFeaturesPublicKey,
+  getFeaturesForUserPublicKey,
 ];
 
 const externalRoutes = routeUtil.getRoutes([
