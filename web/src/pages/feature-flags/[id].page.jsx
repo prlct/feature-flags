@@ -26,6 +26,8 @@ import {
   Table,
   Alert,
 } from '@mantine/core';
+import { useModals } from '@mantine/modals';
+
 import { showNotification } from '@mantine/notifications';
 import { IconX, IconTool, IconPlus, IconTrash } from '@tabler/icons';
 import { featureFlagApi } from 'resources/feature-flag';
@@ -49,6 +51,7 @@ const schema = yup.object().shape({
 
 const FeatureFlag = () => {
   const router = useRouter();
+  const modals = useModals();
   const [isConfigurationCreateModalOpened, setIsConfigurationCreateModalOpened] = useState(false);
   const [isConfigurationRemoveModalOpened, setIsConfigurationRemoveModalOpened] = useState(false);
   const [deleteConfigurationId, setDeleteConfigurationId] = useState('');
@@ -60,6 +63,12 @@ const FeatureFlag = () => {
 
   const { data: feature } = featureFlagApi.useGetById({ _id: id, env });
   const { data: application } = applicationApi.useGetApplication();
+
+  const confirmModalText = (
+    <Text size="sm">
+      This will reset access for all currently enabled users. Are you sure?
+    </Text>
+  );
 
   useEffect(() => {
     setUsersPercentageValue((feature?.usersPercentage || '').toString());
@@ -120,7 +129,7 @@ const FeatureFlag = () => {
   const toggleFeatureStatusMutation = featureFlagApi.useToggleFeatureStatusOnSettingsPage();
 
   // TODO: Disable feature toggler during request / add loader?
-  const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
+  const updateEnabled = (data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: ({ enabled }) => {
       showNotification({
         title: 'Success',
@@ -131,15 +140,29 @@ const FeatureFlag = () => {
     onError: (e) => handleError(e, setError),
   });
 
+  const handleSwitchChange = (value) => {
+    if (feature.enabledForEveryone) {
+      return updateEnabled(value);
+    }
+
+    return modals.openConfirmModal({
+      title: `${value.enabled ? 'Disable' : 'Enable'} feature`,
+      centered: true,
+      children: confirmModalText,
+      labels: { confirm: 'Confirm', cancel: 'Cancel' },
+      onConfirm: () => updateEnabled(value),
+    });
+  };
+
   const changeFeatureVisibilityMutation = featureFlagApi.useChangeFeatureVisibility();
 
-  const handleFeatureVisibilityChange = (visibility) => {
+  const changeFeatureVisibility = useCallback((visibility) => {
     const enabledForEveryone = visibility === 'everyone';
     const reqData = { _id: feature._id, enabledForEveryone, env: feature.env };
 
     return changeFeatureVisibilityMutation.mutate(reqData, {
-      onSuccess: (visibility) => {
-        if (!feature.enabled) {
+      onSuccess: (updatedFeature) => {
+        if (!updatedFeature.enabled) {
           return;
         }
 
@@ -161,11 +184,19 @@ const FeatureFlag = () => {
       },
       onError: (e) => handleError(e, setError),
     });
-  };
+  }, [changeFeatureVisibilityMutation, feature?._id, feature?.env, feature?.name, setError]);
+
+  const handleFeatureVisibilityChange = (value) => modals.openConfirmModal({
+    title: 'Change visibility',
+    centered: true,
+    children: confirmModalText,
+    labels: { confirm: 'Confirm', cancel: 'Cancel' },
+    onConfirm: () => changeFeatureVisibility(value),
+  });
 
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const handleUsersPercentageChange = (percentage) => changeUsersPercentageMutation.mutate({
+  const changeUsersPercent = useCallback((percentage) => changeUsersPercentageMutation.mutate({
     _id: feature._id,
     percentage,
     env: feature.env,
@@ -178,6 +209,14 @@ const FeatureFlag = () => {
       });
     },
     onError: (e) => handleError(e, setError),
+  }), [changeUsersPercentageMutation, feature?._id, feature?.env, setError]);
+
+  const handleUsersPercentageChange = (value) => modals.openConfirmModal({
+    title: 'Change users percent',
+    centered: true,
+    children: confirmModalText,
+    labels: { confirm: 'Confirm', cancel: 'Cancel' },
+    onConfirm: () => changeUsersPercent(value),
   });
 
   const handelConfigurationEdit = useCallback((configurationId) => () => {
