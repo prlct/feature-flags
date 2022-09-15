@@ -30,6 +30,7 @@ import { IconPlus, IconSearch, IconX, IconSettings, IconTrash, IconTool } from '
 import _filter from 'lodash/filter';
 import { featureFlagApi } from 'resources/feature-flag';
 import { applicationApi } from 'resources/application';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import * as routes from 'routes';
 import { handleError } from 'helpers';
@@ -47,6 +48,7 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
+  const growthFlags = useGrowthFlags();
 
   const { data, refetch, isRefetching, isLoading } = applicationApi.useGetFeaturesList(env);
 
@@ -91,20 +93,20 @@ const Home = () => {
 
   const handleSwitchChange = ({ _id, enabled, enabledForEveryone, name, env }) => {
     const value = { _id, enabled, name, env };
-    if (enabledForEveryone) {
-      return updateEnabled(value);
+    if (growthFlags && growthFlags.isOn('percentOfUsers') && !enabledForEveryone) {
+      modals.openConfirmModal({
+        title: `${enabled ? 'Disable' : 'Enable'} feature`,
+        centered: true,
+        children: (
+          <Text size="sm">
+            This will reset access for all currently enabled users. Are you sure?
+          </Text>),
+        labels: { confirm: 'Confirm', cancel: 'Cancel' },
+        onConfirm: () => updateEnabled(value),
+      });
+    } else {
+      updateEnabled(value);
     }
-
-    return modals.openConfirmModal({
-      title: `${enabled ? 'Disable' : 'Enable'} feature`,
-      centered: true,
-      children: (
-        <Text size="sm">
-          This will reset access for all currently enabled users. Are you sure?
-        </Text>),
-      labels: { confirm: 'Confirm', cancel: 'Cancel' },
-      onConfirm: () => updateEnabled(value),
-    });
   };
 
   const handleSelectFeatureToDelete = (feature) => {

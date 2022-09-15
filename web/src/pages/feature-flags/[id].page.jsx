@@ -64,6 +64,8 @@ const FeatureFlag = () => {
   const { data: feature } = featureFlagApi.useGetById({ _id: id, env });
   const { data: application } = applicationApi.useGetApplication();
 
+  const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
+
   const confirmModalText = (
     <Text size="sm">
       This will reset access for all currently enabled users. Are you sure?
@@ -141,17 +143,17 @@ const FeatureFlag = () => {
   });
 
   const handleSwitchChange = (value) => {
-    if (feature.enabledForEveryone) {
-      return updateEnabled(value);
+    if (isFeaturePercentOfUsersOn && !feature.enabledForEveryone) {
+      modals.openConfirmModal({
+        title: `${value.enabled ? 'Disable' : 'Enable'} feature`,
+        centered: true,
+        children: confirmModalText,
+        labels: { confirm: 'Confirm', cancel: 'Cancel' },
+        onConfirm: () => updateEnabled(value),
+      });
+    } else {
+      updateEnabled(value);
     }
-
-    return modals.openConfirmModal({
-      title: `${value.enabled ? 'Disable' : 'Enable'} feature`,
-      centered: true,
-      children: confirmModalText,
-      labels: { confirm: 'Confirm', cancel: 'Cancel' },
-      onConfirm: () => updateEnabled(value),
-    });
   };
 
   const changeFeatureVisibilityMutation = featureFlagApi.useChangeFeatureVisibility();
@@ -186,13 +188,19 @@ const FeatureFlag = () => {
     });
   }, [changeFeatureVisibilityMutation, feature?._id, feature?.env, feature?.name, setError]);
 
-  const handleFeatureVisibilityChange = (value) => modals.openConfirmModal({
-    title: 'Change visibility',
-    centered: true,
-    children: confirmModalText,
-    labels: { confirm: 'Confirm', cancel: 'Cancel' },
-    onConfirm: () => changeFeatureVisibility(value),
-  });
+  const handleFeatureVisibilityChange = (value) => {
+    if (isFeaturePercentOfUsersOn) {
+      modals.openConfirmModal({
+        title: 'Change visibility',
+        centered: true,
+        children: confirmModalText,
+        labels: { confirm: 'Confirm', cancel: 'Cancel' },
+        onConfirm: () => changeFeatureVisibility(value),
+      });
+    } else {
+      changeFeatureVisibility(value);
+    }
+  };
 
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
@@ -211,13 +219,19 @@ const FeatureFlag = () => {
     onError: (e) => handleError(e, setError),
   }), [changeUsersPercentageMutation, feature?._id, feature?.env, setError]);
 
-  const handleUsersPercentageChange = (value) => modals.openConfirmModal({
-    title: 'Change users percent',
-    centered: true,
-    children: confirmModalText,
-    labels: { confirm: 'Confirm', cancel: 'Cancel' },
-    onConfirm: () => changeUsersPercent(value),
-  });
+  const handleUsersPercentageChange = (value) => {
+    if (isFeaturePercentOfUsersOn) {
+      modals.openConfirmModal({
+        title: 'Change users percent',
+        centered: true,
+        children: confirmModalText,
+        labels: { confirm: 'Confirm', cancel: 'Cancel' },
+        onConfirm: () => changeUsersPercent(value),
+      });
+    } else {
+      changeUsersPercent(value);
+    }
+  };
 
   const handelConfigurationEdit = useCallback((configurationId) => () => {
     const test = _find(feature?.tests, { _id: configurationId });
@@ -292,23 +306,28 @@ const FeatureFlag = () => {
 
                 <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
                 <Divider my="sm" mt={0} />
-                <Stack sx={{ maxWidth: '200px' }}>
-                  <Select
-                    label={
-                      <Title order={4}>Percentage of users</Title>
-                    }
-                    placeholder="Select a percentage"
-                    clearable
-                    value={usersPercentageValue}
-                    data={percentageSelectList}
-                    disabled={feature.enabledForEveryone}
-                    onChange={handleUsersPercentageChange}
-                  />
-                </Stack>
 
-                {/* TODO: add link to the docs */}
-                { !feature.enabledForEveryone && application && !application.trackEnabled
+                {isFeaturePercentOfUsersOn && (
+                <>
+                  <Stack sx={{ maxWidth: '200px' }}>
+                    <Select
+                      label={
+                        <Title order={4}>Percentage of users</Title>
+                    }
+                      placeholder="Select a percentage"
+                      clearable
+                      value={usersPercentageValue}
+                      data={percentageSelectList}
+                      disabled={feature.enabledForEveryone}
+                      onChange={handleUsersPercentageChange}
+                    />
+                  </Stack>
+
+                  {/* TODO: add link to the docs */}
+                  { !feature.enabledForEveryone && application && !application.trackEnabled
                   && <Alert color="yellow">% of users can not be used, before implementing feature tracking</Alert>}
+                </>
+                )}
 
                 <TextInput
                   label={
