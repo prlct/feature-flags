@@ -17,7 +17,14 @@ eventBus.on(`${USER_EVENTS}.created`, async (data: InMemoryEvent<UserEvent>) => 
 
   if (!feature) return;
 
-  const featureViewedEvents = await userEventService.find({ userId, 'data.featureId': featureId });
+  const featureViewedEvents = await userEventService.find({ 
+    userId,
+    'data.featureId': featureId, 
+    createdOn: { 
+      $gt: feature.envSettings[env].visibilityChangedOn, 
+    }, 
+  });
+
   if (featureViewedEvents.count > 1) return;
  
   const usersCount = feature.envSettings[env].usersViewedCount;
