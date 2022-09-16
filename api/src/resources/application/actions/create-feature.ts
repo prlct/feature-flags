@@ -67,6 +67,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     envSettings: {
       [Env.DEVELOPMENT]: featureEnvSettings,
       [Env.STAGING]: featureEnvSettings,
+      [Env.DEMO]: featureEnvSettings,
       [Env.PRODUCTION]: featureEnvSettings,
     },
   });

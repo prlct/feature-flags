@@ -3,11 +3,12 @@ import * as routes from 'routes';
 import {
   Header as LayoutHeader,
   Text,
-  Group
+  Group,
 } from '@mantine/core';
 import { Link } from 'components';
 
 import AdminMenu from './components/AdminMenu';
+import EnvSelect from './components/EnvSelect';
 
 const Header = () => (
   <LayoutHeader
@@ -23,16 +24,19 @@ const Header = () => (
   >
     <Group>
       <Link type="router" href={routes.route.home} underline={false}>
-        <Text color="white" size='lg' weight={700}>Feature flags</Text>
+        <Text color="white" size="lg" weight={700}>Feature flags</Text>
       </Link>
       <Link type="router" href={routes.route.apiKey} underline={false}>
-        <Text color="white" size='lg' weight={700}>Api Keys</Text>
+        <Text color="white" size="lg" weight={700}>Api Keys</Text>
       </Link>
       <Link type="router" href={routes.route.members} underline={false}>
-        <Text color="white" size='lg' weight={700}>Team members</Text>
+        <Text color="white" size="lg" weight={700}>Team members</Text>
       </Link>
     </Group>
-    <AdminMenu />
+    <Group spacing="lg" sx={{ marginLeft: 'auto' }}>
+      <EnvSelect />
+      <AdminMenu />
+    </Group>
   </LayoutHeader>
 );
 

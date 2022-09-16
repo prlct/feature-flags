@@ -27,6 +27,7 @@ import {
   Alert,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
+import { useLocalStorage } from '@mantine/hooks';
 
 import { showNotification } from '@mantine/notifications';
 import { IconX, IconTool, IconPlus, IconTrash } from '@tabler/icons';
@@ -34,6 +35,8 @@ import { featureFlagApi } from 'resources/feature-flag';
 import { Link } from 'components';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+
 import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import { useRouter } from 'next/router';
@@ -52,6 +55,8 @@ const schema = yup.object().shape({
 const FeatureFlag = () => {
   const router = useRouter();
   const modals = useModals();
+  const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
+
   const [isConfigurationCreateModalOpened, setIsConfigurationCreateModalOpened] = useState(false);
   const [isConfigurationRemoveModalOpened, setIsConfigurationRemoveModalOpened] = useState(false);
   const [deleteConfigurationId, setDeleteConfigurationId] = useState('');
@@ -59,9 +64,9 @@ const FeatureFlag = () => {
   const [editConfiguration, setEditConfiguration] = useState('');
   const [usersPercentageValue, setUsersPercentageValue] = useState('');
   const growthFlags = useGrowthFlags();
-  const { id, env } = router.query;
+  const { id } = router.query;
 
-  const { data: feature } = featureFlagApi.useGetById({ _id: id, env });
+  const { data: feature, refetch } = featureFlagApi.useGetById({ _id: id, env });
   const { data: application } = applicationApi.useGetApplication();
 
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
@@ -71,6 +76,10 @@ const FeatureFlag = () => {
       This will reset access for all currently enabled users. Are you sure?
     </Text>
   );
+
+  useEffect(() => {
+    refetch();
+  }, [env, refetch]);
 
   useEffect(() => {
     setUsersPercentageValue((feature?.usersPercentage || '').toString());

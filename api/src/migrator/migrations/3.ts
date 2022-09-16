@@ -9,6 +9,8 @@ migration.migrate = async () => {
 
   const updateFn = (applicationId: string) => applicationService.atomic.updateOne(
     { _id: applicationId },
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     { $set: { envs: {
       [Env.DEVELOPMENT]: {
         totalUsersCount: 0,
