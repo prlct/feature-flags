@@ -3,6 +3,8 @@ import 'moment-duration-format';
 import { generateId } from '@paralect/node-mongo';
 
 import logger from 'logger';
+import db from 'db';
+db.database.connect();
 
 import { Migration } from './types';
 import migrationLogService from './migration-log/migration-log.service';
