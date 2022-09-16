@@ -16,6 +16,7 @@ const schema = Joi.object({
   envs: Joi.object({
     [Env.DEVELOPMENT]: envDataSchema,
     [Env.STAGING]: envDataSchema,
+    [Env.DEMO]: envDataSchema,
     [Env.PRODUCTION]: envDataSchema,
   }),
  

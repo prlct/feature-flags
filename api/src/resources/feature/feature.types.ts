@@ -18,6 +18,7 @@ export type Feature = {
   envSettings: {
     [Env.DEVELOPMENT]: EnvSettings,
     [Env.STAGING]: EnvSettings,
+    [Env.DEMO]: EnvSettings,
     [Env.PRODUCTION]: EnvSettings,
   }
   createdOn: Date;

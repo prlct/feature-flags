@@ -10,7 +10,6 @@ const AdminMenu = () => {
 
   return (
     <Menu
-      sx={{ marginLeft: 'auto' }}
       control={<MenuToggle />}
     >
       {/* <Menu.Item

@@ -94,6 +94,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       [Env.STAGING]: {
         totalUsersCount: 0,
       },
+      [Env.DEMO]: {
+        totalUsersCount: 0,
+      },
       [Env.PRODUCTION]: {
         totalUsersCount: 0,
       },

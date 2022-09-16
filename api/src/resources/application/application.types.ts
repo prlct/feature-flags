@@ -1,6 +1,7 @@
 export enum Env {
   DEVELOPMENT = 'development',
   STAGING = 'staging',
+  DEMO = 'demo',
   PRODUCTION = 'production',
 }
 
@@ -18,8 +19,9 @@ export type Application = {
   envs: {
     [Env.DEVELOPMENT]: EnvData,
     [Env.STAGING]: EnvData,
+    [Env.DEMO]: EnvData,
     [Env.PRODUCTION]: EnvData,
-  }
+  };
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;

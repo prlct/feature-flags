@@ -17,15 +17,13 @@ import {
   Badge,
   ScrollArea,
   UnstyledButton,
-  SegmentedControl,
   ActionIcon,
   Modal,
   Menu,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
-
 import { showNotification } from '@mantine/notifications';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useLocalStorage, useDebouncedValue } from '@mantine/hooks';
 import { IconPlus, IconSearch, IconX, IconSettings, IconTrash, IconTool } from '@tabler/icons';
 import _filter from 'lodash/filter';
 import { featureFlagApi } from 'resources/feature-flag';
@@ -34,14 +32,15 @@ import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import * as routes from 'routes';
 import { handleError } from 'helpers';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
-import { environmentsList, dashboardColumns } from './index.constants';
+import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
 
 const Home = () => {
   const modals = useModals();
 
-  const [env, setEnv] = useState(environmentsList[0].value);
+  const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [isFeatureDeleteModalOpened, setIsFeatureDeleteModalOpened] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
@@ -137,13 +136,6 @@ const Home = () => {
       <Head>
         <title>Feature flags</title>
       </Head>
-      <Group position="right">
-        <SegmentedControl
-          value={env}
-          onChange={setEnv}
-          data={environmentsList}
-        />
-      </Group>
       <Stack spacing="lg">
         <Title order={2}>Feature flags</Title>
         <Group position="apart">
@@ -267,7 +259,7 @@ const Home = () => {
                             >
                               <Menu.Item
                                 component={NextLink}
-                                href={`${routes.path.featureFlag}/${_id}?env=${env}`}
+                                href={`${routes.path.featureFlag}/${_id}`}
                                 icon={<IconSettings size={14} />}
                               >
                                 Settings
