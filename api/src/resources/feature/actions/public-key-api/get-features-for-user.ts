@@ -5,7 +5,7 @@ import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService, FlatFeature } from 'resources/feature';
 import { Application, Env } from 'resources/application';
-import { publicTokenAuth } from 'resources/application';
+import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userEventService, UserEventType } from 'resources/user-event';
 import { userService, User } from 'resources/user';
 
@@ -125,6 +125,7 @@ export default (router: AppRouter) => {
   router.get(
     '/features',
     extractTokenFromHeader, 
+    extractTokenFromQuery, 
     publicTokenAuth,
     validateMiddleware(schema), 
     handler,
