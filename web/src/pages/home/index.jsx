@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import pluralize from 'pluralize';
 import Head from 'next/head';
 import { NextLink } from '@mantine/next';
@@ -50,12 +50,6 @@ const Home = () => {
   const growthFlags = useGrowthFlags();
 
   const { data, refetch, isRefetching, isLoading } = applicationApi.useGetFeaturesList(env);
-
-  const isListLoading = useMemo(
-    () => isLoading || isRefetching,
-    [isLoading, isRefetching,
-    ],
-  );
 
   useEffect(() => {
     refetch();
@@ -142,7 +136,7 @@ const Home = () => {
           <Skeleton
             height={42}
             radius="sm"
-            visible={isListLoading}
+            visible={isLoading}
             width="auto"
             sx={{ flexGrow: '0.25' }}
           >
@@ -164,9 +158,9 @@ const Home = () => {
           <Skeleton
             height={42}
             radius="sm"
-            visible={isListLoading}
+            visible={isLoading}
             width="auto"
-            sx={{ overflow: !isListLoading ? 'initial' : 'overflow' }}
+            sx={{ overflow: !isLoading ? 'initial' : 'overflow' }}
           >
             <Group grow="1">
               <Button leftIcon={<IconPlus />} onClick={() => setIsFeatureCreateModalOpened(true)}>
@@ -176,7 +170,7 @@ const Home = () => {
           </Skeleton>
         </Group>
 
-        {isListLoading && (
+        {isLoading && (
           <>
             {[1, 2, 3].map((item) => (
               <Skeleton
@@ -188,7 +182,7 @@ const Home = () => {
             ))}
           </>
         )}
-        {(!!filteredFeatureFlags.length && !isListLoading) && (
+        {(!!filteredFeatureFlags.length && !isLoading) && (
           <Paper radius="sm" withBorder>
             <ScrollArea>
               <Table
@@ -197,8 +191,8 @@ const Home = () => {
               >
                 <thead>
                   <tr>
-                    {dashboardColumns.map(({ title }) => (
-                      <th key={title}>{title}</th>
+                    {dashboardColumns.map(({ title, width }) => (
+                      <th key={title} style={{ width }}>{title}</th>
                     ))}
                   </tr>
                 </thead>
@@ -214,7 +208,7 @@ const Home = () => {
                       usersPercentage,
                       users,
                       tests,
-                      seenBy,
+                      usersViewedCount,
                       env }) => (
                         <tr key={_id}>
                           <td>
@@ -231,6 +225,7 @@ const Home = () => {
                               <Switch
                                 checked={enabled}
                                 styles={{ input: { cursor: 'pointer' } }}
+                                disabled={isRefetching}
                                 onChange={() => handleSwitchChange({
                                   _id,
                                   enabled,
@@ -242,9 +237,9 @@ const Home = () => {
                             </Stack>
                           </td>
                           <td>
-                            {seenBy}
+                            {usersViewedCount}
                             {' '}
-                            {pluralize('user', seenBy)}
+                            {pluralize('user', usersViewedCount)}
                           </td>
                           <td>{new Date(createdOn).toLocaleDateString('en-US')}</td>
                           <td>
@@ -252,6 +247,13 @@ const Home = () => {
                               <ActionIcon
                                 title="Settings"
                                 variant="transparent"
+                                disabled={isRefetching}
+                                sx={{
+                                  '&:disabled': {
+                                    backgroundColor: 'transparent',
+                                    border: 0,
+                                  },
+                                }}
                               >
                                 <IconTool />
                               </ActionIcon>
@@ -281,7 +283,7 @@ const Home = () => {
             </ScrollArea>
           </Paper>
         )}
-        {(!filteredFeatureFlags.length && !!search && !isListLoading) && (
+        {(!filteredFeatureFlags.length && !!search && !isLoading) && (
           <Container p={75}>
             <Text size="xl" color="grey">
               No results found, try to adjust your search.
