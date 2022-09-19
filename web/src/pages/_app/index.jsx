@@ -17,7 +17,7 @@ import CrispChat from './CrispChat';
 const App = ({ Component, pageProps }) => (
   <>
     <Head>
-      <title>Ship</title>
+      <title>Growthflags</title>
     </Head>
     <CrispChat />
     <QueryClientProvider client={queryClient}>
