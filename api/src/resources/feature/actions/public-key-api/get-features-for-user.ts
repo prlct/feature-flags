@@ -7,7 +7,7 @@ import { featureService, FlatFeature } from 'resources/feature';
 import { Application, Env } from 'resources/application';
 import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userEventService, UserEventType } from 'resources/user-event';
-import { userService, User } from 'resources/user';
+import { userService } from 'resources/user';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -18,19 +18,22 @@ const schema = Joi.object({
       'string.empty': 'env is required',
     }),
   email: Joi.string().trim(),
-  userId: Joi.string().trim(),
 });
 
 type ValidatedData = {
   env: Env;
   email?: string;
-  userId?: string;
+};
+
+export type UserData = {
+  email: string,
+  _id?: string
 };
 
 const calculateFlagForUser = async (  
   feature: FlatFeature, 
   application: Application,
-  user: User | null,
+  user: UserData | null,
 ): Promise<boolean> => {
   const {
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -60,7 +63,7 @@ const calculateFlagForUser = async (
     }
 
     const { trackEnabled } = application;
-    if (usersPercentage > 0 && trackEnabled) {
+    if (usersPercentage > 0 && trackEnabled && user._id) {
       const { totalUsersCount } = application.envs[env];
      
       // this shouldn't happen, just to avoid division by 0
@@ -92,7 +95,7 @@ const calculateFlagForUser = async (
 export const calculateFlagsForUser = async (
   features: FlatFeature[], 
   application: Application,
-  user: User | null,
+  user: UserData | null,
 ) => {
   const flags: { [key: string]: boolean } = {};
   for (const feature of features) {
@@ -111,7 +114,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   let user = null;
   if (email) {
     user = await userService.findOne({ email, applicationId: application._id, env });
+    if (!user) {
+      user = { email };
+    }
   }
+
   const features = await featureService.getFeaturesForEnv(application._id, env);
   
   const flagsForUser = await calculateFlagsForUser(features, application, user);
