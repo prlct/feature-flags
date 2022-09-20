@@ -2,9 +2,9 @@
 sidebar_position: 4
 ---
 
-# setFeatures(features[])
+# setFeatures()
 
-Override features returned by API. Often used to implement
+Override features returned by API. Often used for development.
 
 ```
 setFeatures(features[])

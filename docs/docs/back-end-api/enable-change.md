@@ -35,3 +35,9 @@ Either `enabled` or `enabledForEveryone` **Required** in request
   updatedOn: string;
 }
 ```
+
+### Authentication
+Type: Bearer
+```
+Authorization: Bearer <your private token>
+```

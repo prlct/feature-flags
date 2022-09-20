@@ -31,3 +31,9 @@ Get all feature flags for the specified environment
   ]
 }
 ```
+
+### Authentication
+Type: Bearer
+```
+Authorization: Bearer <your private token>
+```
