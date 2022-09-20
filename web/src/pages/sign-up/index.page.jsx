@@ -13,6 +13,7 @@ import {
   TextInput,
   Group,
   Title,
+  Text,
 } from '@mantine/core';
 import { accountApi } from 'resources/account';
 
@@ -43,13 +44,13 @@ const SignUp = () => {
   const onSubmit = (data) => signUp(data, {
     onSuccess: () => {
       (async function doAsync() {
-        let DIDToken = await magic.auth.loginWithMagicLink({
+        const DIDToken = await magic.auth.loginWithMagicLink({
           email: data.email,
           // redirectURI: new URL(routes.route.magicLinkRedirect, window.location.origin).href,
         });
 
         return handleSignInRequest({ DIDToken });
-      })()
+      }());
     },
     onError: (e) => handleError(e, setError),
   });
@@ -92,6 +93,19 @@ const SignUp = () => {
             </Button>
           </Stack>
         </form>
+        <Text sx={{ fontSize: '12px' }}>
+          By clicking the button you accept
+          {' '}
+          <Text
+            variant="link"
+            component="a"
+            href="https://www.paralect.com/privacy-policy"
+            target="_blank"
+            inherit
+          >
+            the Privacy Policy
+          </Text>
+        </Text>
         <Group sx={{ fontSize: '14px' }}>
           Have an account?
           <Link
