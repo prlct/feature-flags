@@ -129,7 +129,6 @@ class FeatureFlags {
   }
 
   async trackFeatureView(featureName: string) {
-    console.log(featureName)
     if (!this._user) return;
 
     const data: CreateUserEventData = { 
