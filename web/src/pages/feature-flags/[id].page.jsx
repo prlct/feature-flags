@@ -66,9 +66,8 @@ const FeatureFlag = () => {
   const growthFlags = useGrowthFlags();
   const { id } = router.query;
 
-  const { data: feature, refetch } = featureFlagApi.useGetById({ _id: id, env });
+  const { data: feature, refetch, isIdle } = featureFlagApi.useGetById({ _id: id, env });
   const { data: application } = applicationApi.useGetApplication();
-
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
 
   const confirmModalText = (
@@ -78,8 +77,10 @@ const FeatureFlag = () => {
   );
 
   useEffect(() => {
-    refetch();
-  }, [env, refetch]);
+    if (!isIdle) {
+      refetch();
+    }
+  }, [env, refetch, isIdle]);
 
   useEffect(() => {
     setUsersPercentageValue((feature?.usersPercentage || '').toString());
