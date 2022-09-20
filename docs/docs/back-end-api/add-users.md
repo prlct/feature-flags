@@ -32,3 +32,9 @@ Enable feature flag for a specific users
   updatedOn: string;
 }
 ```
+
+### Authentication
+Type: Bearer
+```
+Authorization: Bearer <your private token>
+```

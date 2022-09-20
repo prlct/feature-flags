@@ -1,20 +1,21 @@
 ---
 sidebar_position: 1
+slug: /
 ---
 
 # Getting Started Guide
 
-Let's discover **GrowthFlags in less than 5 minutes**.
+Let's discover **Growthflags in less than 5 minutes**.
 
 ## Installation
 
-Install GrowthFlags SDK in the root of your web application
+Install Growthflags SDK in the root of your web application
 
 ```
 npm i @growthflags/js-sdk
 ```
 
-## Initialize GrowthFlags SDK
+## Initialize Growthflags SDK
 
 Initialize SDK
 
@@ -27,7 +28,7 @@ const flags = GrowthFlags.create({
 })
 ```
 
-## Add method to fetch GrowthFlags on page load, pass the user
+## Add method to fetch Growthflags on page load, pass the user
 
 ```
 await flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
