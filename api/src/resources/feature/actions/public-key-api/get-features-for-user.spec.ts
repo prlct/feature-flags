@@ -1,9 +1,8 @@
 const mockCountDocuments = jest.fn();
 
-import { calculateFlagsForUser } from './get-features-for-user';
+import { calculateFlagsForUser, UserData } from './get-features-for-user';
 import type { FlatFeature } from '../../feature.types';
 import { Application, Env } from 'resources/application';
-import type { User } from 'resources/user';
 
 jest.mock('../../../user-event/user-event.service', () => ({
   countDocuments: mockCountDocuments,
@@ -83,8 +82,17 @@ const makeUser = (email?: string) => {
   return {
     _id: 'test',
     email,
-  } as User;
+  } as UserData;
 };
+
+const makeUserWithoutId = (email?: string) => {
+  if (!email) return null;
+
+  return {
+    email,
+  } as UserData;
+};
+
 
 const makeApplication = (totalUsersCount: number, trackEnabled = true) => {
   return {
@@ -222,6 +230,17 @@ describe('calculateFlagsForUser', () => {
       mockCountDocuments.mockResolvedValue(0);
 
       await expect(calculateFlagsForUser(initialFeatures, application1, makeUser(USER_TEST_EMAIL_1)))
+        .resolves.toEqual(expectedResult);
+    });
+
+    test('should return false for the user who is not saved to users collection', async () => {
+      const expectedResult = {
+        [featureEnabledForPercentOfUsers.name]: false,
+      };
+
+      mockCountDocuments.mockResolvedValue(0);
+
+      await expect(calculateFlagsForUser(initialFeatures, application1, makeUserWithoutId(USER_TEST_EMAIL_1)))
         .resolves.toEqual(expectedResult);
     });
 
