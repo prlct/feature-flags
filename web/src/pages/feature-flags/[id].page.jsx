@@ -24,9 +24,7 @@ import {
   Paper,
   Breadcrumbs,
   Table,
-  Alert,
 } from '@mantine/core';
-import { useModals } from '@mantine/modals';
 import { useLocalStorage } from '@mantine/hooks';
 
 import { showNotification } from '@mantine/notifications';
@@ -41,7 +39,6 @@ import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import { useRouter } from 'next/router';
 
-import { applicationApi } from 'resources/application';
 import TestConfigurationCreateModal from './components/configuration-create-modal';
 import ConfigurationRemoveModal from './components/configuration-remove-modal';
 import FeatureFlagDescription from './components/feature-flag-description';
@@ -54,7 +51,6 @@ const schema = yup.object().shape({
 
 const FeatureFlag = () => {
   const router = useRouter();
-  const modals = useModals();
   const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
 
   const [isConfigurationCreateModalOpened, setIsConfigurationCreateModalOpened] = useState(false);
@@ -67,14 +63,7 @@ const FeatureFlag = () => {
   const { id } = router.query;
 
   const { data: feature, refetch, isIdle } = featureFlagApi.useGetById({ _id: id, env });
-  const { data: application } = applicationApi.useGetApplication();
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
-
-  const confirmModalText = (
-    <Text size="sm">
-      This will reset access for all currently enabled users. Are you sure?
-    </Text>
-  );
 
   useEffect(() => {
     if (!isIdle) {
@@ -141,7 +130,7 @@ const FeatureFlag = () => {
   const toggleFeatureStatusMutation = featureFlagApi.useToggleFeatureStatusOnSettingsPage();
 
   // TODO: Disable feature toggler during request / add loader?
-  const updateEnabled = (data) => toggleFeatureStatusMutation.mutate(data, {
+  const handleSwitchChange = useCallback((data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: ({ enabled }) => {
       showNotification({
         title: 'Success',
@@ -150,25 +139,11 @@ const FeatureFlag = () => {
       });
     },
     onError: (e) => handleError(e, setError),
-  });
-
-  const handleSwitchChange = (value) => {
-    if (isFeaturePercentOfUsersOn && !feature.enabledForEveryone) {
-      modals.openConfirmModal({
-        title: `${value.enabled ? 'Disable' : 'Enable'} feature`,
-        centered: true,
-        children: confirmModalText,
-        labels: { confirm: 'Confirm', cancel: 'Cancel' },
-        onConfirm: () => updateEnabled(value),
-      });
-    } else {
-      updateEnabled(value);
-    }
-  };
+  }), [setError, toggleFeatureStatusMutation]);
 
   const changeFeatureVisibilityMutation = featureFlagApi.useChangeFeatureVisibility();
 
-  const changeFeatureVisibility = useCallback((visibility) => {
+  const handleFeatureVisibilityChange = useCallback((visibility) => {
     const enabledForEveryone = visibility === 'everyone';
     const reqData = { _id: feature._id, enabledForEveryone, env: feature.env };
 
@@ -198,23 +173,9 @@ const FeatureFlag = () => {
     });
   }, [changeFeatureVisibilityMutation, feature?._id, feature?.env, feature?.name, setError]);
 
-  const handleFeatureVisibilityChange = (value) => {
-    if (isFeaturePercentOfUsersOn) {
-      modals.openConfirmModal({
-        title: 'Change visibility',
-        centered: true,
-        children: confirmModalText,
-        labels: { confirm: 'Confirm', cancel: 'Cancel' },
-        onConfirm: () => changeFeatureVisibility(value),
-      });
-    } else {
-      changeFeatureVisibility(value);
-    }
-  };
-
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const changeUsersPercent = useCallback((percentage) => changeUsersPercentageMutation.mutate({
+  const handleUsersPercentageChange = useCallback((percentage) => changeUsersPercentageMutation.mutate({
     _id: feature._id,
     percentage,
     env: feature.env,
@@ -228,20 +189,6 @@ const FeatureFlag = () => {
     },
     onError: (e) => handleError(e, setError),
   }), [changeUsersPercentageMutation, feature?._id, feature?.env, setError]);
-
-  const handleUsersPercentageChange = (value) => {
-    if (isFeaturePercentOfUsersOn) {
-      modals.openConfirmModal({
-        title: 'Change users percent',
-        centered: true,
-        children: confirmModalText,
-        labels: { confirm: 'Confirm', cancel: 'Cancel' },
-        onConfirm: () => changeUsersPercent(value),
-      });
-    } else {
-      changeUsersPercent(value);
-    }
-  };
 
   const handelConfigurationEdit = useCallback((configurationId) => () => {
     const test = _find(feature?.tests, { _id: configurationId });
@@ -318,25 +265,19 @@ const FeatureFlag = () => {
                 <Divider my="sm" mt={0} />
 
                 {isFeaturePercentOfUsersOn && (
-                <>
-                  <Stack sx={{ maxWidth: '200px' }}>
-                    <Select
-                      label={
-                        <Title order={4}>Percentage of users</Title>
+                <Stack sx={{ maxWidth: '200px' }}>
+                  <Select
+                    label={
+                      <Title order={4}>Percentage of users</Title>
                     }
-                      placeholder="Select a percentage"
-                      clearable
-                      value={usersPercentageValue}
-                      data={percentageSelectList}
-                      disabled={feature.enabledForEveryone}
-                      onChange={handleUsersPercentageChange}
-                    />
-                  </Stack>
-
-                  {/* TODO: add link to the docs */}
-                  { !feature.enabledForEveryone && application && !application.trackEnabled
-                  && <Alert color="yellow">% of users can not be used, before implementing feature tracking</Alert>}
-                </>
+                    placeholder="Select a percentage"
+                    clearable
+                    value={usersPercentageValue}
+                    data={percentageSelectList}
+                    disabled={feature.enabledForEveryone}
+                    onChange={handleUsersPercentageChange}
+                  />
+                </Stack>
                 )}
 
                 <TextInput
