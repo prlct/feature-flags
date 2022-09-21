@@ -18,7 +18,6 @@ import {
   ScrollArea,
   UnstyledButton,
   ActionIcon,
-  Modal,
   Menu,
 } from '@mantine/core';
 import { useModals } from '@mantine/modals';
@@ -42,8 +41,6 @@ const Home = () => {
 
   const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
-  const [isFeatureDeleteModalOpened, setIsFeatureDeleteModalOpened] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState(null);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
@@ -73,7 +70,7 @@ const Home = () => {
   const deleteFeatureMutation = featureFlagApi.useDeleteFeature();
 
   // TODO: Disable feature toggler during request / add loader ?
-  const updateEnabled = (data) => toggleFeatureStatusMutation.mutate(data, {
+  const handleSwitchChange = (data) => toggleFeatureStatusMutation.mutate(data, {
     onSuccess: (item) => {
       showNotification({
         title: 'Success',
@@ -84,44 +81,35 @@ const Home = () => {
     onError: (e) => handleError(e),
   });
 
-  const handleSwitchChange = ({ _id, enabled, enabledForEveryone, name, env }) => {
-    const value = { _id, enabled, name, env };
-    if (growthFlags && growthFlags.isOn('percentOfUsers') && !enabledForEveryone) {
-      modals.openConfirmModal({
-        title: `${enabled ? 'Disable' : 'Enable'} feature`,
-        centered: true,
-        children: (
-          <Text size="sm">
-            This will reset access for all currently enabled users. Are you sure?
-          </Text>),
-        labels: { confirm: 'Confirm', cancel: 'Cancel' },
-        onConfirm: () => updateEnabled(value),
-      });
-    } else {
-      updateEnabled(value);
-    }
-  };
-
-  const handleSelectFeatureToDelete = (feature) => {
-    setSelectedFeature(feature);
-    setIsFeatureDeleteModalOpened(true);
-  };
-
-  const handleDeleteModalClose = () => {
-    setIsFeatureDeleteModalOpened(false);
-    setSelectedFeature(null);
-  };
-
-  const handleDeleteFeature = (id) => {
+  const deleteFeature = (id) => {
     deleteFeatureMutation.mutate({ _id: id }, {
       onSuccess: () => {
-        handleDeleteModalClose();
         showNotification({
           title: 'Success',
           message: 'Feature flag has been successfully deleted.',
           color: 'green',
         });
       },
+    });
+  };
+
+  const handleFeatureDelete = (feature) => {
+    modals.openConfirmModal({
+      title: (<Title order={3}>Delete feature flag</Title>),
+      centered: true,
+      children: (
+        <Text>
+          Feature flag
+          {' '}
+          <Text weight={700} component="span">{feature?.name}</Text>
+          {' '}
+          will be deleted for ALL environments. Are you sure?
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      onConfirm: () => deleteFeature(feature._id),
     });
   };
 
@@ -229,7 +217,6 @@ const Home = () => {
                                 onChange={() => handleSwitchChange({
                                   _id,
                                   enabled,
-                                  enabledForEveryone,
                                   name,
                                   env })}
                               />
@@ -269,7 +256,7 @@ const Home = () => {
                               <Menu.Item
                                 icon={<IconTrash size={14} />}
                                 color="red"
-                                onClick={() => handleSelectFeatureToDelete({ _id, name })}
+                                onClick={() => handleFeatureDelete({ _id, name })}
                               >
                                 Delete
                               </Menu.Item>
@@ -296,26 +283,6 @@ const Home = () => {
         opened={isFeatureCreateModalOpened}
         onClose={() => setIsFeatureCreateModalOpened(false)}
       />
-      <Modal
-        centered
-        opened={isFeatureDeleteModalOpened}
-        title={<Title order={3}>Delete feature flag</Title>}
-        onClose={handleDeleteModalClose}
-      >
-        <Stack>
-          <Text>
-            Feature flag
-            {' '}
-            <Text weight={700} component="span">{selectedFeature?.name}</Text>
-            {' '}
-            will be deleted for ALL environments. Are you sure?
-          </Text>
-          <Group position="right">
-            <Button variant="subtle" onClick={handleDeleteModalClose}>Cancel</Button>
-            <Button color="red" variant="subtle" onClick={() => handleDeleteFeature(selectedFeature._id)}>Delete</Button>
-          </Group>
-        </Stack>
-      </Modal>
     </>
   );
 };

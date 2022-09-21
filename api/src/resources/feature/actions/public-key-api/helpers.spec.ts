@@ -1,12 +1,7 @@
-const mockCountDocuments = jest.fn();
-
-import { calculateFlagsForUser, UserData } from './get-features-for-user';
+import * as helpers from './helpers';
+import type { UserData } from './types';
 import type { FlatFeature } from '../../feature.types';
-import { Application, Env } from 'resources/application';
-
-jest.mock('../../../user-event/user-event.service', () => ({
-  countDocuments: mockCountDocuments,
-}));
+import { Env } from 'resources/application';
 
 const USER_TEST_EMAIL = 'test@email.com';
 const USER_TEST_EMAIL_1 = 'test1@email.com';
@@ -85,28 +80,6 @@ const makeUser = (email?: string) => {
   } as UserData;
 };
 
-const makeUserWithoutId = (email?: string) => {
-  if (!email) return null;
-
-  return {
-    email,
-  } as UserData;
-};
-
-
-const makeApplication = (totalUsersCount: number, trackEnabled = true) => {
-  return {
-    _id: '1',
-    envs: {
-      [Env.DEVELOPMENT]: {
-        totalUsersCount,
-      },
-    },
-    trackEnabled,
-  } as Application;
-};
-
-const application = makeApplication(100);
 describe('calculateFlagsForUser', () => {
   describe('for empty features array', () => {
     const values: Array<{ features: FlatFeature[], email?: string }> = [
@@ -115,7 +88,7 @@ describe('calculateFlagsForUser', () => {
     ];
 
     test.each(values)('should return empty object', async ({ features, email }) => {
-      await expect(calculateFlagsForUser(features, application, makeUser(email))).resolves.toEqual({});
+      await expect(helpers.calculateFlagsForUser(features, makeUser(email))).resolves.toEqual({});
     });
   });
 
@@ -133,7 +106,7 @@ describe('calculateFlagsForUser', () => {
         [featureEnabledForPercentOfUsers.name]: false,
         [featureEnabledForEmail.name]: false,
       };
-      await expect(calculateFlagsForUser(initialFeatures, application, null)).resolves.toEqual(expectedResult);
+      await expect(helpers.calculateFlagsForUser(initialFeatures, null)).resolves.toEqual(expectedResult);
     });
   });
 
@@ -147,7 +120,7 @@ describe('calculateFlagsForUser', () => {
     };
 
     test('should return true for features enabled for everyone', async () => {
-      await expect(calculateFlagsForUser(initialFeatures, application, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
   });
@@ -162,7 +135,7 @@ describe('calculateFlagsForUser', () => {
     };
 
     test('should return false for features disabled for everyone', async () => {
-      await expect(calculateFlagsForUser(initialFeatures, application, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
   });
@@ -176,7 +149,7 @@ describe('calculateFlagsForUser', () => {
       const expectedResult = {
         [featureEnabledForEmail.name]: true,
       };
-      await expect(calculateFlagsForUser(initialFeatures, application, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
 
@@ -184,76 +157,52 @@ describe('calculateFlagsForUser', () => {
       const expectedResult = {
         [featureEnabledForEmail.name]: false,
       };
-      await expect(calculateFlagsForUser(initialFeatures, application, makeUser(USER_TEST_EMAIL_1)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL_1)))
         .resolves.toEqual(expectedResult);
     });
   });
 
   describe('for features enabled for selected percent of users', () => {
+    beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      helpers.calculateRemainderByUserData = jest.fn();
+    });
+    const PERCENT = 20;
     const initialFeatures: Array<FlatFeature> = [
       { 
         ...featureEnabledForPercentOfUsers,
-        usersPercentage: 20,
-        usersViewedCount: 20,
+        usersPercentage: PERCENT,
       },
     ];
 
-    const application1 = makeApplication(100);
-
-    test('should return true for the user who hasn\'t seen the feature when viewed percent is < selected', async () => {
-      const application2 = makeApplication(1000);
-
+    test.each([0, PERCENT - 1])(`should return true if remainder (%i) < selected percent ${PERCENT}`, async (value) => {
       const expectedResult = {
         [featureEnabledForPercentOfUsers.name]: true,
       };
-
-      await expect(calculateFlagsForUser(initialFeatures, application2, makeUser(USER_TEST_EMAIL_1)))
-        .resolves.toEqual(expectedResult);
-    });
   
-    test('should return true for the user who has already seen the feature', async () => {
-      const expectedResult = {
-        [featureEnabledForPercentOfUsers.name]: true,
-      };
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      helpers.calculateRemainderByUserData.mockReturnValueOnce(value);
 
-      mockCountDocuments.mockResolvedValue(1);
-
-      await expect(calculateFlagsForUser(initialFeatures, application1, makeUser(USER_TEST_EMAIL_1)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
 
-    test('should return false for the user who hasn\'t seen the feature', async () => {
-      const expectedResult = {
-        [featureEnabledForPercentOfUsers.name]: false,
-      };
-
-      mockCountDocuments.mockResolvedValue(0);
-
-      await expect(calculateFlagsForUser(initialFeatures, application1, makeUser(USER_TEST_EMAIL_1)))
-        .resolves.toEqual(expectedResult);
-    });
-
-    test('should return false for the user who is not saved to users collection', async () => {
-      const expectedResult = {
-        [featureEnabledForPercentOfUsers.name]: false,
-      };
-
-      mockCountDocuments.mockResolvedValue(0);
-
-      await expect(calculateFlagsForUser(initialFeatures, application1, makeUserWithoutId(USER_TEST_EMAIL_1)))
-        .resolves.toEqual(expectedResult);
-    });
-
-    describe('when trackEnabled is false in the application', () => {
-      const application2 = makeApplication(100, false);
-      test('should return false', async () => {
+    test.each([PERCENT, PERCENT + 1])(
+      `should return false if remainder (%i) >= selected percent ${PERCENT}`, 
+      async (value) => {
         const expectedResult = {
           [featureEnabledForPercentOfUsers.name]: false,
         };
-  
-        await expect(calculateFlagsForUser(initialFeatures, application2, makeUser(USER_TEST_EMAIL_1)))
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        helpers.calculateRemainderByUserData.mockReturnValueOnce(value);
+
+        await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
           .resolves.toEqual(expectedResult);
-      });
-    });
+      },
+    );
   });
 });
