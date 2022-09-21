@@ -71,6 +71,8 @@ export type FeatureOverride = {
   enabled: boolean;
 }
 
+const isBrowser = typeof window !== 'undefined';
+
 class FeatureFlags {
   private _apiKey: string;
   private _env: string;
@@ -95,11 +97,13 @@ class FeatureFlags {
         await this._createUser(user.email);
     } 
 
-    const storageData = this._getFromLocalStorage();
+    if (isBrowser) {
+      const storageData = this._getFromLocalStorage();
 
-    if (storageData) {
-      this._features = storageData.features || {};
-      this._configs = storageData.configs || {};
+      if (storageData) {
+        this._features = storageData.features || {};
+        this._configs = storageData.configs || {};
+      }
     }
     
     return this._fetchFlags();
@@ -172,7 +176,9 @@ class FeatureFlags {
       this._features = this.mergeFeatures(features);
       this._configs = response.configs || {};
 
-      this._saveToLocalStorage(response);
+      if (isBrowser) {
+        this._saveToLocalStorage(response);
+      }
     } catch(error) {
       console.log(consoleLogPrefix, error);
     }
@@ -191,7 +197,10 @@ class FeatureFlags {
       const response = await apiService.post(`${userResource}`, data, config);
 
       this._user = response;
-      this._saveToLocalStorage({ user: response })
+      
+      if (isBrowser) {
+        this._saveToLocalStorage({ user: response })
+      }
     } catch(error) {
       console.log(consoleLogPrefix, error);
     }
