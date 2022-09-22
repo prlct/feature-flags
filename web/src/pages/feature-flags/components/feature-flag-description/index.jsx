@@ -13,7 +13,7 @@ const schema = yup.object().shape({
   description: yup.string().trim().max(300),
 });
 
-const FeatureFlagDescription = ({ featureFlag }) => {
+const FeatureFlagDescription = ({ feature }) => {
   const {
     register,
     handleSubmit,
@@ -22,7 +22,7 @@ const FeatureFlagDescription = ({ featureFlag }) => {
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      description: featureFlag.description,
+      description: feature.description,
     },
     resolver: yupResolver(schema),
   });
@@ -30,10 +30,10 @@ const FeatureFlagDescription = ({ featureFlag }) => {
   const updateDescriptionMutation = featureFlagApi.useUpdateDescription();
 
   const onChange = useCallback((data) => {
-    updateDescriptionMutation.mutate({ _id: featureFlag._id, ...data }, {
+    updateDescriptionMutation.mutate({ _id: feature._id, ...data }, {
       onError: (e) => handleError(e, setError),
     });
-  }, [featureFlag._id, setError, updateDescriptionMutation]);
+  }, [feature._id, setError, updateDescriptionMutation]);
 
   const onChangeDebounced = useMemo(
     () => debounce(handleSubmit(onChange), 1000),
@@ -55,7 +55,7 @@ const FeatureFlagDescription = ({ featureFlag }) => {
 };
 
 FeatureFlagDescription.propTypes = {
-  featureFlag: PropTypes.shape({
+  feature: PropTypes.shape({
     _id: string,
     description: string,
   }).isRequired,
