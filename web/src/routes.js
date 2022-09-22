@@ -26,6 +26,7 @@ export const route = {
   featureFlag: '/feature-flags/[id]',
   apiKey: '/api-key',
   members: '/members',
+  subscriptionPlans: '/subscription-plans',
 };
 
 export const path = {
@@ -105,6 +106,11 @@ export const configuration = {
   },
   members: {
     route: route.members,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  subscriptionPlans: {
+    route: route.subscriptionPlans,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

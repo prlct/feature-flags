@@ -10,8 +10,10 @@ import { LogoImage } from 'public/images';
 
 import AdminMenu from './components/AdminMenu';
 import EnvSelect from './components/EnvSelect';
+import Banner from './components/Banner';
 
 const Header = () => (
+  <>
   <LayoutHeader
     component="header"
     height={72}
@@ -43,6 +45,8 @@ const Header = () => (
       <AdminMenu />
     </Group>
   </LayoutHeader>
+  <Banner />
+  </>
 );
 
 export default memo(Header);

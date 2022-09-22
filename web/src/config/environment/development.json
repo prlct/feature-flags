@@ -1,4 +1,8 @@
 {
   "apiUrl": "http://localhost:3001",
-  "webUrl": "http://localhost:3002"
+  "webUrl": "http://localhost:3002",
+  "subscriptions": {
+    "starter": "prod_MU70yW2A2efFsK",
+    "pro": "prod_MU71Wdf7YAE54u"
+  }
 }

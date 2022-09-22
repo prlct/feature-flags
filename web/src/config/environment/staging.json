@@ -1,4 +1,8 @@
 {
   "apiUrl": "https://ship-api-staging.paralect.net",
-  "webUrl": "https://ship-staging.paralect.net"
+  "webUrl": "https://ship-staging.paralect.net",
+  "subscriptions": {
+    "starter": "prod_MU70yW2A2efFsK",
+    "pro": "prod_MU71Wdf7YAE54u"
+  }
 }

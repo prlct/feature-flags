@@ -1,4 +1,8 @@
 {
   "apiUrl": "https://api.growthflags.com",
-  "webUrl": "https://app.growthflags.com"
+  "webUrl": "https://app.growthflags.com",
+  "subscriptions": {
+    "starter": "replace_with_product_id",
+    "pro": "replace_with_product_id"
+  }
 }
