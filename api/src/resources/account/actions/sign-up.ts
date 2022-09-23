@@ -8,6 +8,7 @@ import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 import { applicationService, Env } from 'resources/application';
 import slackService from 'services/slack.service';
+import mailerLiteService from 'services/mailerlite.service';
 
 const schema = Joi.object({
   firstName: Joi.string()
@@ -118,8 +119,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     ),
   ]);
 
+  const name = `${firstName} ${lastName}`.trim();
 
-  slackService.send(`${firstName} ${lastName} just signed up! Reach out by email: ${email}.`);
+  slackService.send(`${name} just signed up! Reach out by email: ${email}.`);
+  mailerLiteService.addOnboardingSubscriber({ email, name });
 
   ctx.body = {};
 }
