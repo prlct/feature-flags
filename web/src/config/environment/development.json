@@ -2,7 +2,7 @@
   "apiUrl": "http://localhost:3001",
   "webUrl": "http://localhost:3002",
   "subscriptions": {
-    "starter": "prod_MU70yW2A2efFsK",
-    "pro": "prod_MU71Wdf7YAE54u"
+    "starter": "price_1Ll8mbDgd1tzhAXhBQ03Zw0u",
+    "pro": "price_1Ll8n9Dgd1tzhAXh2HpVWooa"
   }
 }

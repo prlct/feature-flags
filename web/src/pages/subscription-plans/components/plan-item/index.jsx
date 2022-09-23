@@ -13,9 +13,12 @@ import {
 } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
 
+import { subscriptionApi } from 'resources/subscription';
+
 import { useStyles } from './styles';
 
 const PlanItem = (props) => {
+  const subscribeMutation = subscriptionApi.useSubscribe();
   const { classes } = useStyles();
 
   const priceText = useMemo(() => {
@@ -32,8 +35,9 @@ const PlanItem = (props) => {
   }, [props.price]);
 
   const renderFeatureList = useCallback(() =>
-    props.features.map((item) => (
+    props.features.map((item, index) => (
       <Container
+        key={index}
         fluid
         sx={{
           display: 'flex',
@@ -60,8 +64,8 @@ const PlanItem = (props) => {
   );
 
   const onClick = useCallback(() => {
-    props.onSelectPlan(props.id);
-  }, [props.id, props.onClick]);
+    subscribeMutation.mutate(props.id);
+  }, [props.id]);
 
   return (
     <MediaQuery smallerThan="sm" styles={{ flex: '1 1 100%' }}>

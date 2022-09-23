@@ -14,5 +14,7 @@
     "bucket": "yourBucket"
   },
   "adminKey": "replaceWithSecureApiKey",
-  "MAGIC_SECRET_KEY": "configure in local.ts file"
+  "MAGIC_SECRET_KEY": "configure in local.ts file",
+  "STRIPE_API_KEY": "configure in local.ts file",
+  "STRIPE_WEBHOOK_SECRET": "configure in local.ts file"
 }
