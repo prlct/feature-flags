@@ -21,6 +21,8 @@ const base = {
   MAGIC_SECRET_KEY: process.env.MAGIC_SECRET_KEY || '',
   slackWebhookUrl: process.env.SLACK_WEBHOOK_URL || '',
   mailerliteSecret: process.env.MAILERLITE_SECRET || '',
+  STRIPE_API_KEY: process.env.STRIPE_API_KEY || '',
+  STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);

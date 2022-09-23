@@ -8,6 +8,7 @@ import applicationRoutes from 'resources/application/application.routes';
 import companyRoutes from 'resources/company/company.routes';
 import userRoutes from 'resources/user/user.routes';
 import userEvents from 'resources/user-event/user-event.routes';
+import subscription from 'resources/subscription/subscription.routes';
 
 import auth from './middlewares/auth.middleware';
 
@@ -19,4 +20,5 @@ export default (app: AppKoa) => {
   app.use(mount('/feature-flags', featureRoutes.externalRoutes));
   app.use(mount('/users', userRoutes.externalRoutes));
   app.use(mount('/user-events', userEvents.externalRoutes));
+  app.use(mount('/subscriptions', subscription.privateRoutes));
 };
