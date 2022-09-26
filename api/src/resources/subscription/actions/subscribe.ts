@@ -30,7 +30,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       quantity: 1,
       price: priceId,
     }],
-    success_url: config.webUrl,
+    success_url: `${config.webUrl}?subscriptionPlan=${priceId}`,
     cancel_url: config.webUrl,
   });
 

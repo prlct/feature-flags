@@ -35,6 +35,7 @@ import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
+import PaymentSuccessModal from './components/payment-sucess-modal';
 
 const Home = () => {
   const modals = useModals();
@@ -283,6 +284,8 @@ const Home = () => {
         opened={isFeatureCreateModalOpened}
         onClose={() => setIsFeatureCreateModalOpened(false)}
       />
+
+      <PaymentSuccessModal />
     </>
   );
 };
