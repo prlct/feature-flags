@@ -7,6 +7,7 @@ const DATABASE_DOCUMENTS = {
   USERS: 'users',
   INVITATIONS: 'invitations',
   USER_EVENTS: 'user-events',
+  SUBSCRIPTIONS: 'subscriptions',
 };
 
 const COOKIES = {
