@@ -18,8 +18,18 @@ import { subscriptionApi } from 'resources/subscription';
 import { useStyles } from './styles';
 
 const PlanItem = (props) => {
-  const subscribeMutation = subscriptionApi.useSubscribe();
   const { classes } = useStyles();
+
+  const subscribeMutation = subscriptionApi.useSubscribe();
+  const { data: currentSubscription } = subscriptionApi.useGetCurrent();
+
+  const isCurrentSubscription = useMemo(() => {
+    if (!currentSubscription) {
+      return '0' === props.id
+    }
+
+    return currentSubscription.planId === props.id
+  }, [currentSubscription?.planId, props.id]);
 
   const priceText = useMemo(() => {
     if (props.price) {
@@ -28,7 +38,7 @@ const PlanItem = (props) => {
           <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price}</Text>
           <Text sx={{ display: 'inline' }} size="md">/month</Text>
         </>
-      )
+      );
     }
 
     return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>
@@ -82,10 +92,23 @@ const PlanItem = (props) => {
 
         <Space h={64} />
 
-        <Button fullWidth onClick={onClick}>Get {props.title}</Button>
+        <Button disabled={isCurrentSubscription} fullWidth onClick={onClick}>
+          {isCurrentSubscription ? 'Current plan' : `Get ${props.title}`}
+        </Button>
       </Card>
     </MediaQuery>
   );
+};
+
+PlanItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
+  features: PropTypes.arrayOf(PropTypes.node),
+};
+
+PlanItem.defaultProps = {
+  features: [],
 };
 
 export default memo(PlanItem);
