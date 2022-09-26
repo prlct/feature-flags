@@ -19,10 +19,13 @@ type ValidatedData = {
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
+  const { admin } = ctx.state;
   const { priceId } = ctx.validatedData;
 
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
+    customer: admin.stripeId || undefined,
+    customer_email: !admin.stripeId ? admin.email : undefined,
     line_items: [{
       quantity: 1,
       price: priceId,

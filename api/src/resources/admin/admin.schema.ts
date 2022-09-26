@@ -12,6 +12,7 @@ const schema = Joi.object({
   ownCompanyId: Joi.string().allow(null),
   companyIds: Joi.array().items(Joi.string()).max(1).unique(),
   applicationIds: Joi.array().items(Joi.string()).max(1).unique(),
+  stripeId: Joi.string().allow(null),
 
   lastRequestOn: Joi.date(),
   lastLoginOn: Joi.date(),

@@ -8,6 +8,19 @@ import { Admin } from './admin.types';
 
 const service = db.createService<Admin>(DATABASE_DOCUMENTS.ADMINS, { schema });
 
+const attachStripeCustomerId = (data: any) => {
+  service.atomic.updateOne(
+    {
+      email: data.email,
+    },
+    {
+      $set: {
+        stripeId: data.id,
+      },
+    },
+  );
+};
+
 const updateLastRequest = (_id: string) => service.atomic.updateOne(
   { _id },
   {
@@ -40,6 +53,7 @@ const privateFields = [
 const getPublic = (admin: Admin | null) => _.omit(admin, privateFields);
 
 export default Object.assign(service, {
+  attachStripeCustomerId,
   updateLastRequest,
   updateLastLogin,
   getPublic,

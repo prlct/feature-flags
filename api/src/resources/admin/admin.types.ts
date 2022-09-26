@@ -10,6 +10,7 @@ export type Admin = {
   ownCompanyId: string;
   companyIds: string[];
   applicationIds: string[];
+  stripeId: string | null;
 
   lastRequestOn?: Date;
   lastLoginOn: Date;
