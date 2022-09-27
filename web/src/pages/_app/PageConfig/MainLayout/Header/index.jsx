@@ -14,9 +14,10 @@ import EnvSelect from './components/EnvSelect';
 const Header = () => (
   <LayoutHeader
     component="header"
+    height={72}
+    p="sm"
     sx={(theme) => ({
       minHeight: '72px',
-      padding: '0 32px',
       backgroundColor: theme.black,
       display: 'flex',
       alignItems: 'center',
