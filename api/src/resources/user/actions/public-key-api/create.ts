@@ -15,28 +15,31 @@ const schema = Joi.object({
       'string.empty': 'env is required',
     }),
   email: Joi.string().trim(),
+  data: Joi.object(),
 });
 
 type ValidatedData = {
   env: Env;
   email?: string;
+  data: { [key: string]: any }
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { application } = ctx.state;
-  const { env, email } = ctx.validatedData;
+  const { env, email, data } = ctx.validatedData;
   let user = await userService.findOne({ applicationId: application._id, env, email });
 
   if (user) {
     user = await userService.updateOne(
       { applicationId: application._id, env, email }, 
-      () => ({ lastVisitedOn: new Date() }),
+      () => ({ data, lastVisitedOn: new Date() }),
     );
   } else {
     user = await userService.insertOne({ 
       applicationId: application._id, 
       env, 
       email, 
+      data: { ...data, email },
       lastVisitedOn: new Date(), 
     });
   }

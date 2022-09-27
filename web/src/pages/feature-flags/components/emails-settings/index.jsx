@@ -6,7 +6,6 @@ import {
   TextInput,
   Button,
   Stack,
-  ScrollArea,
   ActionIcon,
   Badge,
   Group,
@@ -120,31 +119,29 @@ const EmailsSettings = ({ feature }) => {
         {' '}
         {pluralize('user', feature.users.length)}
       </Text>
-      <ScrollArea style={{ height: 300 }}>
-        <Group spacing="sm">
-          {feature.users.map((user) => (
-            <Badge
-              sx={{ height: 26 }}
-              key={user}
-              variant="outline"
-              rightSection={(
-                <ActionIcon
-                  disabled={feature.enabledForEveryone}
-                  size="xs"
-                  color="blue"
-                  radius="xl"
-                  variant="transparent"
-                  onClick={() => handleEmailDelete(user)}
-                >
-                  <IconX size={16} />
-                </ActionIcon>
+      <Group spacing="sm">
+        {feature.users.map((user) => (
+          <Badge
+            sx={{ height: 26 }}
+            key={user}
+            variant="outline"
+            rightSection={(
+              <ActionIcon
+                disabled={feature.enabledForEveryone}
+                size="xs"
+                color="blue"
+                radius="xl"
+                variant="transparent"
+                onClick={() => handleEmailDelete(user)}
+              >
+                <IconX size={16} />
+              </ActionIcon>
                       )}
-            >
-              {user}
-            </Badge>
-          ))}
-        </Group>
-      </ScrollArea>
+          >
+            {user}
+          </Badge>
+        ))}
+      </Group>
     </Stack>
   );
 };

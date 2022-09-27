@@ -1,8 +1,8 @@
-import { includes } from 'lodash';
+import { includes, isEmpty } from 'lodash';
 import BigNumber from 'bignumber.js';
 import sha1 from 'crypto-js/sha1';
 import type { UserData } from './types';
-import type { FlatFeature } from 'resources/feature';
+import { FlatFeature, TargetingRuleOperator } from 'resources/feature';
 
 export const calculateRemainderByUserData = (email: string) => {
   const hash = sha1(email).toString();
@@ -19,6 +19,7 @@ const calculateFlagForUser = async (
     enabledForEveryone, 
     users, 
     usersPercentage,
+    targetingRules,
   } = feature;
 
   if (!enabled) {
@@ -34,6 +35,24 @@ const calculateFlagForUser = async (
 
     if (isFeatureEnabledForEmail) {
       return true;
+    }
+
+    if (targetingRules) {
+      for (const rule of targetingRules) {
+        const { attribute, operator, value } = rule;
+        
+        if (!isEmpty(attribute) && !isEmpty(value)) {
+          if (operator === TargetingRuleOperator.EQUALS && user?.data?.[attribute] === value) {
+            return true;
+          }
+          
+          if (operator === TargetingRuleOperator.INCLUDES 
+            && Array.isArray(value) 
+            && value.includes(user?.data?.[attribute])){
+            return true;
+          }
+        }
+      }
     }
 
     if (usersPercentage > 0) {
