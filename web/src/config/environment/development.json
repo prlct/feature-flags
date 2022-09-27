@@ -2,7 +2,13 @@
   "apiUrl": "http://localhost:3001",
   "webUrl": "http://localhost:3002",
   "subscriptions": {
-    "starter": "price_1Ll8mbDgd1tzhAXhBQ03Zw0u",
-    "pro": "price_1Ll8n9Dgd1tzhAXh2HpVWooa"
+    "starter": {
+      "month": "price_1Ll8mbDgd1tzhAXhBQ03Zw0u",
+      "year": "price_1LmYOfDgd1tzhAXhWYxjYvAV"
+    },
+    "pro": {
+      "month": "price_1Ll8n9Dgd1tzhAXh2HpVWooa",
+      "year": "price_1LmYPwDgd1tzhAXhWDKamOAr"
+    }
   }
 }

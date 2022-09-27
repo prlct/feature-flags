@@ -8,7 +8,7 @@ export function useGetCurrent() {
 };
 
 export const useSubscribe = () => {
-  const subscribe = (priceId) => apiService.post('subscriptions/subscribe', { priceId });
+  const subscribe = ({ priceId, period }) => apiService.post('subscriptions/subscribe', { priceId, period });
 
   return useMutation(subscribe, {
     onSuccess: (data) => {

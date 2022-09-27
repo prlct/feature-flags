@@ -2,7 +2,13 @@
   "apiUrl": "https://ship-api-staging.paralect.net",
   "webUrl": "https://ship-staging.paralect.net",
   "subscriptions": {
-    "starter": "prod_MU70yW2A2efFsK",
-    "pro": "prod_MU71Wdf7YAE54u"
+    "starter": {
+      "month": "replace_with_price_id",
+      "year": "replace_with_price_id"
+    },
+    "pro": {
+      "month": "replace_with_price_id",
+      "year": "replace_with_price_id"
+    }
   }
 }
