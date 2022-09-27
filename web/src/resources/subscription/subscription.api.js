@@ -8,11 +8,34 @@ export function useGetCurrent() {
 };
 
 export const useSubscribe = () => {
-  const subscribe = ({ priceId, period }) => apiService.post('subscriptions/subscribe', { priceId, period });
+  const subscribe = ({ priceId, interval }) => apiService.post('subscriptions/subscribe', { priceId, interval });
 
   return useMutation(subscribe, {
     onSuccess: (data) => {
       window.location.href = data.checkoutLink;
     }
   });
+};
+
+export const usePreviewUpgradeSubscription = (priceId) => {
+  const preview = () => apiService.get('/subscriptions/preview-upgrade', { priceId });
+
+  return useQuery(['previewUpgrade'], preview);
+};
+
+export const useUpgradeSubscription = () => {
+  const upgrade = ({ priceId }) => apiService.post('subscriptions/upgrade-subscription', { priceId });
+
+  return useMutation(upgrade, {
+    onSuccess: (data) => {
+      console.clear();
+      console.log(data);
+    }
+  });
+};
+
+export const useCancelMutation = () => {
+  const cancel = () => apiService.post('subscriptions/cancel-subscription');
+
+  return useMutation(cancel);
 };
