@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { Textarea } from '@mantine/core';
 import PropTypes, { string } from 'prop-types';
 import { useForm } from 'react-hook-form';
@@ -19,13 +19,18 @@ const FeatureFlagDescription = ({ feature }) => {
     handleSubmit,
     setError,
     formState: { errors },
+    reset,
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      description: feature.description,
+      description: '',
     },
     resolver: yupResolver(schema),
   });
+
+  useEffect(() => {
+    reset({ description: feature.description });
+  }, [feature._id, reset]);
 
   const updateDescriptionMutation = featureFlagApi.useUpdateDescription();
 
