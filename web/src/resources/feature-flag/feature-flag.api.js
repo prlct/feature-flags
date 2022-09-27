@@ -190,3 +190,24 @@ export function useDeleteFeature() {
     },
   });
 }
+
+export function useUpdateTargetingRules() {
+  const updateTargetingRules = (data) => apiService.put(`${resource}/${data._id}/targeting-rules`, data);
+
+  return useMutation(updateTargetingRules, {
+    onMutate: async (item) => {
+      await queryClient.cancelQueries(['featureFlag']);
+
+      const featureFlag = queryClient.getQueryData(['featureFlag']);
+      const previousFeatureFlag = cloneDeep(featureFlag);
+
+      featureFlag.targetingRules = item.targetingRules;
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
+    },
+    onError: (err, item, context) => {
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
+    },
+  });
+}

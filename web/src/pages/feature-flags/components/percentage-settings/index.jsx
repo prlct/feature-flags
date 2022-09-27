@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import {
   Title,
+  Text,
   Stack,
   Select,
 } from '@mantine/core';
@@ -49,17 +50,17 @@ const PercentageSettings = ({ feature }) => {
   }), [changeUsersPercentageMutation, feature?._id, feature?.env]);
 
   return (
-    <Stack sx={{ maxWidth: '200px' }}>
+    <Stack spacing="xs">
+      <Title order={4}>Default feature coverage</Title>
+      <Text size="xs">Show features to the specified percentage of users</Text>
       <Select
-        label={
-          <Title order={4}>Percentage of users</Title>
-    }
         placeholder="Select a percentage"
         clearable
         value={usersPercentageValue}
         data={percentageSelectList}
         disabled={feature.enabledForEveryone}
         onChange={handleUsersPercentageChange}
+        sx={{ maxWidth: '200px' }}
       />
     </Stack>
   );

@@ -12,6 +12,7 @@ import VisibilitySettings from '../visibility-settings';
 import EmailsSettings from '../emails-settings';
 import PercentageSettings from '../percentage-settings';
 import FeatureFlagDescription from '../feature-flag-description';
+import FeatureTargetingRules from '../feature-targeting-rules';
 
 const Settings = ({ featureId, env }) => {
   const growthFlags = useGrowthFlags();
@@ -19,24 +20,34 @@ const Settings = ({ featureId, env }) => {
   const { data: feature } = featureFlagApi.useGetById({ featureId, env });
 
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
+  const isTargetingUsersOn = growthFlags && growthFlags.isOn('targetingRules');
 
   return (
-    <Stack sx={{ maxWidth: '520px' }}>
-      <VisibilitySettings feature={feature} />
+    <Stack spacing={24}>
+      <Stack spacing={24} sx={{ maxWidth: '650px' }}>
+        <VisibilitySettings feature={feature} />
 
-      <Stack>
-        <Title order={4}>Info</Title>
-        <FeatureFlagDescription feature={feature} />
+        <Stack spacing="sm">
+          <Title order={4}>Info</Title>
+          <FeatureFlagDescription feature={feature} />
+        </Stack>
+
+        <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
+        <Divider my="sm" mt={0} />
+
+        {isFeaturePercentOfUsersOn && (
+        <PercentageSettings feature={feature} />
+        )}
+
+        {!isTargetingUsersOn && (<EmailsSettings feature={feature} />)}
       </Stack>
 
-      <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
-      <Divider my="sm" mt={0} />
-
-      {isFeaturePercentOfUsersOn && (
-      <PercentageSettings feature={feature} />
+      {isTargetingUsersOn && (
+      <FeatureTargetingRules
+        feature={feature}
+        sx={{ maxWidth: '1000px' }}
+      />
       )}
-
-      <EmailsSettings feature={feature} />
     </Stack>
   );
 };

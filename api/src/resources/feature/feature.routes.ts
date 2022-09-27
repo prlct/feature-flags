@@ -8,6 +8,7 @@ import changeUsersPercentage from './actions/change-users-percentage';
 import getCurrent from './actions/get-current';
 import enableForUsers from './actions/enable-for-users';
 import disableForUsers from './actions/disable-for-users';
+import updateTargetingRules from './actions/update-targeting-rules';
 
 import getFeatures from './actions/private-key-api/get-features';
 import changeEnabled from './actions/private-key-api/change-enabled';
@@ -24,6 +25,7 @@ const privateRoutes = routeUtil.getRoutes([
   getCurrent,
   enableForUsers,
   disableForUsers,
+  updateTargetingRules,
 ]);
 
 const privateKeyRoutes = [

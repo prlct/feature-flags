@@ -1,6 +1,7 @@
 import * as helpers from './helpers';
 import type { UserData } from './types';
 import type { FlatFeature } from '../../feature.types';
+import { TargetingRuleOperator } from '../../feature.types';
 import { Env } from 'resources/application';
 
 const USER_TEST_EMAIL = 'test@email.com';
@@ -67,6 +68,18 @@ const featureEnabledForPercentOfUsers: FlatFeature = {
   usersPercentage: 20,
   tests: [],
   usersViewedCount: 10,
+  targetingRules: [
+    { 
+      attribute: 'test1',
+      operator: TargetingRuleOperator.EQUALS,
+      value: 'test', 
+    },
+    { 
+      attribute: 'test2',
+      operator: TargetingRuleOperator.INCLUDES,
+      value: ['1', '2'], 
+    },
+  ],
   visibilityChangedOn: new Date('2022-09-14T10:41:02.746Z'),
   env: Env.DEVELOPMENT,
 };
@@ -161,6 +174,50 @@ describe('calculateFlagsForUser', () => {
         .resolves.toEqual(expectedResult);
     });
   });
+
+  describe('for features enabled for the users by targeting rules', () => {
+    const initialFeatures : FlatFeature[] = [
+      featureEnabledForPercentOfUsers,
+    ];
+
+    test('should return true for features enabled by targeting rules', async () => {
+      const expectedResult = {
+        [featureEnabledForPercentOfUsers.name]: true,
+      };
+      const user1 = {
+        ...makeUser(USER_TEST_EMAIL),
+        data: {
+          test1: 'test',
+        }, 
+      } as UserData;
+      await expect(helpers.calculateFlagsForUser(initialFeatures, user1))
+        .resolves.toEqual(expectedResult);
+
+      const user2 = {
+        ...makeUser(USER_TEST_EMAIL),
+        data: {
+          test2: '1',
+        }, 
+      } as UserData;  
+      await expect(helpers.calculateFlagsForUser(initialFeatures, user2))
+        .resolves.toEqual(expectedResult);
+    });
+
+    test('should return false for features enabled by targeting rules', async () => {
+      const expectedResult = {
+        [featureEnabledForPercentOfUsers.name]: false,
+      };
+      const user1 = {
+        ...makeUser(USER_TEST_EMAIL),
+        data: {
+          test1: 'testtest',
+        }, 
+      } as UserData;
+      await expect(helpers.calculateFlagsForUser(initialFeatures, user1))
+        .resolves.toEqual(expectedResult);
+    });
+  });
+
 
   describe('for features enabled for selected percent of users', () => {
     beforeAll(() => {

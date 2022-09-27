@@ -7,12 +7,13 @@ sidebar_position: 2
 Instance method to fetch feature flags.
 
 ```
-fetchFeatureFlags({ email })
+fetchFeatureFlags({ email, data })
 ```
 
 ### Arguments
 
 - `email` - User's email. **Optional**
+- `data` - Additional user's data. Used for enabling features by custom targeting rules. **Optional**
 
 ### Example
 
@@ -24,5 +25,5 @@ const flags = GrowthFlags.create({
   env: 'staging',
 })
 
-const featureFlags = await flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
+const featureFlags = await flags.fetchFeatureFlags({ email: 'john.locke@example.com', data: { companyId: '1' } })
 ```

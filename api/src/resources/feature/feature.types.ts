@@ -1,5 +1,16 @@
 import { Env } from 'resources/application';
 
+export enum TargetingRuleOperator {
+  EQUALS = 'equals',
+  INCLUDES = 'includes',
+}
+
+export type TargetingRule = {
+  attribute: string;
+  operator: TargetingRuleOperator;
+  value: string | string[]
+};
+
 type EnvSettings = {
   enabled: boolean;
   enabledForEveryone: boolean;
@@ -7,6 +18,7 @@ type EnvSettings = {
   usersPercentage: number;
   usersViewedCount: number;
   tests: string[];
+  targetingRules?: TargetingRule[];
   visibilityChangedOn?: Date;
 };
 

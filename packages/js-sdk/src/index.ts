@@ -12,6 +12,7 @@ enum UserEventType {
 
 interface AppUser {
   email?: string;
+  data?: { [key: string]: any }
 }
 
 interface User {
@@ -42,10 +43,14 @@ interface FetchFlagsParams {
   userId?: string
 }
 
-interface CreateUserData {
-  env: string;
+interface CreateUserParams {
   email: string;
+  data?: { [key in string]: any }
 }
+
+type CreateUserData = {
+  env: string;
+} & CreateUserParams
 
 interface CreateUserEventData {
   userId: string;
@@ -94,7 +99,7 @@ class FeatureFlags {
   
   async fetchFeatureFlags(user: AppUser)  {
     if (user?.email) {
-        await this._createUser(user.email);
+        await this._createUser({email: user.email, data: user.data});
     } 
 
     if (isBrowser) {
@@ -184,8 +189,9 @@ class FeatureFlags {
     }
   }
 
-  private async _createUser(email: string) {
-    const data: CreateUserData = { env: this._env, email: email };
+  private async _createUser(user: CreateUserParams) {
+    const { email, data } = user;
+    const reqData: CreateUserData = { env: this._env, email, data };
 
     const config = {
       headers: {
@@ -194,7 +200,7 @@ class FeatureFlags {
     };
 
     try {
-      const response = await apiService.post(`${userResource}`, data, config);
+      const response = await apiService.post(`${userResource}`, reqData, config);
 
       this._user = response;
       

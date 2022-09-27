@@ -5,6 +5,7 @@ const schema = Joi.object({
   applicationId: Joi.string().required(),
   email: Joi.string().required(),
   env: Joi.string().required(),
+  data: Joi.object(),
   lastVisitedOn: Joi.date(),
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

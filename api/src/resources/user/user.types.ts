@@ -5,6 +5,7 @@ export type User = {
   applicationId: string;
   email: string;
   env: Env,
+  data: { [key: string]: any };
   lastVisitedOn: Date,
   createdOn: Date;
   updatedOn: Date;
