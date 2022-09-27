@@ -32,7 +32,7 @@ const PaymentSuccessModal = () => {
   useEffect(() => {
     if (router.query.subscriptionPlan) {
       setOpened(true);
-      setActiveSubscriptionPlan(subscriptionList.find((item) => item.planIds[router.query.period] === router.query.subscriptionPlan));
+      setActiveSubscriptionPlan(subscriptionList.find((item) => item.planIds[router.query.interval] === router.query.subscriptionPlan));
     }
   }, [router.query.subscriptionPlan]);
 

@@ -21,40 +21,43 @@ const PlanItem = (props) => {
   const { classes } = useStyles();
 
   const subscribeMutation = subscriptionApi.useSubscribe();
-  const { data: currentSubscription } = subscriptionApi.useGetCurrent();
 
   const isCurrentSubscription = useMemo(() => {
-    if (!currentSubscription) {
-      return '0' === props.planIds[props.period]
+    if (!props.currentSubscription) {
+      return '0' === props.planIds[props.interval]
     }
 
-    if (currentSubscription.interval === 'year') {
-      return Object.values(props.planIds).includes(currentSubscription.planId);
-    }
-
-    return currentSubscription.planId === props.planIds[props.period];
+    return props.currentSubscription.planId === props.planIds[props.interval];
   }, [
-    currentSubscription?.planId,
-    props.planIds.month,
-    props.planIds.year,
-    props.period
+    props.currentSubscription?.planId,
+    props.interval
+  ]);
+
+  const onClick = useCallback(() => {
+    if (props.currentSubscription) {
+      props.onPrevewUpgrade(props.planIds[props.interval]);
+
+      return;
+    }
+
+    subscribeMutation.mutate({ priceId: props.planIds[props.interval], interval: props.interval });
+  }, [
+    props.interval,
   ]);
 
   const priceText = useMemo(() => {
-    if (props.price[props.period]) {
+    if (props.price[props.interval]) {
       return (
         <>
-          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price[props.period]}</Text>
-          <Text sx={{ display: 'inline' }} size="md">/{props.period}</Text>
+          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price[props.interval]}</Text>
+          <Text sx={{ display: 'inline' }} size="md">/{props.interval}</Text>
         </>
       );
     }
 
     return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>
   }, [
-    props.price.month,
-    props.price.year,
-    props.period
+    props.interval
   ]);
 
   const renderFeatureList = useCallback(() =>
@@ -86,14 +89,6 @@ const PlanItem = (props) => {
     []
   );
 
-  const onClick = useCallback(() => {
-    subscribeMutation.mutate({ priceId: props.planIds[props.period], period: props.period });
-  }, [
-    props.planIds.month,
-    props.planIds.year,
-    props.period,
-  ]);
-
   return (
     <MediaQuery smallerThan="sm" styles={{ flex: '1 1 100%' }}>
       <Card withBorder shadow="md" radius="lg" sx={{ flex: '1 1' }}>
@@ -118,6 +113,9 @@ const PlanItem = (props) => {
 };
 
 PlanItem.propTypes = {
+  currentSubscription: PropTypes.shape({
+    planId: PropTypes.string,
+  }),
   planIds: PropTypes.shape({
     month: PropTypes.string.isRequired,
     year: PropTypes.string.isRequired
@@ -128,10 +126,12 @@ PlanItem.propTypes = {
     year: PropTypes.number.isRequired,
   }),
   features: PropTypes.arrayOf(PropTypes.node),
-  period: PropTypes.oneOf('month', 'year').isRequired,
+  interval: PropTypes.oneOf(['month', 'year']).isRequired,
+  onPrevewUpgrade: PropTypes.func.isRequired,
 };
 
 PlanItem.defaultProps = {
+  currentSubscription: null,
   features: [],
 };
 
