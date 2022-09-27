@@ -4,6 +4,7 @@ export type Subscription = {
   planId: string,
   customer: string,
   status: string,
+  interval: string,
   startDate: Date,
   endDate: Date,
   cancelAtPeriodEnd: boolean,

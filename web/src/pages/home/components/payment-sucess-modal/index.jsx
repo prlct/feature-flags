@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Confetti from 'react-confetti'
 import {
@@ -32,7 +32,7 @@ const PaymentSuccessModal = () => {
   useEffect(() => {
     if (router.query.subscriptionPlan) {
       setOpened(true);
-      setActiveSubscriptionPlan(subscriptionList.find((item) => item.id === router.query.subscriptionPlan));
+      setActiveSubscriptionPlan(subscriptionList.find((item) => item.planIds[router.query.period] === router.query.subscriptionPlan));
     }
   }, [router.query.subscriptionPlan]);
 
@@ -69,6 +69,7 @@ const PaymentSuccessModal = () => {
     <>
       <Modal
         centered
+        overlayOpacity={0}
         title={
           <Title order={3}>
             Success

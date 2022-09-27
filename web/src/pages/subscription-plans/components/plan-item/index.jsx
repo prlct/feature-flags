@@ -25,24 +25,37 @@ const PlanItem = (props) => {
 
   const isCurrentSubscription = useMemo(() => {
     if (!currentSubscription) {
-      return '0' === props.id
+      return '0' === props.planIds[props.period]
     }
 
-    return currentSubscription.planId === props.id
-  }, [currentSubscription?.planId, props.id]);
+    if (currentSubscription.interval === 'year') {
+      return Object.values(props.planIds).includes(currentSubscription.planId);
+    }
+
+    return currentSubscription.planId === props.planIds[props.period];
+  }, [
+    currentSubscription?.planId,
+    props.planIds.month,
+    props.planIds.year,
+    props.period
+  ]);
 
   const priceText = useMemo(() => {
-    if (props.price) {
+    if (props.price[props.period]) {
       return (
         <>
-          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price}</Text>
-          <Text sx={{ display: 'inline' }} size="md">/month</Text>
+          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price[props.period]}</Text>
+          <Text sx={{ display: 'inline' }} size="md">/{props.period}</Text>
         </>
       );
     }
 
     return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>
-  }, [props.price]);
+  }, [
+    props.price.month,
+    props.price.year,
+    props.period
+  ]);
 
   const renderFeatureList = useCallback(() =>
     props.features.map((item, index) => (
@@ -74,8 +87,12 @@ const PlanItem = (props) => {
   );
 
   const onClick = useCallback(() => {
-    subscribeMutation.mutate(props.id);
-  }, [props.id]);
+    subscribeMutation.mutate({ priceId: props.planIds[props.period], period: props.period });
+  }, [
+    props.planIds.month,
+    props.planIds.year,
+    props.period,
+  ]);
 
   return (
     <MediaQuery smallerThan="sm" styles={{ flex: '1 1 100%' }}>
@@ -101,10 +118,17 @@ const PlanItem = (props) => {
 };
 
 PlanItem.propTypes = {
-  id: PropTypes.string.isRequired,
+  planIds: PropTypes.shape({
+    month: PropTypes.string.isRequired,
+    year: PropTypes.string.isRequired
+  }).isRequired,
   title: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
+  price: PropTypes.shape({
+    month: PropTypes.number.isRequired,
+    year: PropTypes.number.isRequired,
+  }),
   features: PropTypes.arrayOf(PropTypes.node),
+  period: PropTypes.oneOf('month', 'year').isRequired,
 };
 
 PlanItem.defaultProps = {

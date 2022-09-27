@@ -12,15 +12,22 @@ const schema = Joi.object({
       'any.required': 'Price id is required',
       'string.empty': 'Price id is required',
     }),
+  period: Joi.string()
+    .allow('month', 'year')
+    .default('month')
+    .messages({
+
+    })
 });
 
 type ValidatedData = {
   priceId: string;
+  period: string;
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { admin } = ctx.state;
-  const { priceId } = ctx.validatedData;
+  const { priceId, period } = ctx.validatedData;
 
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
@@ -30,7 +37,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       quantity: 1,
       price: priceId,
     }],
-    success_url: `${config.webUrl}?subscriptionPlan=${priceId}`,
+    success_url: `${config.webUrl}?subscriptionPlan=${priceId}&period=${period}`,
     cancel_url: config.webUrl,
   });
 
