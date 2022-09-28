@@ -32,6 +32,15 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     return;
   }
 
+  if (priceId === '0') {
+    await stripe.subscriptions.del(currentSubscription.subscriptionId, {
+      prorate: true,
+    });
+
+    ctx.body = {};
+    return;
+  }
+
   const subscriptionDetails = await stripe.subscriptions.retrieve(currentSubscription.subscriptionId);
 
   const items = [{

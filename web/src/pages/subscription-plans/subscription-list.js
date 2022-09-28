@@ -15,8 +15,8 @@ export default [
       <span>Onboarding</span>,
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
-      <span>Up to <b>3</b> product users</span>,
-      <span>Up to <b>2K</b> MAU</span>
+      <span><b>Up to 3</b> product users</span>,
+      <span><b>Up to 2K</b> MAU</span>
     ],
   },
   {
@@ -33,8 +33,8 @@ export default [
       <span>Onboarding</span>,
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
-      <span>Up to <b>10</b> product users</span>,
-      <span>Up to <b>10K</b> MAU</span>
+      <span><b>Up to 10</b> product users</span>,
+      <span><b>Up to 10K</b> MAU</span>
     ],
   },
   {
@@ -52,7 +52,7 @@ export default [
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
       <span><b>Unlimited</b> product users</span>,
-      <span>Up to <b>100K</b> MAU</span>
+      <span><b>Up to 100K</b> MAU</span>
     ],
   },
 ];
