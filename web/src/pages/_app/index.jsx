@@ -13,6 +13,7 @@ import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
 
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
+import Hotjar from './Hotjar';
 
 const App = ({ Component, pageProps }) => (
   <>
@@ -20,6 +21,7 @@ const App = ({ Component, pageProps }) => (
       <title>Growthflags</title>
     </Head>
     <CrispChat />
+    <Hotjar />
     <QueryClientProvider client={queryClient}>
       <MantineProvider
         theme={shipTheme}
