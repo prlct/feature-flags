@@ -1,5 +1,6 @@
 export type UserData = {
-  email: string;
+  email?: string;
+  externalId?: string;
   _id?: string;
   data?: { [key: string] : any };
 };

@@ -84,12 +84,19 @@ const featureEnabledForPercentOfUsers: FlatFeature = {
   env: Env.DEVELOPMENT,
 };
 
-const makeUser = (email?: string) => {
+const makeUserByEmail = (email?: string) => {
   if (!email) return null;
 
   return {
     _id: 'test',
     email,
+  } as UserData;
+};
+
+const makeUser = () => {
+  return {
+    _id: 'test',
+    externalId: '1',
   } as UserData;
 };
 
@@ -101,11 +108,11 @@ describe('calculateFlagsForUser', () => {
     ];
 
     test.each(values)('should return empty object', async ({ features, email }) => {
-      await expect(helpers.calculateFlagsForUser(features, makeUser(email))).resolves.toEqual({});
+      await expect(helpers.calculateFlagsForUser(features, makeUserByEmail(email))).resolves.toEqual({});
     });
   });
 
-  describe('when email is not passed', () => {
+  describe('when user is not passed', () => {
     test('should return true only for features enabled for everyone', async () => {
       const initialFeatures : FlatFeature[] = [
         featureDisabledForEveryone,
@@ -133,7 +140,7 @@ describe('calculateFlagsForUser', () => {
     };
 
     test('should return true for features enabled for everyone', async () => {
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
   });
@@ -148,7 +155,7 @@ describe('calculateFlagsForUser', () => {
     };
 
     test('should return false for features disabled for everyone', async () => {
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
         .resolves.toEqual(expectedResult);
     });
   });
@@ -162,7 +169,21 @@ describe('calculateFlagsForUser', () => {
       const expectedResult = {
         [featureEnabledForEmail.name]: true,
       };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
+        .resolves.toEqual(expectedResult);
+    });
+
+    test('should return true for features enabled for email when email stored in data and matches', async () => {
+      const expectedResult = {
+        [featureEnabledForEmail.name]: true,
+      };
+      const user = {
+        ...makeUser(),
+        data: {
+          email: USER_TEST_EMAIL,
+        },
+      };
+      await expect(helpers.calculateFlagsForUser(initialFeatures, user))
         .resolves.toEqual(expectedResult);
     });
 
@@ -170,7 +191,29 @@ describe('calculateFlagsForUser', () => {
       const expectedResult = {
         [featureEnabledForEmail.name]: false,
       };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL_1)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL_1)))
+        .resolves.toEqual(expectedResult);
+    });
+
+    test('should return false for features enabled for email when email stored in data and does not match', async () => {
+      const expectedResult = {
+        [featureEnabledForEmail.name]: false,
+      };
+      const user = {
+        ...makeUser(),
+        data: {
+          email: USER_TEST_EMAIL_1,
+        },
+      };
+      await expect(helpers.calculateFlagsForUser(initialFeatures, user))
+        .resolves.toEqual(expectedResult);
+    });
+
+    test('should return false for features enabled for email when email is not passed', async () => {
+      const expectedResult = {
+        [featureEnabledForEmail.name]: false,
+      };
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser()))
         .resolves.toEqual(expectedResult);
     });
   });
@@ -185,7 +228,7 @@ describe('calculateFlagsForUser', () => {
         [featureEnabledForPercentOfUsers.name]: true,
       };
       const user1 = {
-        ...makeUser(USER_TEST_EMAIL),
+        ...makeUserByEmail(USER_TEST_EMAIL),
         data: {
           test1: 'test',
         }, 
@@ -194,7 +237,7 @@ describe('calculateFlagsForUser', () => {
         .resolves.toEqual(expectedResult);
 
       const user2 = {
-        ...makeUser(USER_TEST_EMAIL),
+        ...makeUserByEmail(USER_TEST_EMAIL),
         data: {
           test2: '1',
         }, 
@@ -208,7 +251,7 @@ describe('calculateFlagsForUser', () => {
         [featureEnabledForPercentOfUsers.name]: false,
       };
       const user1 = {
-        ...makeUser(USER_TEST_EMAIL),
+        ...makeUserByEmail(USER_TEST_EMAIL),
         data: {
           test1: 'testtest',
         }, 
@@ -240,9 +283,12 @@ describe('calculateFlagsForUser', () => {
   
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      helpers.calculateRemainderByUserData.mockReturnValueOnce(value);
+      helpers.calculateRemainderByUserData.mockReturnValue(value);
 
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
+        .resolves.toEqual(expectedResult);
+      
+      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser()))
         .resolves.toEqual(expectedResult);
     });
 
@@ -255,9 +301,12 @@ describe('calculateFlagsForUser', () => {
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        helpers.calculateRemainderByUserData.mockReturnValueOnce(value);
+        helpers.calculateRemainderByUserData.mockReturnValue(value);
 
-        await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser(USER_TEST_EMAIL)))
+        await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
+          .resolves.toEqual(expectedResult);
+
+        await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser()))
           .resolves.toEqual(expectedResult);
       },
     );

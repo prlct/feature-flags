@@ -17,6 +17,7 @@ export enum UserEventType {
 }
 
 export interface AppUser {
+  id?: string;
   email?: string;
   data?: { [key: string]: any }
 }
@@ -25,6 +26,7 @@ export interface User {
   _id: string;
   applicationId: string;
   email: string;
+  externalId: string;
   env: string,
   lastVisitedOn: Date,
   createdOn: Date;
@@ -45,12 +47,12 @@ export type JSONValue =
 
 export interface FetchFlagsParams {
   env: string;
-  email?: string;
-  userId?: string
+  userId?: string;
 }
 
 export interface CreateUserParams {
-  email: string;
+  id?: string;
+  email?: string;
   data?: { [key in string]: any }
 }
 
@@ -96,8 +98,12 @@ class FeatureFlags {
   }
   
   async fetchFeatureFlags(user: AppUser)  {
-    if (user?.email) {
-        await this._createUser({email: user.email, data: user.data});
+    if (user?.email || user?.id) {
+        await this._createUser({ 
+          id: user.id,
+          email: user.email,
+          data: user.data
+        });
     } 
 
     const storageData = this._getFromStorage();
@@ -160,8 +166,8 @@ class FeatureFlags {
   private async _fetchFlags() {
     const params: FetchFlagsParams = { env: this._env };
 
-    if (this._user && this._user.email) {
-      params.email = this._user.email;
+    if (this._user) {
+      params.userId = this._user._id;
     }
 
     const config = {
@@ -186,8 +192,8 @@ class FeatureFlags {
   }
 
   private async _createUser(user: CreateUserParams) {
-    const { email, data } = user;
-    const reqData: CreateUserData = { env: this._env, email, data };
+    const { id, email, data } = user;
+    const reqData: CreateUserData = { env: this._env, id, email, data };
 
     const config = {
       headers: {

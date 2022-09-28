@@ -4,8 +4,8 @@ import sha1 from 'crypto-js/sha1';
 import type { UserData } from './types';
 import { FlatFeature, TargetingRuleOperator } from 'resources/feature';
 
-export const calculateRemainderByUserData = (email: string) => {
-  const hash = sha1(email).toString();
+export const calculateRemainderByUserData = (id: string) => {
+  const hash = sha1(id).toString();
   const decimal = new BigNumber(hash, 16);
   return decimal.modulo(100).toNumber();
 };
@@ -30,8 +30,8 @@ const calculateFlagForUser = async (
     return true;
   }
 
-  if (user?.email) {
-    const isFeatureEnabledForEmail = includes(users, user.email);
+  if (user) {
+    const isFeatureEnabledForEmail = includes(users, user.email || user.data?.email);
 
     if (isFeatureEnabledForEmail) {
       return true;
@@ -55,8 +55,10 @@ const calculateFlagForUser = async (
       }
     }
 
-    if (usersPercentage > 0) {
-      const remainder = calculateRemainderByUserData(user.email);
+    const externalId = user.externalId || user.email;
+
+    if (usersPercentage > 0 && externalId) {
+      const remainder = calculateRemainderByUserData(externalId);
       if (remainder < usersPercentage) {
         return true;
       }
