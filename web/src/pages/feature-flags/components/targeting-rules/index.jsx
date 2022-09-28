@@ -86,7 +86,7 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
         <Text
           variant="link"
           component="a"
-          href="https://developer.growthflags.com/sdk-api/fetch-feature-flags"
+          href="https://developer.growthflags.com/dynamic-targeting"
           target="_blank"
           inherit
         >
