@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Confetti from 'react-confetti'
 import {
-  Badge,
   Container,
   Modal,
   Stack,
@@ -37,7 +36,7 @@ const PaymentSuccessModal = () => {
   }, [router.query.subscriptionPlan]);
 
   const renderFeatureList = useCallback(() =>
-    activeSubscriptionPlan.features.map((item, index) => (
+  activeSubscriptionPlan.features.map((item, index) => (
       <Container
         key={index}
         fluid
@@ -49,15 +48,7 @@ const PaymentSuccessModal = () => {
           padding: 0,
         }}
       >
-        <Badge
-          variant="filled"
-          classNames={{
-            root: classes.badgeContainer,
-            inner: classes.badgeInner,
-          }}
-        >
-          <IconCheck size={18} />
-        </Badge>
+        <IconCheck size={14} className={classes.icon} />
         <Space w={8} />
         {item}
       </Container>

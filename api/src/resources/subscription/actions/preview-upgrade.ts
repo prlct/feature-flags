@@ -34,10 +34,16 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const subscriptionDetails = await stripe.subscriptions.retrieve(currentSubscription.subscriptionId);
 
-  const items = [{
-    id: subscriptionDetails.items.data[0].id,
-    price: priceId,
-  }];
+  let items: any;
+
+  if (priceId === '0') {
+    items = [];
+  } else {
+    items = [{
+      id: subscriptionDetails.items.data[0].id,
+      price: priceId,
+    }];
+  }
 
   const invoice = await stripe.invoices.retrieveUpcoming({
     customer: admin.stripeId || undefined,

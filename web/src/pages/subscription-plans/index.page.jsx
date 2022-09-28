@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react';
 import Head from 'next/head';
 import {
-  Button,
+  Badge,
   Group,
-  Text,
+  SegmentedControl,
   Space,
+  Stack,
+  Text,
+  Title,
 } from '@mantine/core';
 
 import { subscriptionApi } from 'resources/subscription';
@@ -22,7 +25,7 @@ const SubscriptionPlans = () => {
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
   const renderItems = useCallback(() =>
-    subscriptionList.map((item) => 
+    subscriptionList.map((item) =>
       <PlanItem
         key={item.planIds[interval]}
         currentSubscription={currentSubscription}
@@ -31,9 +34,9 @@ const SubscriptionPlans = () => {
         {...item}
       />
     ), [
-      interval,
-      currentSubscription
-    ]);
+    interval,
+    currentSubscription
+  ]);
 
   const onClosePreview = useCallback(() => setSelectedUpgradePlan(undefined), []);
 
@@ -42,36 +45,61 @@ const SubscriptionPlans = () => {
       <Head>
         <title>Pricing plans</title>
       </Head>
-      <Group
+      <Stack
+        align="center"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
-        <Text size="lg" sx={{ flex: '1 1 100%' }} align="center">You can change your plan or cancel any time.</Text>
+        <Title align="center">Pricing plans</Title>
+        <Text size="sm">
+          <Badge color="orange" sx={{ marginRight: '8px' }}>Save up to 15%</Badge>
+          with yearly subscription
+        </Text>
+        <Space h={16} />
 
-        <Button variant={interval === 'year' ? 'light' : 'subtle'} onClick={() => setInterval('year')}>Pay Yearly</Button>
-        <Button variant={interval === 'month' ? 'light' : 'subtle'} onClick={() => setInterval('month')}>Pay Monthly</Button>
+        <SegmentedControl
+          size="md"
+          value={interval}
+          data={[
+            { label: 'Yearly', value: 'year' },
+            { label: 'Monthly', value: 'month' },
+          ]}
+          onChange={setInterval}
+        />
+      </Stack>
 
-        <Text size="sm" sx={{ flex: '1 1 100%' }}>Save up to <b>15%</b> with yearly subscription</Text>
-      </Group>
-      <Space h={32} />
+      <Space h={48} />
+
       <Group
         grow
+        component="section"
         position="center"
-        sx={{ maxWidth: '1280px', margin: '0 auto' }}
+        sx={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          alignItems: 'stretch',
+        }}
       >
         {renderItems()}
       </Group>
 
+      <Space h={24} />
+
+      <Text align="center" sx={(theme) => ({ color: theme.colors.dark[3] })}>
+        You can change your plan or cancel any time
+      </Text>
+
       <Space h={32} />
 
       <Group
+        component="section"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
-        <CurrentSubscriptionBlock />
+        {currentSubscription && <CurrentSubscriptionBlock />}
       </Group>
 
       {selectedUpgradePlan && (
         <UpgradeModal
-          priceId={selectedUpgradePlan}
+          plan={selectedUpgradePlan}
           interval={interval}
           onClose={onClosePreview}
         />

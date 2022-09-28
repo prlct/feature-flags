@@ -10,6 +10,7 @@ import {
   Space,
   Stack,
   Text,
+  Title,
 } from '@mantine/core';
 import { IconCheck } from '@tabler/icons';
 
@@ -18,7 +19,7 @@ import { subscriptionApi } from 'resources/subscription';
 import { useStyles } from './styles';
 
 const PlanItem = (props) => {
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
 
   const subscribeMutation = subscriptionApi.useSubscribe();
 
@@ -35,7 +36,7 @@ const PlanItem = (props) => {
 
   const onClick = useCallback(() => {
     if (props.currentSubscription) {
-      props.onPrevewUpgrade(props.planIds[props.interval]);
+      props.onPrevewUpgrade({ priceId: props.planIds[props.interval], title: props.title });
 
       return;
     }
@@ -43,6 +44,7 @@ const PlanItem = (props) => {
     subscribeMutation.mutate({ priceId: props.planIds[props.interval], interval: props.interval });
   }, [
     props.interval,
+    props.currentSubscription,
   ]);
 
   const priceText = useMemo(() => {
@@ -50,7 +52,15 @@ const PlanItem = (props) => {
       return (
         <>
           <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price[props.interval]}</Text>
-          <Text sx={{ display: 'inline' }} size="md">/{props.interval}</Text>
+          <Text
+            sx={(theme) => ({
+              display: 'inline',
+              color: theme.colors.dark[3],
+            })}
+            size="xs"
+          >
+            / {props.interval}
+          </Text>
         </>
       );
     }
@@ -73,15 +83,7 @@ const PlanItem = (props) => {
           padding: 0,
         }}
       >
-        <Badge
-          variant="filled"
-          classNames={{
-            root: classes.badgeContainer,
-            inner: classes.badgeInner,
-          }}
-        >
-          <IconCheck size={18} />
-        </Badge>
+        <IconCheck size={14} className={classes.icon} />
         <Space w={8} />
         {item}
       </Container>
@@ -91,12 +93,38 @@ const PlanItem = (props) => {
 
   return (
     <MediaQuery smallerThan="sm" styles={{ flex: '1 1 100%' }}>
-      <Card withBorder shadow="md" radius="lg" sx={{ flex: '1 1' }}>
-        <Text size="xl">{props.title}</Text>
-        <Space h="md" />
+      <Card
+        withBorder
+        radius="sm"
+        p={32}
+        className={cx(classes.card, {
+          [classes.active]: isCurrentSubscription,
+        })}
+      >
+        <Container
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <Title order={3}>{props.title}</Title>
+          {isCurrentSubscription && (
+            <Badge
+              size="lg"
+              sx={(theme) => ({
+                backgroundColor: theme.colors.blue[6],
+                color: theme.white,
+              })}
+            >
+              Current plan
+            </Badge>
+        )}
+        </Container>
+        <Space h={24} />
         {priceText}
 
-        <Space h="lg" />
+        <Space h={40} />
 
         <Stack>
           {renderFeatureList()}
@@ -104,18 +132,23 @@ const PlanItem = (props) => {
 
         <Space h={64} />
 
-        <Button disabled={isCurrentSubscription} fullWidth onClick={onClick}>
-          {isCurrentSubscription ? 'Current plan' : `Get ${props.title}`}
-        </Button>
+        {!isCurrentSubscription && (
+          <Button sx={(theme) => ({ backgroundColor: theme.colors.blue[6] })} fullWidth onClick={onClick}>
+            Get {props.title}
+          </Button>
+        )}
       </Card>
     </MediaQuery>
   );
 };
 
 PlanItem.propTypes = {
-  currentSubscription: PropTypes.shape({
-    planId: PropTypes.string,
-  }),
+  currentSubscription: PropTypes.oneOfType([
+    PropTypes.shape({
+      planId: PropTypes.string,
+    }),
+    PropTypes.string,
+  ]),
   planIds: PropTypes.shape({
     month: PropTypes.string.isRequired,
     year: PropTypes.string.isRequired
