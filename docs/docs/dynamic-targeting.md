@@ -16,14 +16,19 @@ Targeting rules can be used together with the feature coverage by percent of use
 ### Example
 1. Filter by email
 ```
-const featureFlags = await flags.fetchFeatureFlags({ email: 'test1@test.com' })
+const featureFlags = await flags.fetchFeatureFlags({ 
+  id: '1',
+  data: {
+    email: 'test1@test.com' 
+  }
+})
 ```
 ![Email example](../static/img/dynamic-targeting/example-email.png)
 
 2. Filter by company id
 ```
 const featureFlags = await flags.fetchFeatureFlags({ 
-  email: 'test1@test.com',
+  id: '1',
   data: {
      companyId: '1'
   } 

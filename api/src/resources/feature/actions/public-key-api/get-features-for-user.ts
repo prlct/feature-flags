@@ -17,20 +17,22 @@ const schema = Joi.object({
       'string.empty': 'env is required',
     }),
   email: Joi.string().trim(),
+  userId: Joi.string().trim(),
 });
 
 type ValidatedData = {
   env: Env;
   email?: string;
+  userId?: string;
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { application } = ctx.state;
-  const { env, email } = ctx.validatedData;
+  const { env, email, userId } = ctx.validatedData;
 
   let user = null;
-  if (email) {
-    user = await userService.findOne({ email, applicationId: application._id, env });
+  if (userId) {
+    user = await userService.findOne({ _id: userId });
     if (!user) {
       user = { email };
     }
