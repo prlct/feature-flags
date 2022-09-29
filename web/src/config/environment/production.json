@@ -3,12 +3,12 @@
   "webUrl": "https://app.growthflags.com",
   "subscriptions": {
     "starter": {
-      "month": "replace_with_price_id",
-      "year": "replace_with_price_id"
+      "month": "price_1LnMGRKu55YRO0maiDwAxXkp",
+      "year": "price_1LnMHQKu55YRO0maVSaI1qy5"
     },
     "pro": {
-      "month": "replace_with_price_id",
-      "year": "replace_with_price_id"
+      "month": "price_1LnMIOKu55YRO0maljWEbWA0",
+      "year": "price_1LnMIOKu55YRO0mahVfG4UKl"
     }
   }
 }
