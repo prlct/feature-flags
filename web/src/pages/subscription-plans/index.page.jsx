@@ -19,7 +19,7 @@ import CurrentSubscriptionBlock from './components/current-subscription';
 import subscriptionList from './subscription-list';
 
 const SubscriptionPlans = () => {
-  const { data: currentSubscription } = subscriptionApi.useGetCurrent();
+  const { data: currentSubscription, refetch } = subscriptionApi.useGetCurrent();
 
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
@@ -94,7 +94,7 @@ const SubscriptionPlans = () => {
         component="section"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
-        {currentSubscription && <CurrentSubscriptionBlock />}
+        {currentSubscription && !currentSubscription.cancelAtPeriodEnd && <CurrentSubscriptionBlock onCancelSubscription={refetch} />}
       </Group>
 
       {selectedUpgradePlan && (
