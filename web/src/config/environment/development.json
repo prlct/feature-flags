@@ -3,12 +3,12 @@
   "webUrl": "http://localhost:3002",
   "subscriptions": {
     "starter": {
-      "month": "price_1Ll8mbDgd1tzhAXhBQ03Zw0u",
-      "year": "price_1LmYOfDgd1tzhAXhWYxjYvAV"
+      "month": "replace_with_price_id",
+      "year": "replace_with_price_id"
     },
     "pro": {
-      "month": "price_1Ll8n9Dgd1tzhAXh2HpVWooa",
-      "year": "price_1LmYPwDgd1tzhAXhWDKamOAr"
+      "month": "replace_with_price_id",
+      "year": "replace_with_price_id"
     }
   }
 }
