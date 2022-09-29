@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { useCallback, memo } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Text,
@@ -6,14 +7,16 @@ import {
 
 import { subscriptionApi } from 'resources/subscription';
 
-const CurrentSubscriptionBlock = () => {
+const CurrentSubscriptionBlock = (props) => {
   const cancelMutation = subscriptionApi.useCancelMutation();
 
   const onCancelCurrentSubscription = useCallback(() => {
     cancelMutation.mutate(null, {
-      onSuccess: () => {} // TODO: Add handler,
+      onSuccess: () => {
+        props.onCancelSubscription();
+      }
     });
-  }, []);
+  }, [props.onCancelSubscription]);
 
   return (
     <>
@@ -25,4 +28,8 @@ const CurrentSubscriptionBlock = () => {
   );
 };
 
-export default CurrentSubscriptionBlock;
+CurrentSubscriptionBlock.propTypes = {
+  onCancelCurrentSubscription: PropTypes.func.isRequired,
+}
+
+export default memo(CurrentSubscriptionBlock);

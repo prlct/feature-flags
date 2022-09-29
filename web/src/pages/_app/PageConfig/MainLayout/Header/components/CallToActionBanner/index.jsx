@@ -13,7 +13,7 @@ import { IconAlertCircle } from '@tabler/icons';
 
 import { useStyles } from './styles';
 
-const Banner = () => {
+const CallToActionBanner = () => {
   const { classes } = useStyles();
 
   const handleClick = useCallback(() => {
@@ -34,4 +34,4 @@ const Banner = () => {
   )
 };
 
-export default Banner;
+export default CallToActionBanner;

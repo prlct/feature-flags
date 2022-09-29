@@ -128,8 +128,8 @@ const UpgradeModal = (props) => {
               gap: '16px',
             }}
           >
-            <Button variant="subtle" onClick={props.onClose}>Cancel</Button>
-            <Button onClick={onConfirm}>Confirm</Button>
+            <Button disabled={upgradeMutation.isLoading} variant="subtle" onClick={props.onClose}>Cancel</Button>
+            <Button disabled={upgradeMutation.isLoading} onClick={onConfirm}>Confirm</Button>
           </Container>
         </>
       )}
