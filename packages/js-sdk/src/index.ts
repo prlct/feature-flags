@@ -1,4 +1,5 @@
 import apiService from './api.service';
+import storage from './storage'
 
 const featureFlagResource = '/feature-flags';
 const userResource = '/users';
@@ -6,16 +7,21 @@ const userEventResource = '/user-events';
 const storagePath = '@growthflags/js-sdk';
 const consoleLogPrefix = '@growthflags/js-sdk error:';
 
-enum UserEventType {
+export interface Constructor {
+  publicApiKey: string;
+  env: string;
+}
+
+export enum UserEventType {
   FeatureViewed = 'featureViewed',
 }
 
-interface AppUser {
+export interface AppUser {
   email?: string;
   data?: { [key: string]: any }
 }
 
-interface User {
+export interface User {
   _id: string;
   applicationId: string;
   email: string;
@@ -26,33 +32,33 @@ interface User {
   deletedOn?: Date | null;
 }
 
-interface JSONObject {
+export interface JSONObject {
   [x: string]: JSONValue;
 }
 
-type JSONValue =
+export type JSONValue =
     | string
     | number
     | boolean
     | { [x: string]: JSONValue }
     | Array<JSONValue>;
 
-interface FetchFlagsParams {
+export interface FetchFlagsParams {
   env: string;
   email?: string;
   userId?: string
 }
 
-interface CreateUserParams {
+export interface CreateUserParams {
   email: string;
   data?: { [key in string]: any }
 }
 
-type CreateUserData = {
+export type CreateUserData = {
   env: string;
 } & CreateUserParams
 
-interface CreateUserEventData {
+export interface CreateUserEventData {
   userId: string;
   type: UserEventType;
   data: {
@@ -60,24 +66,16 @@ interface CreateUserEventData {
   }
 };
 
-interface LocalStorageData {
+export interface LocalStorageData {
   features: { [key in string]: boolean };
   configs: { [key in string]: JSONObject };
   user?: User
-}
-
-interface Constructor {
-  publicApiKey: string;
-  env: string;
 }
 
 export type FeatureOverride = {
   name: string;
   enabled: boolean;
 }
-
-const isBrowser = typeof window !== 'undefined';
-
 class FeatureFlags {
   private _apiKey: string;
   private _env: string;
@@ -102,13 +100,11 @@ class FeatureFlags {
         await this._createUser({email: user.email, data: user.data});
     } 
 
-    if (isBrowser) {
-      const storageData = this._getFromLocalStorage();
+    const storageData = this._getFromStorage();
 
-      if (storageData) {
-        this._features = storageData.features || {};
-        this._configs = storageData.configs || {};
-      }
+    if (storageData) {
+      this._features = storageData.features || {};
+      this._configs = storageData.configs || {};
     }
     
     return this._fetchFlags();
@@ -181,9 +177,9 @@ class FeatureFlags {
       this._features = this.mergeFeatures(features);
       this._configs = response.configs || {};
 
-      if (isBrowser) {
-        this._saveToLocalStorage(response);
-      }
+      this._saveToStorage(response);
+
+      return response;
     } catch(error) {
       console.log(consoleLogPrefix, error);
     }
@@ -204,31 +200,38 @@ class FeatureFlags {
 
       this._user = response;
       
-      if (isBrowser) {
-        this._saveToLocalStorage({ user: response })
-      }
+      this._saveToStorage({ user: response })
     } catch(error) {
       console.log(consoleLogPrefix, error);
     }
   }
 
-  private _saveToLocalStorage(data: JSONObject) {
+  private _saveToStorage(data: JSONObject) {
+    if (!storage) {
+      return;
+    }
+
     try {
-      const localStorageData : LocalStorageData = this._getFromLocalStorage();
-      const updatedData = {...localStorageData, ...data};
+      const localStorageData : LocalStorageData = this._getFromStorage();
+
+      const updatedData = localStorageData ? {...localStorageData, ...data} : {...data};
       const stringData = JSON.stringify(updatedData);
       
-      localStorage.setItem(`${storagePath}`, stringData);
+      storage.setItem(`${storagePath}`, stringData);
     } catch (error) {
       console.log(consoleLogPrefix, error);
     }
   }
 
-  private _getFromLocalStorage() {
+  private _getFromStorage() {
+    if (!storage) {
+      return null
+    }
+
     try {
-      const localStorageData = localStorage.getItem(`${storagePath}`);
+      const localStorageData = storage.getItem(`${storagePath}`);
       
-      return localStorageData ? JSON.parse(localStorageData): {};
+      return localStorageData ? JSON.parse(localStorageData): null;
     } catch (error) {
       console.log(consoleLogPrefix, error);
     }

@@ -1,15 +1,9 @@
 {
   "name": "@growthflags/js-sdk",
-  "version": "1.2.0",
+  "version": "1.2.8",
   "description": "Feature flags",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts",
-    "dist/api.service.js",
-    "dist/api.service.d.ts"
-  ],
   "scripts": {
     "build": "rm -rf dist && npm-run-all --parallel build:tsc",
     "build:tsc": "tsc",
