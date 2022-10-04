@@ -250,11 +250,11 @@ let instance: FeatureFlags;
 export default {
   create: ({ publicApiKey, env }: Constructor) => {
     if (!publicApiKey) {
-      throw new RangeError('Public API Key must be provided.');
+      throw new RangeError('Invalid arguments: "publicApiKey" must be provided.');
     }
 
     if (!env) {
-      throw new RangeError('Environment must be provided.');
+      throw new RangeError('Invalid arguments: "env" must be provided.');
     }
 
     if (instance) {
