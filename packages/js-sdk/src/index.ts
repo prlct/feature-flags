@@ -9,7 +9,7 @@ const consoleLogPrefix = '@growthflags/js-sdk error:';
 
 export interface Constructor {
   publicApiKey: string;
-  env: string;
+  env: 'development' | 'staging' | 'production';
 }
 
 export enum UserEventType {
@@ -250,11 +250,11 @@ let instance: FeatureFlags;
 export default {
   create: ({ publicApiKey, env }: Constructor) => {
     if (!publicApiKey) {
-      throw new Error('Public API Key must be provided.');
+      throw new RangeError('Public API Key must be provided.');
     }
 
     if (!env) {
-      throw new Error('Environment must be provided.');
+      throw new RangeError('Environment must be provided.');
     }
 
     if (instance) {
