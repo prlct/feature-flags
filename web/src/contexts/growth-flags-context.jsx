@@ -19,7 +19,10 @@ export const GrowthFlagsContextProvider = ({ children }) => {
   useEffect(() => {
     const fetchFeatureFlags = async () => {
       if (!currentAdmin) return;
-      await growthFlags.fetchFeatureFlags({ email: currentAdmin.email });
+      await growthFlags.fetchFeatureFlags({
+        id: currentAdmin._id,
+        data: { email: currentAdmin.email },
+      });
       setIsLoaded(true);
     };
     fetchFeatureFlags();
