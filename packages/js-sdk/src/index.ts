@@ -66,7 +66,7 @@ export interface CreateUserEventData {
   data: {
     featureName?: string
   }
-};
+}
 
 export interface LocalStorageData {
   features: { [key in string]: boolean };
@@ -78,6 +78,7 @@ export type FeatureOverride = {
   name: string;
   enabled: boolean;
 }
+
 class FeatureFlags {
   private _apiKey: string;
   private _env: string;
@@ -248,6 +249,14 @@ let instance: FeatureFlags;
 
 export default {
   create: ({ publicApiKey, env }: Constructor) => {
+    if (!publicApiKey) {
+      throw new Error('Public API Key must be provided.');
+    }
+
+    if (!env) {
+      throw new Error('Environment must be provided.');
+    }
+
     if (instance) {
       return instance;
     }
