@@ -3,7 +3,7 @@ import Joi from 'joi';
 const schema = Joi.object({
   _id: Joi.string().required(),
   applicationId: Joi.string().required(),
-  email: Joi.string().allow(null),
+  email: Joi.string().allow(null, '').optional(),
   externalId: Joi.string().required(),
   env: Joi.string().required(),
   data: Joi.object(),
