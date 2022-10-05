@@ -60,7 +60,7 @@ const VisibilitySettings = ({ feature }) => {
         if (visibility === 'group') {
           showNotification({
             title: 'Success',
-            message: `Feature ${feature.name} is now visible only for some user.`,
+            message: `Feature ${feature.name} is now visible only for some users.`,
             color: 'green',
           });
         }

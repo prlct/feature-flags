@@ -9,7 +9,6 @@ import { featureFlagApi } from 'resources/feature-flag';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import VisibilitySettings from '../visibility-settings';
-import EmailsSettings from '../emails-settings';
 import PercentageSettings from '../percentage-settings';
 import FeatureFlagDescription from '../feature-flag-description';
 import FeatureTargetingRules from '../feature-targeting-rules';
@@ -18,7 +17,6 @@ const Settings = ({ featureId, env }) => {
   const growthFlags = useGrowthFlags();
 
   const { data: feature } = featureFlagApi.useGetById({ featureId, env });
-
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
   const isTargetingUsersOn = growthFlags && growthFlags.isOn('targetingRules');
 
@@ -39,7 +37,6 @@ const Settings = ({ featureId, env }) => {
         <PercentageSettings feature={feature} />
         )}
 
-        {!isTargetingUsersOn && (<EmailsSettings feature={feature} />)}
       </Stack>
 
       {isTargetingUsersOn && (

@@ -14,7 +14,6 @@ export type TargetingRule = {
 type EnvSettings = {
   enabled: boolean;
   enabledForEveryone: boolean;
-  users: string[];
   usersPercentage: number;
   usersViewedCount: number;
   tests: string[];
