@@ -19,7 +19,6 @@ const targetingRuleSchema = Joi.object({
 const envSettingsSchema = Joi.object({
   enabled: Joi.boolean().required().default(false),
   enabledForEveryone: Joi.boolean().required().default(false),
-  users: Joi.array().items(Joi.string()).unique().required().default([]),
   usersPercentage: Joi.number().min(0).max(100).required().default(0),
   usersViewedCount: Joi.number().required().default(0),
   tests: Joi.array().items(Joi.string()).unique().required().default([]),

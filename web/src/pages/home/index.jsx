@@ -195,7 +195,7 @@ const Home = () => {
                       enabledForEveryone,
                       createdOn,
                       usersPercentage,
-                      users,
+                      targetingRules,
                       tests,
                       usersViewedCount,
                       env }) => (
@@ -221,7 +221,18 @@ const Home = () => {
                                   name,
                                   env })}
                               />
-                              <Text>{enabledForEveryone ? 'For everyone' : (usersPercentage ? `For ${usersPercentage}% of users` : `For ${users.length} users`)}</Text>
+                              <Stack spacing={0}>
+                                {enabledForEveryone && <Text size="xs">For everyone</Text>}
+                                {usersPercentage > 0 && (
+                                  <Text size="xs">
+                                    For
+                                    {' '}
+                                    {usersPercentage}
+                                    % of users
+                                  </Text>
+                                )}
+                                {targetingRules && targetingRules.length > 0 && <Text size="xs">By targeting rules</Text>}
+                              </Stack>
                             </Stack>
                           </td>
                           <td>

@@ -100,26 +100,6 @@ export function useChangeUsersPercentage() {
   });
 }
 
-export function useEnableFeatureForUsers() {
-  const enableFeatureForUsers = ({ _id, email, env }) => apiService.post(`${resource}/${_id}/users`, { email, env });
-
-  return useMutation(enableFeatureForUsers, {
-    onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlag'], data);
-    },
-  });
-}
-
-export function useDisableFeatureForUser() {
-  const enableFeatureForUsers = ({ _id, email, env }) => apiService.delete(`${resource}/${_id}/users`, { email, env });
-
-  return useMutation(enableFeatureForUsers, {
-    onSuccess: (data) => {
-      queryClient.setQueryData(['featureFlag'], data);
-    },
-  });
-}
-
 export function useCreateConfiguration() {
   const createConfiguration = (data) => new Promise((res) => { setTimeout(() => res(data), 1000); });
 

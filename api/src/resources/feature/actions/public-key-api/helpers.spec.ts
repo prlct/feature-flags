@@ -5,7 +5,6 @@ import { TargetingRuleOperator } from '../../feature.types';
 import { Env } from 'resources/application';
 
 const USER_TEST_EMAIL = 'test@email.com';
-const USER_TEST_EMAIL_1 = 'test1@email.com';
 
 const featureDisabledForEveryone: FlatFeature =  {
   _id: '1',
@@ -16,7 +15,6 @@ const featureDisabledForEveryone: FlatFeature =  {
   updatedOn: new Date('2022-09-14T10:39:01.469Z'),
   enabled: false,
   enabledForEveryone: false,
-  users: [],
   usersPercentage: 0,
   usersViewedCount: 0,
   tests: [],
@@ -32,7 +30,6 @@ const featureEnabledForEveryone: FlatFeature =  {
   updatedOn: new Date('2022-09-14T10:41:19.706Z'),
   enabled: true,
   enabledForEveryone: true,
-  users: [],
   usersPercentage: 0,
   tests: [],
   usersViewedCount: 1,
@@ -48,7 +45,6 @@ const featureEnabledForEmail: FlatFeature = {
   updatedOn: new Date('2022-09-14T10:41:19.706Z'),
   enabled: true,
   enabledForEveryone: false,
-  users: [USER_TEST_EMAIL],
   usersPercentage: 0,
   tests: [],
   usersViewedCount: 1,
@@ -64,7 +60,6 @@ const featureEnabledForPercentOfUsers: FlatFeature = {
   updatedOn: new Date('2022-09-14T10:41:19.706Z'),
   enabled: true,
   enabledForEveryone: false,
-  users: [],
   usersPercentage: 20,
   tests: [],
   usersViewedCount: 10,
@@ -118,13 +113,11 @@ describe('calculateFlagsForUser', () => {
         featureDisabledForEveryone,
         featureEnabledForEveryone,
         featureEnabledForPercentOfUsers,
-        featureEnabledForEmail,
       ];
       const expectedResult = {
         [featureDisabledForEveryone.name]: false,
         [featureEnabledForEveryone.name]: true,
         [featureEnabledForPercentOfUsers.name]: false,
-        [featureEnabledForEmail.name]: false,
       };
       await expect(helpers.calculateFlagsForUser(initialFeatures, null)).resolves.toEqual(expectedResult);
     });
@@ -156,64 +149,6 @@ describe('calculateFlagsForUser', () => {
 
     test('should return false for features disabled for everyone', async () => {
       await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
-        .resolves.toEqual(expectedResult);
-    });
-  });
-
-  describe('for features enabled for the users by email', () => {
-    const initialFeatures : FlatFeature[] = [
-      featureEnabledForEmail,
-    ];
-
-    test('should return true for features enabled for email when email matches', async () => {
-      const expectedResult = {
-        [featureEnabledForEmail.name]: true,
-      };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL)))
-        .resolves.toEqual(expectedResult);
-    });
-
-    test('should return true for features enabled for email when email stored in data and matches', async () => {
-      const expectedResult = {
-        [featureEnabledForEmail.name]: true,
-      };
-      const user = {
-        ...makeUser(),
-        data: {
-          email: USER_TEST_EMAIL,
-        },
-      };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, user))
-        .resolves.toEqual(expectedResult);
-    });
-
-    test('should return false for features enabled for email when email does not match', async () => {
-      const expectedResult = {
-        [featureEnabledForEmail.name]: false,
-      };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUserByEmail(USER_TEST_EMAIL_1)))
-        .resolves.toEqual(expectedResult);
-    });
-
-    test('should return false for features enabled for email when email stored in data and does not match', async () => {
-      const expectedResult = {
-        [featureEnabledForEmail.name]: false,
-      };
-      const user = {
-        ...makeUser(),
-        data: {
-          email: USER_TEST_EMAIL_1,
-        },
-      };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, user))
-        .resolves.toEqual(expectedResult);
-    });
-
-    test('should return false for features enabled for email when email is not passed', async () => {
-      const expectedResult = {
-        [featureEnabledForEmail.name]: false,
-      };
-      await expect(helpers.calculateFlagsForUser(initialFeatures, makeUser()))
         .resolves.toEqual(expectedResult);
     });
   });

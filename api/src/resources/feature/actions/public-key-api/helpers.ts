@@ -17,7 +17,6 @@ const calculateFlagForUser = async (
   const {
     enabled,
     enabledForEveryone, 
-    users, 
     usersPercentage,
     targetingRules,
   } = feature;
@@ -31,12 +30,6 @@ const calculateFlagForUser = async (
   }
 
   if (user) {
-    const isFeatureEnabledForEmail = includes(users, user.email || user.data?.email);
-
-    if (isFeatureEnabledForEmail) {
-      return true;
-    }
-
     if (targetingRules) {
       for (const rule of targetingRules) {
         const { attribute, operator, value } = rule;
