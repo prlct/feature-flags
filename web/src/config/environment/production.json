@@ -1,6 +1,6 @@
 {
-  "apiUrl": "https://api.growthflags.com",
-  "webUrl": "https://app.growthflags.com",
+  "apiUrl": "https://growthflags-api-mz7ts.ondigitalocean.app",
+  "webUrl": "https://growthflags-web-ji3wj.ondigitalocean.app",
   "subscriptions": {
     "starter": {
       "month": "price_1LnMGRKu55YRO0maiDwAxXkp",
