@@ -1,7 +1,7 @@
 {
   "mongo": {
-    "dbName": "growthflags-production"
+    "dbName": "do-growthflags-test"
   },
-  "apiUrl": "https://api.growthflags.com",
-  "webUrl": "https://app.growthflags.com"
+  "apiUrl": "https://growthflags-api-mz7ts.ondigitalocean.app",
+  "webUrl": "https://growthflags-web-ji3wj.ondigitalocean.app"
 }
