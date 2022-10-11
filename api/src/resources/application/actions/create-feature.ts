@@ -53,7 +53,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const featureEnvSettings = {
     enabled: false,
-    enabledForEveryone: false,
+    enabledForEveryone: true,
     usersPercentage: 0,
     usersViewedCount: 0,
     tests: [],
