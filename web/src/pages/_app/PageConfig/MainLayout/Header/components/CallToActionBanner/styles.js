@@ -3,7 +3,7 @@ import { createStyles } from '@mantine/core';
 export const useStyles = createStyles((theme) => ({
   container: {
     position: 'sticky',
-    top: 0,
+    top: '72px',
     display: 'flex',
     alignItems: 'center',
     width: '100%',

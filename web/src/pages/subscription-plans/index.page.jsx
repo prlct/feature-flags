@@ -24,7 +24,7 @@ const SubscriptionPlans = () => {
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
-  const renderItems = useCallback(() =>
+  const renderItems = () =>
     subscriptionList.map((item) =>
       <PlanItem
         key={item.planIds[interval]}
@@ -33,10 +33,7 @@ const SubscriptionPlans = () => {
         onPrevewUpgrade={setSelectedUpgradePlan}
         {...item}
       />
-    ), [
-    interval,
-    currentSubscription
-  ]);
+    );
 
   const onClosePreview = useCallback(() => setSelectedUpgradePlan(undefined), []);
 

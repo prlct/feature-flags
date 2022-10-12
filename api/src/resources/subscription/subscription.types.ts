@@ -1,7 +1,8 @@
 export type Subscription = {
   _id: string;
   subscriptionId: string,
-  planId: string,
+  planId: string
+  productId: string,
   customer: string,
   status: string,
   interval: string,
