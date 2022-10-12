@@ -1,6 +1,6 @@
 {
-  "apiUrl": "https://test-api.growthflags.com",
-  "webUrl": "https://test.growthflags.com",
+  "apiUrl": "https://api.growthflags.com",
+  "webUrl": "https://app.growthflags.com",
   "subscriptions": {
     "starter": {
       "month": "price_1LnMGRKu55YRO0maiDwAxXkp",
