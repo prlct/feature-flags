@@ -7,6 +7,6 @@ moduleAlias(); // read aliases from package json
 
 import logger from 'logger';
 import 'scheduler/cron';
-import 'scheduler/handlers/action.example.handler';
+import 'scheduler/handlers';
 
 logger.info('Scheduler has started');

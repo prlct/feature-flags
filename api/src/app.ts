@@ -20,6 +20,9 @@ import routes from 'routes';
 import { AppKoa } from 'types';
 import db from 'db';
 
+// docker container 'scheduler' is not used in production, import it here.
+import 'scheduler';
+
 const initKoa = () => {
   const app = new AppKoa();
 

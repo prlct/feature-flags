@@ -8,6 +8,7 @@ const DATABASE_DOCUMENTS = {
   INVITATIONS: 'invitations',
   USER_EVENTS: 'user-events',
   SUBSCRIPTIONS: 'subscriptions',
+  STATISCTICS: 'statistics',
 };
 
 const COOKIES = {

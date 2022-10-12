@@ -13,6 +13,7 @@ const updateSubscription = async (data: any) => {
       $set: {
         subscriptionId: data.id,
         planId: data.plan.id,
+        productId: data.plan.product,
         status: data.status,
         interval: data.plan.interval,
         startDate: data.current_period_start,

@@ -4,6 +4,7 @@ const schema = Joi.object({
   _id: Joi.string().required(),
   subscriptionId: Joi.string().required(),
   planId: Joi.string().required(),
+  productId: Joi.string().required(),
   customer: Joi.string().required(),
   status: Joi.string().required(),
   interval: Joi.string().required(),
