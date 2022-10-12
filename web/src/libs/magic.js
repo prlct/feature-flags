@@ -1,11 +1,12 @@
 import { Magic } from 'magic-sdk';
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 // Create client-side Magic instance
-const createMagic = (key) => {
-  return (
-    typeof window != 'undefined' &&
-    new Magic(key)
-  );
-};
+const createMagic = (key) => (
+  typeof window !== 'undefined'
+    && new Magic(key)
+);
 
-export const magic = createMagic(process.env.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY);
+export const magic = createMagic(publicRuntimeConfig.NEXT_PUBLIC_MAGIC_PUBLISHABLE_KEY);
