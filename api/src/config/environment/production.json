@@ -1,6 +1,6 @@
 {
   "mongo": {
-    "dbName": "do-growthflags-test"
+    "dbName": "growthflags-production"
   },
   "apiUrl": "https://api.growthflags.com",
   "webUrl": "https://app.growthflags.com"
