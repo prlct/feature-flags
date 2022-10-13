@@ -38,11 +38,11 @@ const App = ({ Component, pageProps }) => (
       >
         <ModalsProvider>
           <NotificationsProvider autoClose={5000} limit={2}>
-            <PageConfig>
-              <GrowthFlagsContextProvider>
+            <GrowthFlagsContextProvider>
+              <PageConfig>
                 <Component {...pageProps} />
-              </GrowthFlagsContextProvider>
-            </PageConfig>
+              </PageConfig>
+            </GrowthFlagsContextProvider>
           </NotificationsProvider>
         </ModalsProvider>
         <ReactQueryDevtools position="bottom-right" />

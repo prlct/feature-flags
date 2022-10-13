@@ -1,7 +1,8 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { useQueryClient } from 'react-query';
 import GrowthFlags from '@growthflags/js-sdk';
+
+import { adminApi } from 'resources/admin';
 
 export const growthFlags = GrowthFlags.create({
   env: process.env.NEXT_PUBLIC_APP_ENV,
@@ -11,10 +12,9 @@ export const growthFlags = GrowthFlags.create({
 const GrowthFlagsContext = createContext(null);
 
 export const GrowthFlagsContextProvider = ({ children }) => {
-  const queryClient = useQueryClient();
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const { data: currentAdmin } = adminApi.useGetCurrent();
 
   useEffect(() => {
     const fetchFeatureFlags = async () => {
