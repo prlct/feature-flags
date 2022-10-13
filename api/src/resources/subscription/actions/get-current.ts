@@ -11,7 +11,7 @@ async function handler(ctx: AppKoaContext) {
     return;
   }
 
-  ctx.body = {};
+  ctx.body = null;
 }
 
 export default (router: AppRouter) => {

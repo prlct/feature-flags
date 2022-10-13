@@ -19,39 +19,45 @@ import { subscriptionApi } from 'resources/subscription';
 import { useStyles } from './styles';
 
 const PlanItem = (props) => {
+  const {
+    currentSubscription,
+    planIds,
+    price,
+    features,
+    interval,
+    title,
+    onPreviewUpgrade,
+  } = props;
   const { classes, cx } = useStyles();
 
   const subscribeMutation = subscriptionApi.useSubscribe();
 
   const isCurrentSubscription = useMemo(() => {
-    if (!props.currentSubscription) {
-      return '0' === props.planIds[props.interval]
+    if (!currentSubscription) {
+      return planIds[interval] === '0';
     }
 
-    return props.currentSubscription.planId === props.planIds[props.interval];
-  }, [
-    props.currentSubscription?.planId,
-    props.interval
-  ]);
+    return currentSubscription.planId === planIds[interval];
+  }, [currentSubscription, interval, planIds]);
 
   const onClick = useCallback(() => {
-    if (props.currentSubscription) {
-      props.onPrevewUpgrade({ priceId: props.planIds[props.interval], title: props.title });
+    if (currentSubscription) {
+      onPreviewUpgrade({ priceId: planIds[interval], title });
 
       return;
     }
 
-    subscribeMutation.mutate({ priceId: props.planIds[props.interval], interval: props.interval });
-  }, [
-    props.interval,
-    props.currentSubscription,
-  ]);
+    subscribeMutation.mutate({ priceId: planIds[interval], interval });
+  }, [currentSubscription, subscribeMutation, planIds, interval, onPreviewUpgrade, title]);
 
   const priceText = useMemo(() => {
-    if (props.price[props.interval]) {
+    if (price[interval]) {
       return (
         <>
-          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">${props.price[props.interval]}</Text>
+          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">
+            $
+            {price[interval]}
+          </Text>
           <Text
             sx={(theme) => ({
               display: 'inline',
@@ -59,19 +65,19 @@ const PlanItem = (props) => {
             })}
             size="xs"
           >
-            / {props.interval}
+            /
+            {' '}
+            {interval}
           </Text>
         </>
       );
     }
 
-    return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>
-  }, [
-    props.interval
-  ]);
+    return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>;
+  }, [interval, price]);
 
-  const renderFeatureList = useCallback(() =>
-    props.features.map((item, index) => (
+  const renderFeatureList = useCallback(
+    () => features.map((item, index) => (
       <Container
         key={index}
         fluid
@@ -88,7 +94,7 @@ const PlanItem = (props) => {
         {item}
       </Container>
     )),
-    []
+    [classes.icon, features],
   );
 
   return (
@@ -108,7 +114,7 @@ const PlanItem = (props) => {
             alignItems: 'center',
           }}
         >
-          <Title order={3}>{props.title}</Title>
+          <Title order={3}>{title}</Title>
           {isCurrentSubscription && (
             <Badge
               size="lg"
@@ -119,7 +125,7 @@ const PlanItem = (props) => {
             >
               Current plan
             </Badge>
-        )}
+          )}
         </Container>
         <Space h={24} />
         {priceText}
@@ -133,8 +139,14 @@ const PlanItem = (props) => {
         <Space h={64} />
 
         {!isCurrentSubscription && (
-          <Button sx={(theme) => ({ backgroundColor: theme.colors.blue[6] })} fullWidth onClick={onClick}>
-            Get {props.title}
+          <Button
+            sx={(theme) => ({ backgroundColor: theme.colors.blue[6] })}
+            fullWidth
+            onClick={onClick}
+          >
+            Get
+            {' '}
+            {title}
           </Button>
         )}
       </Card>
@@ -151,16 +163,16 @@ PlanItem.propTypes = {
   ]),
   planIds: PropTypes.shape({
     month: PropTypes.string.isRequired,
-    year: PropTypes.string.isRequired
+    year: PropTypes.string.isRequired,
   }).isRequired,
   title: PropTypes.string.isRequired,
   price: PropTypes.shape({
     month: PropTypes.number.isRequired,
     year: PropTypes.number.isRequired,
-  }),
+  }).isRequired,
   features: PropTypes.arrayOf(PropTypes.node),
   interval: PropTypes.oneOf(['month', 'year']).isRequired,
-  onPrevewUpgrade: PropTypes.func.isRequired,
+  onPreviewUpgrade: PropTypes.func.isRequired,
 };
 
 PlanItem.defaultProps = {
