@@ -1,32 +1,32 @@
 import moment from 'moment';
 import logger from 'logger';
 
-import { userService } from "resources/user";
-import statisticsService from "./statistics.service";
+import { userService } from 'resources/user';
+import statisticsService from './statistics.service';
 
-export const calculcateMonthlyStatisctics = async () => {
+export const calculateMonthlyStatistics = async () => {
   try {
     const startOfMonth = moment().startOf('month').toDate();
     const currentDate = new Date();
 
-    const statisctics = await userService.aggregate([
+    const statistics = await userService.aggregate([
       {
         $match: {
           $and: [
             { lastVisitedOn: { $gte: startOfMonth } },
-            { lastVisitedOn: { $lte: currentDate } }
+            { lastVisitedOn: { $lte: currentDate } },
           ],
-        }
+        },
       },
       {
         $group: {
           _id: '$applicationId',
           count: { $sum: 1 },
-        }
-      }
+        },
+      },
     ]);
 
-    const bulk = statisctics.map((item) => ({
+    const bulk = statistics.map((item) => ({
       updateOne: {
         filter: {
           applicationId: item._id,
@@ -38,14 +38,14 @@ export const calculcateMonthlyStatisctics = async () => {
             mau: item.count,
             createdOn: startOfMonth,
             updatedOn: currentDate,
-          }
+          },
         },
         upsert: true,
-      }
+      },
     }));
 
     await statisticsService.atomic.bulkWrite(bulk);
   } catch (error) {
-    logger.error("Statistics calculation cron job failed: ", error);
+    logger.error('Statistics calculation cron job failed: ', error);
   }
 };
