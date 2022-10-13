@@ -8,6 +8,7 @@ import {
 import { Link } from 'components';
 import { LogoImage } from 'public/images';
 
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 import { statisticsApi } from 'resources/statistics';
 
 import AdminMenu from './components/AdminMenu';
@@ -15,7 +16,10 @@ import EnvSelect from './components/EnvSelect';
 import CallToActionBanner from './components/CallToActionBanner';
 
 const Header = () => {
-  const { data: statistics } = statisticsApi.useGetStatistics();
+  const growthFlags = useGrowthFlags();
+
+  const isSubscriptionsOn = growthFlags && growthFlags.isOn('subscriptions');
+  const { data: statistics } = statisticsApi.useGetStatistics(!!isSubscriptionsOn);
 
   return (
     <>
