@@ -17,64 +17,68 @@ import { subscriptionApi } from 'resources/subscription';
 import { useStyles } from './styles';
 
 const UpgradeModal = (props) => {
+  const { plan, interval, onClose } = props;
   const { classes } = useStyles();
   const router = useRouter();
 
-  const { data: invoicePreview, isFetching, remove } = subscriptionApi.usePreviewUpgradeSubscription(props.plan.priceId);
+  const {
+    data: invoicePreview,
+    isFetching,
+    remove,
+  } = subscriptionApi.usePreviewUpgradeSubscription(plan.priceId);
   const upgradeMutation = subscriptionApi.useUpgradeSubscription();
 
-  useEffect(() => {
-    return () => remove();
-  }, []);
+  useEffect(() => () => remove(), [remove]);
 
-  const isDowngrage = useMemo(() =>
-    props.plan.priceId === '0' || invoicePreview?.invoice?.total < 0,
+  const isDowngrade = useMemo(
+    () => plan.priceId === '0' || invoicePreview?.invoice?.total < 0,
     [
-      props.plan.priceId,
+      plan.priceId,
       invoicePreview?.invoice?.total,
-    ]
+    ],
   );
 
   const text = useMemo(() => {
-    if (isDowngrage) {
-      return `Please, confirm that you want to switch to ${props.plan.title}. The new plan will be applied immediately. We refund you the difference for the ${props.plan.title} to be used for your next payment.`
+    if (isDowngrade) {
+      return `Please, confirm that you want to switch to ${plan.title}. The new plan will be applied immediately. We refund you the difference for the ${plan.title} to be used for your next payment.`;
     }
 
-    return `Please, confirm that you want to update to ${props.plan.title}. You will be upgraded immediately and charged the difference for the ${props.plan.title}.`
+    return `Please, confirm that you want to update to ${plan.title}. You will be upgraded immediately and charged the difference for the ${plan.title}.`;
   }, [
-    props.plan.title,
-    isDowngrage,
+    plan.title,
+    isDowngrade,
   ]);
 
   const onConfirm = useCallback(() => {
     upgradeMutation.mutate({
-      priceId: props.plan.priceId,
+      priceId: plan.priceId,
     }, {
       onSuccess: () => {
-        router.push(`${routes.route.home}?subscriptionPlan=${props.plan.priceId}&interval=${props.interval}`);
-      }
+        router.push(`${routes.route.home}?subscriptionPlan=${plan.priceId}&interval=${interval}`);
+      },
     });
-  }, [props.plan.priceId, props.interval]);
+  }, [upgradeMutation, plan.priceId, router, interval]);
 
   const renderPrice = useCallback(() => {
     const { invoice } = invoicePreview;
     let secondRow = (
       <>
         <Text>Next payment</Text>
-        <Text size='lg' weight={600}>
+        <Text size="lg" weight={600}>
           {dayjs(invoice.lines?.data[1]?.period.end * 1000).format('MMM DD, YYYY')}
         </Text>
       </>
     );
 
-    if (isDowngrage) {
-      const balanceAfterNextPayment = Math.abs(invoice.total) -  invoice.lines?.data[1]?.amount;
+    if (isDowngrade) {
+      const balanceAfterNextPayment = Math.abs(invoice.total) - invoice.lines?.data[1]?.amount;
 
       secondRow = (
         <>
           <Text>Total for the next payment</Text>
-          <Text size='lg' weight={600}>
-            ${Math.abs(Math.min(balanceAfterNextPayment / 100, 0))}
+          <Text size="lg" weight={600}>
+            $
+            {Math.abs(Math.min(balanceAfterNextPayment / 100, 0))}
           </Text>
         </>
       );
@@ -83,28 +87,37 @@ const UpgradeModal = (props) => {
     return (
       <>
         <Container className={classes.row} sx={{ marginTop: '12px' }}>
-          <Text>{isDowngrage ? 'Refund' : 'Total Price'}</Text>
-          <Text size='lg' weight={600}>${Math.abs(invoicePreview.invoice.total / 100)}</Text>
+          <Text>{isDowngrade ? 'Refund' : 'Total Price'}</Text>
+          <Text size="lg" weight={600}>
+            $
+            {Math.abs(invoicePreview.invoice.total / 100)}
+          </Text>
         </Container>
-        {props.plan.priceId !== '0' && (
+        {plan.priceId !== '0' && (
           <Container className={classes.row}>
             {secondRow}
           </Container>
         )}
       </>
     );
-  }, [isDowngrage, invoicePreview]);
+  }, [invoicePreview, isDowngrade, classes.row, plan.priceId]);
 
   return (
     <Modal
       opened
       centered
-      title={
+      title={(
         <Title order={4}>
-          You are about to {isDowngrage ? 'switch' : 'upgrade'} to {props.plan.title}
+          You are about to
+          {' '}
+          {isDowngrade ? 'switch' : 'upgrade'}
+          {' '}
+          to
+          {' '}
+          {plan.title}
         </Title>
-      }
-      onClose={props.onClose}
+      )}
+      onClose={onClose}
     >
       <Space h={16} />
       <Text
@@ -128,7 +141,7 @@ const UpgradeModal = (props) => {
               gap: '16px',
             }}
           >
-            <Button disabled={upgradeMutation.isLoading} variant="subtle" onClick={props.onClose}>Cancel</Button>
+            <Button disabled={upgradeMutation.isLoading} variant="subtle" onClick={onClose}>Cancel</Button>
             <Button disabled={upgradeMutation.isLoading} onClick={onConfirm}>Confirm</Button>
           </Container>
         </>
@@ -143,6 +156,7 @@ UpgradeModal.propTypes = {
     title: PropTypes.string.isRequired,
   }).isRequired,
   interval: PropTypes.oneOf(['month', 'year']).isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default memo(UpgradeModal);

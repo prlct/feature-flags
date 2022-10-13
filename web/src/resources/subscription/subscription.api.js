@@ -5,7 +5,7 @@ export function useGetCurrent() {
   const getCurrent = () => apiService.get('/subscriptions/current');
 
   return useQuery(['currentSubscription'], getCurrent);
-};
+}
 
 export const useSubscribe = () => {
   const subscribe = ({ priceId, interval }) => apiService.post('subscriptions/subscribe', { priceId, interval });
@@ -13,7 +13,7 @@ export const useSubscribe = () => {
   return useMutation(subscribe, {
     onSuccess: (data) => {
       window.location.href = data.checkoutLink;
-    }
+    },
   });
 };
 
@@ -30,7 +30,7 @@ export const useUpgradeSubscription = () => {
     onSuccess: (data) => {
       console.clear();
       console.log(data);
-    }
+    },
   });
 };
 

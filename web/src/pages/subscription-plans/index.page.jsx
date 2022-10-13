@@ -24,16 +24,15 @@ const SubscriptionPlans = () => {
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
-  const renderItems = () =>
-    subscriptionList.map((item) =>
-      <PlanItem
-        key={item.planIds[interval]}
-        currentSubscription={currentSubscription}
-        interval={interval}
-        onPrevewUpgrade={setSelectedUpgradePlan}
-        {...item}
-      />
-    );
+  const renderItems = () => subscriptionList.map((item) => (
+    <PlanItem
+      key={item.planIds[interval]}
+      currentSubscription={currentSubscription}
+      interval={interval}
+      onPreviewUpgrade={setSelectedUpgradePlan}
+      {...item}
+    />
+  ));
 
   const onClosePreview = useCallback(() => setSelectedUpgradePlan(undefined), []);
 
@@ -91,7 +90,9 @@ const SubscriptionPlans = () => {
         component="section"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
-        {currentSubscription && !currentSubscription.cancelAtPeriodEnd && <CurrentSubscriptionBlock onCancelSubscription={refetch} />}
+        {currentSubscription
+          && !currentSubscription.cancelAtPeriodEnd
+          && <CurrentSubscriptionBlock onCancelSubscription={refetch} />}
       </Group>
 
       {selectedUpgradePlan && (

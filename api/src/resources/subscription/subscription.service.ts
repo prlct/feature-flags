@@ -18,12 +18,12 @@ const updateSubscription = async (data: any) => {
         interval: data.plan.interval,
         startDate: data.current_period_start,
         endDate: data.current_period_end,
-        cancelAtPeriodEnd: data.cancel_at_period_end
+        cancelAtPeriodEnd: data.cancel_at_period_end,
       },
     },
     {
       upsert: true,
-    }
+    },
   );
 };
 
