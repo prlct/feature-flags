@@ -57,6 +57,6 @@ const Header = () => {
       {statistics?.limitReached && <CallToActionBanner />}
     </>
   );
-}
+};
 
 export default memo(Header);

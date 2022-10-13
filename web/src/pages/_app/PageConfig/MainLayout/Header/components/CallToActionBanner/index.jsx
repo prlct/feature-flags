@@ -27,11 +27,11 @@ const CallToActionBanner = () => {
     >
       <IconAlertCircle size={16} className={classes.icon} />
       <Space w={16} />
-      <Text>You have reached plan's limits. Upgrage plan to increase your limits.</Text>
+      <Text>You have reached plan&apos;s limits. Upgrade plan to increase your limits.</Text>
       <Space w={16} />
       <Button sx={{ height: '36px' }} onClick={handleClick}>Upgrade</Button>
     </Container>
-  )
+  );
 };
 
 export default CallToActionBanner;

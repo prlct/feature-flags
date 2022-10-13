@@ -33,15 +33,15 @@ async function handler(ctx: AppKoaContext) {
           { applicationId: { $in: admin.applicationIds } },
           { createdOn: { $lte: endDate } },
           { createdOn: { $gte: startDate } },
-        ]
-      }
+        ],
+      },
     },
     {
       $group: {
         _id: '$applicationId',
-        count: { $sum: '$mau' }
-      }
-    }
+        count: { $sum: '$mau' },
+      },
+    },
   ]);
 
   ctx.body = {

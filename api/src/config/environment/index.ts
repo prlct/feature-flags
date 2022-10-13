@@ -23,7 +23,7 @@ const base = {
   mailerliteSecret: process.env.MAILERLITE_SECRET || '',
   STRIPE_API_KEY: process.env.STRIPE_API_KEY || '',
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
-  MONTHLY_ACTIVE_USERS_LIMIT: process.env.STRIPE_WEBHOOK_SECRET || 2000,
+  MONTHLY_ACTIVE_USERS_LIMIT: process.env.MONTHLY_ACTIVE_USERS_LIMIT || 2000,
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);

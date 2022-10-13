@@ -7,4 +7,4 @@ export function useGetStatistics(enabled = false) {
   return useQuery(['statistics'], getCurrent, {
     enabled,
   });
-};
+}
