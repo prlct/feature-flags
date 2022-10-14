@@ -6,7 +6,7 @@ sidebar_position: 2
 
 Instance method to fetch feature flags.
 
-```
+```js
 fetchFeatureFlags({ id, email, data })
 ```
 
@@ -18,7 +18,7 @@ fetchFeatureFlags({ id, email, data })
 
 ### Example
 
-```
+```js
 import GrowthFlags from '@growthflags/js-sdk';
 
 const flags = GrowthFlags.create({

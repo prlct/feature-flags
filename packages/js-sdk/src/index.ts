@@ -86,7 +86,7 @@ class FeatureFlags {
   private _features: { [key in string]: boolean }
   // custom feature overrides set by users to override on the specific environment (e.g. dev)
   private _featureOverrides: FeatureOverride[];
-  private _configs: { [key in string]: JSONObject }
+  private _configs: { [key in string]: string };
 
   constructor({ publicApiKey, env }: Constructor) {
     this._apiKey = publicApiKey;
@@ -145,7 +145,7 @@ class FeatureFlags {
   }
 
   getConfig(featureName: string): JSONObject {
-    return this._configs[featureName];
+    return JSON.parse(this._configs[featureName]);
   }
 
   async trackFeatureView(featureName: string) {

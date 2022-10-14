@@ -24,7 +24,7 @@ Feature type:
 
 ### Example
 
-```
+```js
 import GrowthFlags from '@growthflags/js-sdk';
 
 const flags = GrowthFlags.create({
