@@ -36,9 +36,6 @@ const flags = GrowthFlags.create({
 flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
 
 const { enabled, config } = growthflags.getFeature('theFeature');
-const customText = feature.enabled && feature.config.customText;
-
-const defaultText = 'Default';
 
 const Page = () => {
   return (
