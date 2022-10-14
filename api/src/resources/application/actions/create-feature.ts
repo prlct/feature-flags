@@ -57,6 +57,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     usersPercentage: 0,
     usersViewedCount: 0,
     tests: [],
+    remoteConfig: '',
   };
 
   const feature = await featureService.insertOne({

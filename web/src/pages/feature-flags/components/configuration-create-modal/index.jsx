@@ -24,12 +24,12 @@ const ConfigurationCreateModal = ({
     if (opened && configurationId) {
       setConfiguration(propsConfiguration);
     }
-  }, [configurationId, opened]);
+  }, [configurationId, opened, propsConfiguration]);
 
   const handleClose = useCallback(() => {
     setConfiguration('');
     onClose();
-  }, []);
+  }, [onClose]);
 
   const createConfigurationMutation = featureFlagApi.useCreateConfiguration();
 
@@ -52,35 +52,37 @@ const ConfigurationCreateModal = ({
   return (
     <Modal
       centered
-      title={
+      title={(
         <Title order={3}>
           {configurationId ? 'Edit configuration' : 'Create configuration'}
         </Title>
-      }
+      )}
       opened={opened}
       onClose={handleClose}
     >
-        <Stack spacing={20}>
-          {/* TODO: Using of JsonInput with react-hook-form leads to TypeError: Cannot read properties of undefined (reading 'name') */}
-          <JsonInput
-            label="JSON configuration"
-            placeholder="Enter a JSON configuration"
-            validationError="Invalid JSON format"
-            formatOnBlur
-            autosize
-            minRows={4}
-            value={configuration}
-            onChange={setConfiguration}
-          />
-          <Button
-            onClick={onSubmit}
-            loading={createConfigurationMutation.isLoading}
-          >
-            {configurationId ? 'Edit' : 'Create'}
-          </Button>
-        </Stack>
+      <Stack spacing={20}>
+        {/* TODO: Using of JsonInput with react-hook-form leads to TypeError:
+          ** Cannot read properties of undefined (reading 'name') */}
+        <JsonInput
+          label="JSON configuration"
+          placeholder="Enter a JSON configuration"
+          validationError="Invalid JSON format"
+          formatOnBlur
+          autosize
+          minRows={4}
+          value={configuration}
+          onChange={setConfiguration}
+        />
+        <Button
+          onClick={onSubmit}
+          loading={createConfigurationMutation.isLoading}
+        >
+          {configurationId ? 'Edit' : 'Create'}
+        </Button>
+      </Stack>
     </Modal>
-)};
+  );
+};
 
 ConfigurationCreateModal.propTypes = {
   opened: PropTypes.bool,

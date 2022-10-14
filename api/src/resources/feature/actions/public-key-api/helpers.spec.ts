@@ -20,6 +20,7 @@ const featureDisabledForEveryone: FlatFeature =  {
   tests: [],
   visibilityChangedOn: new Date('2022-09-14T10:39:01.455Z'),
   env: Env.DEVELOPMENT,
+  remoteConfig: '{ "featureDisabledForEveryoneConfig": 1 } ',
 };
 const featureEnabledForEveryone: FlatFeature =  {
   _id: '2',
@@ -35,6 +36,7 @@ const featureEnabledForEveryone: FlatFeature =  {
   usersViewedCount: 1,
   visibilityChangedOn: new Date('2022-09-14T10:41:02.746Z'),
   env: Env.DEVELOPMENT,
+  remoteConfig: '{ "featureEnabledForEveryone": 2 } ',
 };
 const featureEnabledForEmail: FlatFeature = {
   _id: '3',
@@ -50,6 +52,7 @@ const featureEnabledForEmail: FlatFeature = {
   usersViewedCount: 1,
   visibilityChangedOn: new Date('2022-09-14T10:41:02.746Z'),
   env: Env.DEVELOPMENT,
+  remoteConfig: '{ "featureEnabledForEmail": 3 } ',
 };
 const featureEnabledForPercentOfUsers: FlatFeature = {
   _id: '4',
@@ -77,6 +80,7 @@ const featureEnabledForPercentOfUsers: FlatFeature = {
   ],
   visibilityChangedOn: new Date('2022-09-14T10:41:02.746Z'),
   env: Env.DEVELOPMENT,
+  remoteConfig: '{ "featureEnabledForPercentOfUsers": 4 }',
 };
 
 const makeUserByEmail = (email?: string) => {

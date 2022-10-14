@@ -2,7 +2,7 @@ import { includes, isEmpty } from 'lodash';
 import BigNumber from 'bignumber.js';
 import sha1 from 'crypto-js/sha1';
 import type { UserData } from './types';
-import { FlatFeature, TargetingRuleOperator } from 'resources/feature';
+import { FlatFeature, TargetingRuleOperator, UserFeature } from 'resources/feature';
 
 export const calculateRemainderByUserData = (id: string) => {
   const hash = sha1(id).toString();
@@ -73,4 +73,14 @@ export const calculateFlagsForUser = async (
   }
 
   return flags;
+};
+
+export const featuresToConfigsForUser = (features: FlatFeature[]) => {
+  const configs: { [key: string]: string } = {};
+  for (const feature of features) {
+    const { name } = feature;
+    configs[name] = feature.remoteConfig;
+  }
+
+  return configs;
 };

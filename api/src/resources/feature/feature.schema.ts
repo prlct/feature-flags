@@ -23,7 +23,8 @@ const envSettingsSchema = Joi.object({
   usersViewedCount: Joi.number().required().default(0),
   tests: Joi.array().items(Joi.string()).unique().required().default([]),
   targetingRules: Joi.array().items(targetingRuleSchema).default([]),
-  visibilityChangedOn: Joi.date(), 
+  visibilityChangedOn: Joi.date(),
+  remoteConfig: Joi.string().allow(null, '').default(''),
 });
 
 const schema = Joi.object({

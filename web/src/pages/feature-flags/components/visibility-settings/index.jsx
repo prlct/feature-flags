@@ -13,26 +13,6 @@ import { handleError } from 'helpers';
 import { featureFlagApi } from 'resources/feature-flag';
 
 const VisibilitySettings = ({ feature }) => {
-  const toggleFeatureStatusMutation = featureFlagApi.useToggleFeatureStatusOnSettingsPage();
-
-  const handleSwitchChange = useCallback(() => {
-    const reqData = {
-      _id: feature._id,
-      env: feature.env,
-    };
-
-    return toggleFeatureStatusMutation.mutate(reqData, {
-      onSuccess: ({ enabled }) => {
-        showNotification({
-          title: 'Success',
-          message: `The feature was successfully ${enabled ? 'enabled' : 'disabled'}`,
-          color: 'green',
-        });
-      },
-      onError: (e) => handleError(e),
-    });
-  }, [feature._id, feature.env, toggleFeatureStatusMutation]);
-
   const changeFeatureVisibilityMutation = featureFlagApi.useChangeFeatureVisibility();
 
   const handleFeatureVisibilityChange = useCallback((visibility) => {
@@ -90,14 +70,6 @@ const VisibilitySettings = ({ feature }) => {
           onChange={handleFeatureVisibilityChange}
         />
       </Stack>
-      <Switch
-        label={
-          <Title order={4}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Title>
-        }
-        styles={{ input: { cursor: 'pointer' } }}
-        checked={feature.enabled}
-        onChange={handleSwitchChange}
-      />
     </Group>
   );
 };
