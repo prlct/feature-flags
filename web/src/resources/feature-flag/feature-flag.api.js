@@ -5,7 +5,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import queryClient from 'query-client';
 import { apiService } from 'services';
 
-import { getLetterByAlphabetNumber } from 'helpers';
+import { getLetterByAlphabetNumber, handleError } from 'helpers';
 
 const resource = '/features';
 
@@ -154,9 +154,6 @@ export function useUpdateRemoteConfig() {
       queryClient.setQueryData(['featureFlag'], featureFlag);
 
       return { previousFeatureFlag };
-    },
-    onError: (err, item, context) => {
-      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
     },
   });
 }

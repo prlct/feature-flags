@@ -97,15 +97,15 @@ class FeatureFlags {
     this._featureOverrides = []
     this._configs = {};
   }
-  
+
   async fetchFeatureFlags(user: AppUser)  {
     if (user?.email || user?.id) {
-        await this._createUser({ 
+        await this._createUser({
           id: user.id,
           email: user.email,
           data: user.data
         });
-    } 
+    }
 
     const storageData = this._getFromStorage();
 
@@ -113,10 +113,10 @@ class FeatureFlags {
       this._features = storageData.features || {};
       this._configs = storageData.configs || {};
     }
-    
+
     return this._fetchFlags();
   }
-  
+
   isOn(featureName: string): boolean {
     return Boolean(this._features[featureName]);
   }
@@ -136,28 +136,31 @@ class FeatureFlags {
     this._features = this.mergeFeatures(this._features)
   }
 
-  getFeature(featureName: string) {
+  getFeature(featureName: string, options: { defaultConfig?: JSONObject } = {}) {
     return {
       name: featureName,
       enabled: this.isOn(featureName),
-      config: this.getConfig(featureName),
+      config: this.getConfig(featureName, options.defaultConfig),
     };
   }
 
-  getConfig(featureName: string): JSONObject {
-    return JSON.parse(this._configs[featureName]);
+  getConfig(featureName: string, defaultConfig?: JSONObject): JSONObject | undefined {
+    if (this._configs[featureName]) {
+      return JSON.parse(this._configs[featureName]);
+    }
+    return defaultConfig;
   }
 
   async trackFeatureView(featureName: string) {
     if (!this._user) return;
 
-    const data: CreateUserEventData = { 
+    const data: CreateUserEventData = {
       userId: this._user?._id,
       type: UserEventType.FeatureViewed,
       data: {
         featureName
       }
-    } ;
+    };
 
     const config = {
       headers: {
@@ -214,7 +217,7 @@ class FeatureFlags {
       const response = await apiService.post(`${userResource}`, reqData, config);
 
       this._user = response;
-      
+
       this._saveToStorage({ user: response })
     } catch(error) {
       console.log(consoleLogPrefix, error);
@@ -231,7 +234,7 @@ class FeatureFlags {
 
       const updatedData = localStorageData ? {...localStorageData, ...data} : {...data};
       const stringData = JSON.stringify(updatedData);
-      
+
       storage.setItem(`${storagePath}`, stringData);
     } catch (error) {
       console.log(consoleLogPrefix, error);
@@ -245,7 +248,7 @@ class FeatureFlags {
 
     try {
       const localStorageData = storage.getItem(`${storagePath}`);
-      
+
       return localStorageData ? JSON.parse(localStorageData): null;
     } catch (error) {
       console.log(consoleLogPrefix, error);
