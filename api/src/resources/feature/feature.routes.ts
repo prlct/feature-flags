@@ -2,6 +2,7 @@ import { routeUtil } from 'utils';
 
 import deleteFeature from './actions/delete-feature';
 import updateDescription from './actions/update-description';
+import updateRemoteConfig from './actions/update-remote-config';
 import toggle from './actions/toggle';
 import changeVisibility from './actions/change-visibility';
 import changeUsersPercentage from './actions/change-users-percentage';
@@ -15,6 +16,7 @@ import getFeaturesForUserPublicKey from './actions/public-key-api/get-features-f
 const privateRoutes = routeUtil.getRoutes([
   deleteFeature,
   updateDescription,
+  updateRemoteConfig,
   toggle,
   changeVisibility,
   changeUsersPercentage,

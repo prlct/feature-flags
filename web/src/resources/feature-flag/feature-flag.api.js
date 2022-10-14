@@ -140,6 +140,27 @@ export const useGetById = ({ _id, env }) => {
   return useQuery(['featureFlag'], getById, { enabled: !!_id });
 };
 
+export function useUpdateRemoteConfig() {
+  const updateRemoteConfig = (data) => apiService.put(`${resource}/${data.featureId}/remote-config`, data);
+
+  return useMutation(updateRemoteConfig, {
+    onMutate: async (feature) => {
+      await queryClient.cancelQueries(['featureFlag']);
+
+      const featureFlag = queryClient.getQueryData(['featureFlag']);
+      const previousFeatureFlag = cloneDeep(featureFlag);
+
+      featureFlag.remoteConfig = feature.remoteConfig;
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
+    },
+    onError: (err, item, context) => {
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
+    },
+  });
+}
+
 export function useUpdateDescription() {
   const updateDescription = (data) => apiService.put(`${resource}/${data._id}/description`, data);
 

@@ -19,6 +19,7 @@ type EnvSettings = {
   tests: string[];
   targetingRules?: TargetingRule[];
   visibilityChangedOn?: Date;
+  remoteConfig: string,
 };
 
 export type Feature = {
@@ -38,3 +39,8 @@ export type Feature = {
 };
 
 export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: Env };
+
+export type UserFeature = {
+  enabled: boolean,
+  remoteConfig?: string | null,
+};
