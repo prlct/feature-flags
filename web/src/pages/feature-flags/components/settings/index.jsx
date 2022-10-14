@@ -47,18 +47,20 @@ const Settings = ({ featureId, env }) => {
     return debounceConfigSave();
   };
 
-  const defaultLabel = 'JSON configuration';
-  const remoteConfigLabel = growthFlags && JSON.parse(growthFlags.getConfig('remoteConfig'))?.textAreaLabel;
-
   return (
     <Stack spacing={24}>
       <Stack spacing={24} sx={{ maxWidth: '650px' }}>
         <VisibilitySettings feature={feature} />
 
+        <Stack spacing="sm">
+          <Title order={4}>Info</Title>
+          <FeatureFlagDescription feature={feature} />
+        </Stack>
+
         {isRemoteConfigOn && (
           <Stack>
             <JsonInput
-              label={remoteConfigLabel || defaultLabel}
+              label="Remote config"
               placeholder='{ "color": "blue" }'
               validationError="Invalid JSON format"
               formatOnBlur
@@ -70,11 +72,6 @@ const Settings = ({ featureId, env }) => {
             />
           </Stack>
         )}
-
-        <Stack spacing="sm">
-          <Title order={4}>Info</Title>
-          <FeatureFlagDescription feature={feature} />
-        </Stack>
 
         <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
         <Divider my="sm" mt={0} />

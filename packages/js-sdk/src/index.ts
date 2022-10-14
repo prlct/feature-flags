@@ -135,7 +135,15 @@ class FeatureFlags {
 
     this._features = this.mergeFeatures(this._features)
   }
-  
+
+  getFeature(featureName: string) {
+    return {
+      name: featureName,
+      enabled: this.isOn(featureName),
+      config: this.getConfig(featureName),
+    };
+  }
+
   getConfig(featureName: string): JSONObject {
     return this._configs[featureName];
   }
