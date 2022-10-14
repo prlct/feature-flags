@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Method to Initialize SDK instance.
 
-```
+```js
 create({ publicApiKey, env })
 ```
 
@@ -17,7 +17,7 @@ create({ publicApiKey, env })
 
 ### Example
 
-```
+```js
 import GrowthFlags from '@growthflags/js-sdk';
 
 const flags = GrowthFlags.create({
