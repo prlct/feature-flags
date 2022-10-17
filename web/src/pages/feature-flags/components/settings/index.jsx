@@ -59,7 +59,7 @@ const Settings = ({ featureId, env }) => {
         </Stack>
 
         {isRemoteConfigOn && (
-          <Stack>
+          <Stack spacing="xs">
             <JsonInput
               label="Remote config"
               placeholder='{ "color": "blue" }'
@@ -71,7 +71,7 @@ const Settings = ({ featureId, env }) => {
               value={remoteConfig}
               onChange={setRemoteConfig}
             />
-            <Anchor href="https://developer.growthflags.com/js-sdk/getFeature" target="_blank">Learn more how to use remote config.</Anchor>
+            <Anchor href="https://developer.growthflags.com/js-sdk/getFeature" target="_blank" size="xs">Learn more how to use remote config.</Anchor>
           </Stack>
         )}
 
