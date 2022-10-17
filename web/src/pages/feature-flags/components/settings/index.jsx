@@ -71,7 +71,7 @@ const Settings = ({ featureId, env }) => {
               value={remoteConfig}
               onChange={setRemoteConfig}
             />
-            <Anchor href="https://developer.growthflags.com/js-sdk/getFeature" target="_blank" size="xs">Learn more how to use remote config.</Anchor>
+            <Anchor href="https://developer.growthflags.com/sdk-api/getFeature" target="_blank" size="xs">Learn more how to use remote config.</Anchor>
           </Stack>
         )}
 
