@@ -3,7 +3,6 @@ import { PropTypes } from 'prop-types';
 import {
   Title,
   Stack,
-  Switch,
   Select,
   Group,
 } from '@mantine/core';
