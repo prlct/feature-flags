@@ -10,9 +10,10 @@ const extendedJoi = Joi.extend({
         return { value };
       }
       try {
-        return JSON.parse(value);
+        JSON.parse(value);
+        return { value };
       } catch (error) {
-        return { errors: helpers.error('json.invalid', { value }) };
+        return { errors: [helpers.error('json.invalid', { value })] };
       }
     },
   },
