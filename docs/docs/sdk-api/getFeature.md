@@ -2,6 +2,10 @@
 sidebar_position: 4
 ---
 
+:::info Since js-sdk version 1.4.0 
+
+:::
+
 # getFeature()
 
 Returns feature with remote config
