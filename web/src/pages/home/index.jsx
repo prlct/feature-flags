@@ -27,7 +27,6 @@ import { IconPlus, IconSearch, IconX, IconSettings, IconTrash, IconTool } from '
 import _filter from 'lodash/filter';
 import { featureFlagApi } from 'resources/feature-flag';
 import { applicationApi } from 'resources/application';
-import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import * as routes from 'routes';
 import { handleError } from 'helpers';
@@ -35,7 +34,7 @@ import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
-import PaymentSuccessModal from './components/payment-sucess-modal';
+import PaymentSuccessModal from './components/payment-success-modal';
 
 const Home = () => {
   const modals = useModals();
@@ -45,7 +44,6 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
-  const growthFlags = useGrowthFlags();
 
   const { data, refetch, isRefetching, isLoading } = applicationApi.useGetFeaturesList(env);
 

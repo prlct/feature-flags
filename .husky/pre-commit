@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+lerna exec npm run precommit --scope api
+lerna exec npm run precommit --scope web

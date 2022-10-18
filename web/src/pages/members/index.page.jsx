@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { trim, cloneDeep } from 'lodash';
+import trim from 'lodash/trim';
+import cloneDeep from 'lodash/cloneDeep';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -36,14 +37,14 @@ const Members = () => {
   const queryClient = useQueryClient();
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const { data, isLoading } = companyApi.useGetMembers();
-  
+
   const {
     register, handleSubmit, formState: { errors }, setError, reset,
   } = useForm({ resolver: yupResolver(schema) });
 
   const membersList = useMemo(() => {
     if (!data) {
-      return []
+      return [];
     }
 
     const list = [
@@ -78,6 +79,7 @@ const Members = () => {
   const cancelInvitationMutation = companyApi.useCancelInvitation();
 
   const handleCancelInvitation = (email) => () => {
+    // eslint-disable-next-line no-restricted-globals
     const isConfirmed = confirm(`Chancel invitation for ${email}?`);
 
     if (!isConfirmed) {
@@ -99,6 +101,7 @@ const Members = () => {
   const removeMemberMutation = companyApi.useRemoveMember();
 
   const handleMemberRemove = useCallback((_id, email) => () => {
+    // eslint-disable-next-line no-restricted-globals
     const isConfirmed = confirm(`Remove team member ${email}?`);
 
     if (!isConfirmed) {
@@ -115,7 +118,7 @@ const Members = () => {
       },
       onError: (e) => handleError(e, setError),
     });
-  }, []);
+  }, [removeMemberMutation, setError]);
 
   return (
     <>
@@ -131,15 +134,15 @@ const Members = () => {
               placeholder="Enter email"
               error={errors?.email?.message}
               rightSectionWidth="200"
-              rightSection={
+              rightSection={(
                 <Button
                   loading={inviteMemberMutation.isLoading}
-                  sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0  }}
+                  sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                   onClick={handleSubmit(handleInvite)}
                 >
                   Invite
                 </Button>
-              }
+              )}
             />
           </Stack>
 
@@ -174,17 +177,20 @@ const Members = () => {
                       <td>
                         <Text size="md" weight={700}>
                           {firstName}
-                        </Text> 
+                        </Text>
                       </td>
                       <td>
                         <Text size="md" weight={700}>
                           {lastName}
-                        </Text> 
+                        </Text>
                       </td>
                       <td>
                         <Group sx={{ width: 50 }}>
                           {
-                            !isInvitation && currentAdmin?.ownCompanyId && _id !== currentAdmin?._id && (
+                            !isInvitation
+                            && currentAdmin?.ownCompanyId
+                            && _id !== currentAdmin?._id
+                            && (
                               <Tooltip label="Remove member" withArrow position="right">
                                 <ActionIcon
                                   loading={removeMemberMutation.isLoading}

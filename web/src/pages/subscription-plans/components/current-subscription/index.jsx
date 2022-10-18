@@ -16,7 +16,7 @@ const CurrentSubscriptionBlock = ({ onCancelSubscription }) => {
         onCancelSubscription();
       },
     });
-  }, [onCancelSubscription]);
+  }, [cancelMutation, onCancelSubscription]);
 
   return (
     <>

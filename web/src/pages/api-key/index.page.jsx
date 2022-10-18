@@ -50,13 +50,13 @@ const ApiKey = () => {
             sx={{ width: 560 }}
             label={<Title order={4}>Publishable API key</Title>}
             value={data?.publicApiKey}
-            rightSection={
+            rightSection={(
               <Tooltip label={isPublicKeyCopied ? 'Copied' : 'Copy'} withArrow position="right">
                 <ActionIcon color={isPublicKeyCopied ? 'teal' : 'gray'} onClick={handlePublicKeyCopy}>
                   {isPublicKeyCopied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                 </ActionIcon>
               </Tooltip>
-            }
+            )}
             onChange={() => {}}
           />
           <TextInput
@@ -64,7 +64,7 @@ const ApiKey = () => {
             label={<Title order={4}>Private API key</Title>}
             value={isPrivateKeyVisible ? data?.privateApiKey : '*******************************************************'}
             rightSectionWidth={80}
-            rightSection={
+            rightSection={(
               <Group>
                 <Tooltip label={isPrivateKeyVisible ? 'Hide' : 'Show'} withArrow position="right">
                   <ActionIcon onClick={handlePrivateKeyVisible}>
@@ -72,12 +72,12 @@ const ApiKey = () => {
                   </ActionIcon>
                 </Tooltip>
                 <Tooltip label={isPrivateKeyCopied ? 'Copied' : 'Copy'} withArrow position="right">
-                <ActionIcon color={isPrivateKeyCopied ? 'teal' : 'gray'} onClick={handlePrivateKeyCopy}>
+                  <ActionIcon color={isPrivateKeyCopied ? 'teal' : 'gray'} onClick={handlePrivateKeyCopy}>
                     {isPrivateKeyCopied ? <IconCheck size={16} /> : <IconCopy size={16} />}
                   </ActionIcon>
                 </Tooltip>
               </Group>
-            }
+            )}
             onChange={() => {}}
           />
         </Stack>

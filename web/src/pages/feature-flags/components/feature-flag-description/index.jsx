@@ -30,7 +30,7 @@ const FeatureFlagDescription = ({ feature }) => {
 
   useEffect(() => {
     reset({ description: feature.description });
-  }, [feature._id, reset]);
+  }, [feature._id, feature.description, reset]);
 
   const updateDescriptionMutation = featureFlagApi.useUpdateDescription();
 
