@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import {
   Title,
@@ -81,7 +81,10 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
     <Stack spacing="xs" sx={sx}>
       <Title order={4}>Feature targeting rules</Title>
       <Text size="xs">
-        <Text inherit>Show features to the users based on the rules. For example: only show to users with specified emails or for companies specified by _id. </Text>
+        <Text inherit>
+          Show features to the users based on the rules.
+          For example: only show to users with specified emails or for companies specified by _id.
+        </Text>
         {' '}
         <Text
           variant="link"

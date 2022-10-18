@@ -3,7 +3,7 @@ import { createStyles } from '@mantine/core';
 export const useStyles = createStyles((theme) => ({
   card: {
     flex: '1 1',
-    borderColor: theme.colors.gray[4]
+    borderColor: theme.colors.gray[4],
   },
   active: {
     border: 'none',
@@ -23,5 +23,5 @@ export const useStyles = createStyles((theme) => ({
     backgroundColor: theme.colors.green[9],
     borderRadius: '50%',
     color: theme.white,
-  }
+  },
 }));

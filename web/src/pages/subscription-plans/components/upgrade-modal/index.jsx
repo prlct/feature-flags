@@ -65,12 +65,14 @@ const UpgradeModal = (props) => {
       <>
         <Text>Next payment</Text>
         <Text size="lg" weight={600}>
+          {/* eslint-disable-next-line no-unsafe-optional-chaining */}
           {dayjs(invoice.lines?.data[1]?.period.end * 1000).format('MMM DD, YYYY')}
         </Text>
       </>
     );
 
     if (isDowngrade) {
+      /* eslint-disable-next-line no-unsafe-optional-chaining */
       const balanceAfterNextPayment = Math.abs(invoice.total) - invoice.lines?.data[1]?.amount;
 
       secondRow = (

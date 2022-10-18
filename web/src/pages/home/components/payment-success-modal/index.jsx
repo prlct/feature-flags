@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import Confetti from 'react-confetti'
+import Confetti from 'react-confetti';
 import {
   Container,
   Modal,
@@ -18,7 +18,7 @@ import { useStyles } from './styles';
 
 const PaymentSuccessModal = () => {
   const { classes } = useStyles();
-  const router = useRouter()
+  const router = useRouter();
 
   const [opened, setOpened] = useState(false);
   const [activeSubscriptionPlan, setActiveSubscriptionPlan] = useState();
@@ -26,17 +26,22 @@ const PaymentSuccessModal = () => {
   const onClose = useCallback(() => {
     setOpened(false);
     router.replace(routes.route.home, undefined, { shallow: true });
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (router.query.subscriptionPlan) {
       setOpened(true);
-      setActiveSubscriptionPlan(subscriptionList.find((item) => item.planIds[router.query.interval] === router.query.subscriptionPlan));
+      setActiveSubscriptionPlan(
+        subscriptionList.find(
+          (item) => item.planIds[router.query.interval] === router.query.subscriptionPlan,
+        ),
+      );
     }
-  }, [router.query.subscriptionPlan]);
+  }, [router.query.interval, router.query.subscriptionPlan]);
 
-  const renderFeatureList = useCallback(() =>
-  activeSubscriptionPlan.features.map((item, index) => (
+  /* eslint-disable react/no-array-index-key */
+  const renderFeatureList = useCallback(
+    () => activeSubscriptionPlan.features.map((item, index) => (
       <Container
         key={index}
         fluid
@@ -53,7 +58,7 @@ const PaymentSuccessModal = () => {
         {item}
       </Container>
     )),
-    [activeSubscriptionPlan]
+    [activeSubscriptionPlan, classes.icon],
   );
 
   return (
@@ -61,11 +66,11 @@ const PaymentSuccessModal = () => {
       <Modal
         centered
         overlayOpacity={0}
-        title={
+        title={(
           <Title order={3}>
             Success
           </Title>
-        }
+        )}
         opened={opened}
         onClose={onClose}
       >
@@ -82,7 +87,7 @@ const PaymentSuccessModal = () => {
       </Modal>
       {opened && <Confetti />}
     </>
-  )
+  );
 };
 
 export default PaymentSuccessModal;

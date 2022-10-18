@@ -23,34 +23,35 @@ const ConfigurationRemoveModal = ({ opened, onClose, configurationId }) => {
         color: 'green',
       });
     },
-    onError: (e) => handleError(e, setError),
+    onError: (e) => handleError(e),
   });
 
   return (
     <Modal
       centered
-      title={
+      title={(
         <Title order={3}>
           Delete the configuration?
         </Title>
-      }
+      )}
       opened={opened}
       onClose={onClose}
     >
-        <Stack spacing={20}>
-          <Group>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button
-              color="red"
-              loading={deleteConfigurationMutation.isLoading}
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
-          </Group>
-        </Stack>
+      <Stack spacing={20}>
+        <Group>
+          <Button onClick={onClose}>Cancel</Button>
+          <Button
+            color="red"
+            loading={deleteConfigurationMutation.isLoading}
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
-)};
+  );
+};
 
 ConfigurationRemoveModal.propTypes = {
   opened: PropTypes.bool,

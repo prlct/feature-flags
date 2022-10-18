@@ -35,7 +35,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
   const handleClose = useCallback(() => {
     reset();
     onClose();
-  }, []);
+  }, [onClose, reset]);
 
   const createFeatureFlagMutation = applicationApi.useCreateFeatureFlag();
 
@@ -54,37 +54,38 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
   return (
     <Modal
       centered
-      title={
+      title={(
         <Title order={3}>
           Create feature flag
         </Title>
-      }
+      )}
       opened={opened}
       onClose={handleClose}
     >
-        <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={20}>
-          <TextInput
-            {...register('name')}
-            label="Name"
-            placeholder="Enter a name"
-            error={errors?.name?.message}
-          />
-          <Textarea
-            {...register('description')}
-            label="Description"
-            placeholder="Enter a description"
-            error={errors?.description?.message}
-            sx={{ fontSize: '16px !important' }}
-          />
-          <Button
-            type="submit"
-            loading={createFeatureFlagMutation.isLoading}
-          >
-            Create
-          </Button>
-        </Stack>
+      <Stack component="form" onSubmit={handleSubmit(onSubmit)} spacing={20}>
+        <TextInput
+          {...register('name')}
+          label="Name"
+          placeholder="Enter a name"
+          error={errors?.name?.message}
+        />
+        <Textarea
+          {...register('description')}
+          label="Description"
+          placeholder="Enter a description"
+          error={errors?.description?.message}
+          sx={{ fontSize: '16px !important' }}
+        />
+        <Button
+          type="submit"
+          loading={createFeatureFlagMutation.isLoading}
+        >
+          Create
+        </Button>
+      </Stack>
     </Modal>
-)};
+  );
+};
 
 FeatureFlagCreateModal.propTypes = {
   opened: PropTypes.bool,

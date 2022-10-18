@@ -76,6 +76,7 @@ const PlanItem = (props) => {
     return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>;
   }, [interval, price]);
 
+  /* eslint-disable react/no-array-index-key */
   const renderFeatureList = useCallback(
     () => features.map((item, index) => (
       <Container

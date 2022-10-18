@@ -1,8 +1,7 @@
 import { memo } from 'react';
 import { accountApi } from 'resources/account';
 import { Menu } from '@mantine/core';
-import { NextLink } from '@mantine/next';
-import { IconUserCircle, IconLogout } from '@tabler/icons';
+import { IconLogout } from '@tabler/icons';
 import MenuToggle from '../MenuToggle';
 
 const AdminMenu = () => {
@@ -12,13 +11,6 @@ const AdminMenu = () => {
     <Menu
       control={<MenuToggle />}
     >
-      {/* <Menu.Item
-        component={NextLink}
-        href="/profile"
-        icon={<IconUserCircle size={16} />}
-      >
-        Profile
-      </Menu.Item> */}
       <Menu.Item
         onClick={() => signOut()}
         icon={<IconLogout size={16} />}

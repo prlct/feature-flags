@@ -34,20 +34,22 @@ const PercentageSettings = ({ feature }) => {
 
   const changeUsersPercentageMutation = featureFlagApi.useChangeUsersPercentage();
 
-  const handleUsersPercentageChange = useCallback((percentage) => changeUsersPercentageMutation.mutate({
-    _id: feature._id,
-    percentage: parseInt(percentage, 10),
-    env: feature.env,
-  }, {
-    onSuccess: ({ usersPercentage }) => {
-      showNotification({
-        title: 'Success',
-        message: `The feature will be displayed for ${usersPercentage || 0} percent of users.`,
-        color: 'green',
-      });
-    },
-    onError: (e) => handleError(e),
-  }), [changeUsersPercentageMutation, feature?._id, feature?.env]);
+  const handleUsersPercentageChange = useCallback((percentage) => {
+    changeUsersPercentageMutation.mutate({
+      _id: feature._id,
+      percentage: parseInt(percentage, 10),
+      env: feature.env,
+    }, {
+      onSuccess: ({ usersPercentage }) => {
+        showNotification({
+          title: 'Success',
+          message: `The feature will be displayed for ${usersPercentage || 0} percent of users.`,
+          color: 'green',
+        });
+      },
+      onError: (e) => handleError(e),
+    });
+  }, [changeUsersPercentageMutation, feature?._id, feature?.env]);
 
   return (
     <Stack spacing="xs">

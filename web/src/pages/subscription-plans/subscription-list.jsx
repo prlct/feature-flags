@@ -15,14 +15,20 @@ export default [
       <span>Onboarding</span>,
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
-      <span><b>Up to 3</b> product users</span>,
-      <span><b>Up to 2K</b> MAU</span>
+      <span>
+        <b>Up to 3</b>
+        <span>product users</span>
+      </span>,
+      <span>
+        <b>Up to 2K</b>
+        <span>MAU</span>
+      </span>,
     ],
   },
   {
     planIds: {
       month: config.subscriptions.starter.month,
-      year: config.subscriptions.starter.year
+      year: config.subscriptions.starter.year,
     },
     title: 'Starter',
     price: {
@@ -33,8 +39,14 @@ export default [
       <span>Onboarding</span>,
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
-      <span><b>Up to 10</b> product users</span>,
-      <span><b>Up to 10K</b> MAU</span>
+      <span>
+        <b>Up to 10</b>
+        <span>product users</span>
+      </span>,
+      <span>
+        <b>Up to 10K</b>
+        <span>MAU</span>
+      </span>,
     ],
   },
   {
@@ -51,8 +63,14 @@ export default [
       <span>Onboarding</span>,
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
-      <span><b>Unlimited</b> product users</span>,
-      <span><b>Up to 100K</b> MAU</span>
+      <span>
+        <b>Unlimited</b>
+        <span>product users</span>
+      </span>,
+      <span>
+        <b>Up to 100K</b>
+        <span>MAU</span>
+      </span>,
     ],
   },
 ];
