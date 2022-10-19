@@ -12,6 +12,8 @@ import updateTargetingRules from './actions/update-targeting-rules';
 import getFeatures from './actions/private-key-api/get-features';
 import changeEnabled from './actions/private-key-api/change-enabled';
 import getFeaturesForUserPublicKey from './actions/public-key-api/get-features-for-user';
+import createAbVariant from './actions/create-ab-variant';
+import updateAbVariant from './actions/update-ab-variant';
 
 const privateRoutes = routeUtil.getRoutes([
   deleteFeature,
@@ -22,6 +24,8 @@ const privateRoutes = routeUtil.getRoutes([
   changeUsersPercentage,
   getCurrent,
   updateTargetingRules,
+  createAbVariant,
+  updateAbVariant,
 ]);
 
 const privateKeyRoutes = [

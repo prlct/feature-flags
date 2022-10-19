@@ -11,12 +11,17 @@ export type TargetingRule = {
   value: string | string[]
 };
 
+export type ABVariant = {
+  name: string,
+  remoteConfig: string,
+};
+
 type EnvSettings = {
   enabled: boolean;
   enabledForEveryone: boolean;
   usersPercentage: number;
   usersViewedCount: number;
-  tests: string[];
+  tests: ABVariant[];
   targetingRules?: TargetingRule[];
   visibilityChangedOn?: Date;
   remoteConfig: string,

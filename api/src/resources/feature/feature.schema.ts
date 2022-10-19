@@ -1,6 +1,8 @@
 import Joi from 'joi';
 import { Env } from 'resources/application';
 import { TargetingRuleOperator } from './feature.types';
+import extendedJoi from '../../utils/joi.extension';
+import { MAX_REMOTE_CONFIG_LENGTH } from './feature.constants';
 
 const targetingRuleSchema = Joi.object({
   attribute: Joi.string().allow(null, ''),
@@ -16,15 +18,25 @@ const targetingRuleSchema = Joi.object({
     }),
 });
 
+export const remoteConfigSchema = extendedJoi.json()
+  .max(MAX_REMOTE_CONFIG_LENGTH)
+  .messages({
+    'json.invalid': 'Invalid JSON format',
+  });
+
 const envSettingsSchema = Joi.object({
   enabled: Joi.boolean().required().default(false),
   enabledForEveryone: Joi.boolean().required().default(false),
   usersPercentage: Joi.number().min(0).max(100).required().default(0),
   usersViewedCount: Joi.number().required().default(0),
-  tests: Joi.array().items(Joi.string()).unique().required().default([]),
+  tests: Joi.array().items(
+    Joi.object({
+      name: Joi.string().trim().required(),
+      remoteConfig: remoteConfigSchema,
+    })).unique().required().default([]),
   targetingRules: Joi.array().items(targetingRuleSchema).default([]),
   visibilityChangedOn: Joi.date(),
-  remoteConfig: Joi.string().allow(null, '').default(''),
+  remoteConfig: remoteConfigSchema,
 });
 
 const schema = Joi.object({

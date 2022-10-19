@@ -8,15 +8,18 @@ const AdminMenu = () => {
   const { mutate: signOut } = accountApi.useSignOut();
 
   return (
-    <Menu
-      control={<MenuToggle />}
-    >
-      <Menu.Item
-        onClick={() => signOut()}
-        icon={<IconLogout size={16} />}
-      >
-        Logout
-      </Menu.Item>
+    <Menu>
+      <Menu.Target>
+        <MenuToggle />
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item
+          onClick={() => signOut()}
+          icon={<IconLogout size={16} />}
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
     </Menu>
   );
 };

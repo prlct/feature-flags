@@ -35,6 +35,7 @@ import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
 import PaymentSuccessModal from './components/payment-success-modal';
+import MessagingText from './components/targeting-message';
 
 const Home = () => {
   const modals = useModals();
@@ -211,7 +212,7 @@ const Home = () => {
                             <Stack>
                               <Switch
                                 checked={enabled}
-                                styles={{ input: { cursor: 'pointer' } }}
+                                sx={{ label: { cursor: 'pointer' } }}
                                 disabled={isRefetching}
                                 onChange={() => handleSwitchChange({
                                   _id,
@@ -220,54 +221,51 @@ const Home = () => {
                                   env })}
                               />
                               <Stack spacing={0}>
-                                {enabledForEveryone && <Text size="xs">For everyone</Text>}
-                                {usersPercentage > 0 && (
-                                  <Text size="xs">
-                                    {`For ${usersPercentage}% of users`}
-                                  </Text>
-                                )}
-                                {targetingRules && targetingRules.length > 0 && <Text size="xs">By targeting rules</Text>}
-                                {!enabledForEveryone && !usersPercentage && !targetingRules?.length && <Text size="xs">For some users</Text> }
+                                <MessagingText
+                                  enabledForEveryone={enabledForEveryone}
+                                  usersPercentage={usersPercentage}
+                                  targetingRulesCount={targetingRules?.length || 0}
+                                />
                               </Stack>
                             </Stack>
                           </td>
                           <td>
-                            {usersViewedCount}
-                            {' '}
-                            {pluralize('user', usersViewedCount)}
+                            {`${usersViewedCount} ${pluralize('user', usersViewedCount)}`}
                           </td>
                           <td>{new Date(createdOn).toLocaleDateString('en-US')}</td>
                           <td>
-                            <Menu control={(
-                              <ActionIcon
-                                title="Settings"
-                                variant="transparent"
-                                disabled={isRefetching}
-                                sx={{
-                                  '&:disabled': {
-                                    backgroundColor: 'transparent',
-                                    border: 0,
-                                  },
-                                }}
-                              >
-                                <IconTool />
-                              </ActionIcon>
-                        )}
-                            >
-                              <Menu.Item
-                                component={NextLink}
-                                href={`${routes.path.featureFlag}/${_id}`}
-                                icon={<IconSettings size={14} />}
-                              >
-                                Settings
-                              </Menu.Item>
-                              <Menu.Item
-                                icon={<IconTrash size={14} />}
-                                color="red"
-                                onClick={() => handleFeatureDelete({ _id, name })}
-                              >
-                                Delete
-                              </Menu.Item>
+                            <Menu>
+                              <Menu.Target>
+                                <ActionIcon
+                                  title="Settings"
+                                  variant="transparent"
+                                  disabled={isRefetching}
+                                  sx={{
+                                    '&:disabled': {
+                                      backgroundColor: 'transparent',
+                                      border: 0,
+                                    },
+                                  }}
+                                >
+                                  <IconTool />
+                                </ActionIcon>
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Item
+                                  component={NextLink}
+                                  href={`${routes.path.featureFlag}/${_id}`}
+                                  icon={<IconSettings size={14} />}
+                                >
+                                  Settings
+                                </Menu.Item>
+                                <Menu.Item
+                                  icon={<IconTrash size={14} />}
+                                  color="red"
+                                  onClick={() => handleFeatureDelete({ _id, name })}
+                                >
+                                  Delete
+                                </Menu.Item>
+                              </Menu.Dropdown>
                             </Menu>
 
                           </td>
