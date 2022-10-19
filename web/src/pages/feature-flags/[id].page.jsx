@@ -5,7 +5,9 @@ import {
   Stack,
   Tabs,
   Breadcrumbs,
-  Group, Switch, Title,
+  Group,
+  Switch,
+  Text,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
@@ -15,16 +17,13 @@ import { Link } from 'components';
 import * as routes from 'routes';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 import { handleError } from 'helpers';
-import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import { useRouter } from 'next/router';
 import Settings from './components/settings';
-import ABTesting from './components/ab-testing';
 
 const FeatureFlag = () => {
   const router = useRouter();
   const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
-  const growthFlags = useGrowthFlags();
 
   const { id } = router.query;
 
@@ -77,25 +76,25 @@ const FeatureFlag = () => {
             <Breadcrumbs>{breadcrumbItems}</Breadcrumbs>
             <Switch
               label={
-                <Title order={4}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Title>
+                <Text span size="lg" weight={600}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Text>
               }
-              styles={{ input: { cursor: 'pointer' } }}
+              styles={{ body: { alignItems: 'center' } }}
+              sx={{ label: { cursor: 'pointer' } }}
               checked={feature.enabled}
               onChange={handleSwitchChange}
             />
           </Group>
 
           {/* TODO: Connect tabs with url */}
-          <Tabs>
-            <Tabs.Tab label="Settings">
+          <Tabs defaultValue="settings">
+            <Tabs.List>
+              <Tabs.Tab value="settings">
+                Settings
+              </Tabs.Tab>
+            </Tabs.List>
+            <Tabs.Panel value="settings">
               <Settings featureId={id} env={env} />
-            </Tabs.Tab>
-
-            {growthFlags && growthFlags.isOn('abTesting') && (
-            <Tabs.Tab label="A/B testing">
-              <ABTesting featureId={id} env={env} />
-            </Tabs.Tab>
-            )}
+            </Tabs.Panel>
           </Tabs>
         </Stack>
       ) : (

@@ -3,12 +3,10 @@ import Joi from 'joi';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService, Feature } from 'resources/feature';
-import extendedJoi from 'utils/joi.extension';
 
 import featureAuth from '../middlewares/feature-auth.middleware';
 import { Env } from '../../application';
-
-const MAX_REMOTE_CONFIG_LENGTH = 500;
+import { remoteConfigSchema } from '../feature.schema';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -18,11 +16,7 @@ const schema = Joi.object({
       'any.required': 'env is required',
       'string.empty': 'env is required',
     }),
-  remoteConfig: extendedJoi.json()
-    .max(MAX_REMOTE_CONFIG_LENGTH)
-    .messages({
-      'json.invalid': 'Invalid JSON format',
-    }),
+  remoteConfig: remoteConfigSchema,
 });
 
 type ValidatedData = {

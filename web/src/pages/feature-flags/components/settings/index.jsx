@@ -1,23 +1,27 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
-import trim from 'lodash/trim';
+
 import {
   Title,
   Text,
   Divider,
   Stack,
-  JsonInput,
-  Anchor,
+  Tabs,
 } from '@mantine/core';
-import { featureFlagApi } from 'resources/feature-flag';
 
+import { featureFlagApi } from 'resources/feature-flag';
+import { getLetterByAlphabetNumber } from 'helpers';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
+
 import VisibilitySettings from '../visibility-settings';
 import PercentageSettings from '../percentage-settings';
 import FeatureFlagDescription from '../feature-flag-description';
 import FeatureTargetingRules from '../feature-targeting-rules';
+import RemoteConfig from '../remote-config';
+import ABVariant from '../ab-variant';
 
+const MAX_AB_VARIANTS = 3;
 const CONFIG_SAVE_DEBOUNCE_TIME = 500;
 
 const Settings = ({ featureId, env }) => {
@@ -25,32 +29,32 @@ const Settings = ({ featureId, env }) => {
 
   const { data: feature } = featureFlagApi.useGetById({ featureId, env });
 
-  const [remoteConfig, setRemoteConfig] = useState(feature.remoteConfig);
-
-  useEffect(() => {
-    setRemoteConfig(feature.remoteConfig);
-  }, [feature]);
+  const [openedVariant, setOpenedVariant] = useState('variantA');
 
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
   const isTargetingUsersOn = growthFlags && growthFlags.isOn('targetingRules');
-  const isRemoteConfigOn = growthFlags && growthFlags.isOn('remoteConfig');
+  const isABTestingOn = growthFlags && growthFlags.isOn('abTesting');
 
+  const createABVariantMutation = featureFlagApi.useCreateABVariant(feature._id);
   const updateRemoteConfigMutation = featureFlagApi.useUpdateRemoteConfig();
 
-  const debounceConfigSave = useMemo(() => debounce(() => updateRemoteConfigMutation.mutate({
-    env, featureId, remoteConfig,
-  }), CONFIG_SAVE_DEBOUNCE_TIME), [env, featureId, remoteConfig, updateRemoteConfigMutation]);
+  const debouncedRemoteConfigSave = useMemo(
+    () => debounce(({ env, featureId, remoteConfig }) => updateRemoteConfigMutation.mutate({
+      env, featureId, remoteConfig,
+    }), CONFIG_SAVE_DEBOUNCE_TIME),
+    [updateRemoteConfigMutation],
+  );
 
-  const onRemoteConfigBlurHandler = () => {
-    if (trim(remoteConfig) === trim(feature.remoteConfig)) {
-      return null;
-    }
-    return debounceConfigSave();
+  const handleAddVariant = async () => {
+    const totalExtraVariants = feature.tests?.length || 0;
+    const newVariantName = `Variant ${getLetterByAlphabetNumber(totalExtraVariants + 1).toUpperCase()}`;
+    await createABVariantMutation.mutate({ name: newVariantName, remoteConfig: '', env });
+    setOpenedVariant(totalExtraVariants.toString());
   };
 
   return (
     <Stack spacing={24}>
-      <Stack spacing={24} sx={{ maxWidth: '650px' }}>
+      <Stack spacing={24} sx={{ maxWidth: '800px' }}>
         <VisibilitySettings feature={feature} />
 
         <Stack spacing="sm">
@@ -58,38 +62,61 @@ const Settings = ({ featureId, env }) => {
           <FeatureFlagDescription feature={feature} />
         </Stack>
 
-        {isRemoteConfigOn && (
-          <Stack spacing="xs">
-            <JsonInput
-              label="Remote config"
-              placeholder='{ "color": "blue" }'
-              validationError="Invalid JSON format"
-              formatOnBlur
-              onBlur={onRemoteConfigBlurHandler}
-              autosize
-              minRows={4}
-              value={remoteConfig}
-              onChange={setRemoteConfig}
-            />
-            <Anchor href="https://developer.growthflags.com/sdk-api/getFeature" target="_blank" size="xs">Learn more how to use remote config.</Anchor>
-          </Stack>
-        )}
-
-        <Text size="sm" mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
+        <Text size="sm" mt={16} mb={-16}>The settings below will only apply if the feature is enabled for some users</Text>
         <Divider my="sm" mt={0} />
 
         {isFeaturePercentOfUsersOn && (
           <PercentageSettings feature={feature} />
         )}
 
+        {isTargetingUsersOn && (
+          <FeatureTargetingRules
+            feature={feature}
+            sx={{ maxWidth: '1000px' }}
+          />
+        )}
+
+        <Divider my="sm" mt={0} />
+
+        <Tabs defaultValue="variantA" value={openedVariant} onTabChange={setOpenedVariant} keepMounted={false}>
+          <Tabs.List>
+            <Tabs.Tab value="variantA">
+              Variant A
+            </Tabs.Tab>
+            {isABTestingOn && feature?.tests?.map((variant, index) => (
+              <Tabs.Tab key={variant.name} value={index.toString()}>
+                {variant.name}
+              </Tabs.Tab>
+            ))}
+            <Tabs.Tab value="Add new" onClick={handleAddVariant} disabled={feature?.tests?.length >= MAX_AB_VARIANTS}>
+              <Text color="blue">
+                Add New
+              </Text>
+            </Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="variantA" mt={8}>
+            <RemoteConfig
+              feature={feature}
+              env={env}
+              configSaveHandler={debouncedRemoteConfigSave}
+              initialRemoteConfig={feature.remoteConfig}
+            />
+          </Tabs.Panel>
+
+          {isABTestingOn && feature?.tests?.map((variant, index) => (
+            <Tabs.Panel key={variant.name} value={index.toString()} mt={8}>
+              <ABVariant
+                feature={feature}
+                env={env}
+                variantIndex={index}
+              />
+            </Tabs.Panel>
+          ))}
+
+        </Tabs>
       </Stack>
 
-      {isTargetingUsersOn && (
-        <FeatureTargetingRules
-          feature={feature}
-          sx={{ maxWidth: '1000px' }}
-        />
-      )}
     </Stack>
   );
 };
