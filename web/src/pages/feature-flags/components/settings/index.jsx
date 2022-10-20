@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 
@@ -29,7 +29,13 @@ const Settings = ({ featureId, env }) => {
 
   const { data: feature } = featureFlagApi.useGetById({ featureId, env });
 
-  const [openedVariant, setOpenedVariant] = useState('variantA');
+  const [openedVariant, setOpenedVariant] = useState('mainVariant');
+
+  useEffect(() => {
+    if (feature.tests.length === 0) {
+      setOpenedVariant('mainVariant');
+    }
+  }, [feature.tests.length]);
 
   const isFeaturePercentOfUsersOn = growthFlags && growthFlags.isOn('percentOfUsers');
   const isTargetingUsersOn = growthFlags && growthFlags.isOn('targetingRules');
@@ -78,9 +84,9 @@ const Settings = ({ featureId, env }) => {
 
         <Divider my="sm" mt={0} />
 
-        <Tabs defaultValue="variantA" value={openedVariant} onTabChange={setOpenedVariant} keepMounted={false}>
+        <Tabs defaultValue="mainVariant" value={openedVariant} onTabChange={setOpenedVariant} keepMounted={false}>
           <Tabs.List>
-            <Tabs.Tab value="variantA">
+            <Tabs.Tab value="mainVariant">
               Variant A
             </Tabs.Tab>
             {isABTestingOn && feature?.tests?.map((variant, index) => (
@@ -95,7 +101,7 @@ const Settings = ({ featureId, env }) => {
             </Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="variantA" mt={8}>
+          <Tabs.Panel value="mainVariant" mt={8}>
             <RemoteConfig
               feature={feature}
               env={env}

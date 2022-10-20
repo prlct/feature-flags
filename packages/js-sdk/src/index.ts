@@ -79,6 +79,11 @@ export type FeatureOverride = {
   enabled: boolean;
 }
 
+export type ABVariant = {
+  name: string,
+  config: string
+}
+
 class FeatureFlags {
   private _apiKey: string;
   private _env: string;
@@ -87,6 +92,7 @@ class FeatureFlags {
   // custom feature overrides set by users to override on the specific environment (e.g. dev)
   private _featureOverrides: FeatureOverride[];
   private _configs: { [key in string]: string };
+  private _variants: { [key in string]: ABVariant };
 
   constructor({ publicApiKey, env }: Constructor) {
     this._apiKey = publicApiKey;
@@ -96,6 +102,7 @@ class FeatureFlags {
     this._features = {};
     this._featureOverrides = []
     this._configs = {};
+    this._variants = {};
   }
 
   async fetchFeatureFlags(user: AppUser)  {
@@ -141,7 +148,12 @@ class FeatureFlags {
       name: featureName,
       enabled: this.isOn(featureName),
       config: this.getConfig(featureName, options.defaultConfig),
+      variant: this.getVariant(featureName),
     };
+  }
+
+  getVariant(featureName: string) {
+    return this._variants[featureName] || { name: "mainVariant", remoteConfig: this.getConfig(featureName) };
   }
 
   getConfig(featureName: string, defaultConfig?: JSONObject): JSONObject | undefined {
@@ -194,6 +206,7 @@ class FeatureFlags {
       const features = response.features || {};
       this._features = this.mergeFeatures(features);
       this._configs = response.configs || {};
+      this._variants = response.variants || {};
 
       this._saveToStorage(response);
 
