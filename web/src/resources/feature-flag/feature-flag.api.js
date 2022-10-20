@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from 'react-query';
 import _find from 'lodash/find';
+import filter from 'lodash/filter';
 import cloneDeep from 'lodash/cloneDeep';
 import queryClient from 'query-client';
 import { apiService } from 'services';
@@ -205,6 +206,30 @@ export function useUpdateABVariant(featureId) {
       const previousFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.tests[item.variantIndex] = { name: item.name, remoteConfig: item.remoteConfig };
+      queryClient.setQueryData(['featureFlag'], featureFlag);
+
+      return { previousFeatureFlag };
+    },
+    onError: (err, item, context) => {
+      queryClient.setQueryData(['featureFlag'], context.previousFeatureFlag);
+    },
+  });
+}
+
+export function useRemoveABVariant(featureId) {
+  const removeABVariant = (data) => apiService.delete(`${resource}/${featureId}/tests/${data.variantIndex}`, data);
+
+  return useMutation(removeABVariant, {
+    onMutate: async (item) => {
+      await queryClient.cancelQueries(['featureFlag']);
+
+      const featureFlag = queryClient.getQueryData(['featureFlag']);
+      const previousFeatureFlag = cloneDeep(featureFlag);
+
+      featureFlag.tests = filter(
+        featureFlag.tests,
+        (test, index) => index !== +item.variantIndex,
+      );
       queryClient.setQueryData(['featureFlag'], featureFlag);
 
       return { previousFeatureFlag };

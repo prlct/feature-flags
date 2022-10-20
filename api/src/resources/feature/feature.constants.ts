@@ -1,0 +1,1 @@
+export const MAX_REMOTE_CONFIG_LENGTH = 500;

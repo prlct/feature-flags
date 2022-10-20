@@ -79,6 +79,7 @@ const Members = () => {
   const cancelInvitationMutation = companyApi.useCancelInvitation();
 
   const handleCancelInvitation = (email) => () => {
+    // TODO: useModals().openConfirmModal
     // eslint-disable-next-line no-restricted-globals
     const isConfirmed = confirm(`Chancel invitation for ${email}?`);
 
@@ -101,6 +102,7 @@ const Members = () => {
   const removeMemberMutation = companyApi.useRemoveMember();
 
   const handleMemberRemove = useCallback((_id, email) => () => {
+    // TODO: useModals().openConfirmModal
     // eslint-disable-next-line no-restricted-globals
     const isConfirmed = confirm(`Remove team member ${email}?`);
 
