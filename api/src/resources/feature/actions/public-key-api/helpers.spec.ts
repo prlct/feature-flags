@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import * as helpers from './helpers';
 import type { UserData } from './types';
 import type { FlatFeature } from '../../feature.types';
@@ -249,5 +251,41 @@ describe('calculateFlagsForUser', () => {
           .resolves.toEqual(expectedResult);
       },
     );
+  });
+
+  describe('Utilities to calculate a/b bucket from number', () => {
+    test('id as integers from 1 to 100 with 2 buckets and for numbers from 1 to 100 should be 50/50', () => {
+      const users = new Array(100).fill(null).map((u, i) => i + 1);
+      const buckets = users.map(u => helpers.numberToBucketIndex(2, u));
+
+      const variantACount = _.filter(buckets, n => n == 0).length;
+      const variantBCount = _.filter(buckets, n => n == 1).length;
+
+      expect(variantACount).toEqual(variantBCount);
+    });
+
+    test('id as integers from 1 to 100 with 3 buckets and for numbers from 1 to 100 should be 33/33/33', () => {
+      const users = new Array(100).fill(null).map((u, i) => i + 1);
+      const buckets = users.map(u => helpers.numberToBucketIndex(3, u));
+
+      const variantACount = _.filter(buckets, n => n == 0).length;
+      const variantBCount = _.filter(buckets, n => n == 1).length;
+      const variantCCount = _.filter(buckets, n => n == 2).length;
+
+      expect(variantACount).toEqual(variantBCount);
+      expect(variantACount).toEqual(variantCCount);
+    });
+
+    test('id as integers from 1 to 100 with 4 buckets and for numbers from 1 to 100 should be 25/25/25/25', () => {
+      const users = new Array(100).fill(null).map((u, i) => i + 1);
+      const buckets = users.map(u => helpers.numberToBucketIndex(3, u));
+
+      const variantACount = _.filter(buckets, n => n == 0).length;
+      const variantBCount = _.filter(buckets, n => n == 1).length;
+      const variantCCount = _.filter(buckets, n => n == 2).length;
+
+      expect(variantACount).toEqual(variantBCount);
+      expect(variantACount).toEqual(variantCCount);
+    });
   });
 });

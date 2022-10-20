@@ -54,9 +54,9 @@ const ABVariant = (props) => {
       labels: { confirm: 'Delete', cancel: 'Cancel' },
       confirmProps: { color: 'red', variant: 'subtle' },
       cancelProps: { variant: 'subtle' },
-      onConfirm: async () => {
-        await removeVariantMutation.mutate({ variantIndex, env });
-        setOpenedVariant(Math.max(variantIndex - 1, 0).toString());
+      onConfirm: () => {
+        removeVariantMutation.mutate({ variantIndex, env });
+        setOpenedVariant(Math.max(+variantIndex - 1, 0).toString());
       },
     });
   };

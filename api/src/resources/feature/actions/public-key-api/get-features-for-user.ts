@@ -6,7 +6,7 @@ import { featureService } from 'resources/feature';
 import { Env } from 'resources/application';
 import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userService } from 'resources/user';
-import { calculateFlagsForUser, featuresToConfigsForUser } from './helpers';
+import { calculateABTestsForUser, calculateFlagsForUser, featuresToConfigsForUser } from './helpers';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -44,7 +44,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
  
   const configs: { [key: string]: string } = featuresToConfigsForUser(features);
 
-  ctx.body = { features: flagsForUser, configs };
+  const variants = calculateABTestsForUser(userId || user?._id || '', features);
+
+  ctx.body = { features: flagsForUser, configs, variants };
 }
 
 export default (router: AppRouter) => {

@@ -18,6 +18,7 @@ const schema = Joi.object({
     }),
   name: Joi.string()
     .trim()
+    .max(64)
     .required()
     .messages({
       'any.required': 'Variant name is required',
