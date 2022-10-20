@@ -110,6 +110,7 @@ const Settings = ({ featureId, env }) => {
                 feature={feature}
                 env={env}
                 variantIndex={index}
+                setOpenedVariant={setOpenedVariant}
               />
             </Tabs.Panel>
           ))}

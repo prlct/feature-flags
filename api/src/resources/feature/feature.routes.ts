@@ -14,6 +14,7 @@ import changeEnabled from './actions/private-key-api/change-enabled';
 import getFeaturesForUserPublicKey from './actions/public-key-api/get-features-for-user';
 import createAbVariant from './actions/create-ab-variant';
 import updateAbVariant from './actions/update-ab-variant';
+import removeAbVariant from './actions/remove-ab-variant';
 
 const privateRoutes = routeUtil.getRoutes([
   deleteFeature,
@@ -26,6 +27,7 @@ const privateRoutes = routeUtil.getRoutes([
   updateTargetingRules,
   createAbVariant,
   updateAbVariant,
+  removeAbVariant,
 ]);
 
 const privateKeyRoutes = [
