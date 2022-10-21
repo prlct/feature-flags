@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import _ from 'lodash';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';

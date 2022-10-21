@@ -19,7 +19,6 @@ const calculateFlagForUser = async (
     enabledForEveryone,
     usersPercentage,
     targetingRules,
-    tests,
   } = feature;
 
   if (!enabled) {
@@ -90,14 +89,6 @@ export const featuresToConfigsForUser = (features: FlatFeature[], variants: { [n
   return configs;
 };
 
-export const mongoIdToNumber = (id: string) => {
-  const incPart = id.substring(18);
-
-  const number = parseInt(incPart, 16);
-
-  return number;
-};
-
 export const numberToBucketIndex = (totalBuckets: number, targetNumber: number) => {
   const percentageNumber = targetNumber % 100;
 
@@ -110,7 +101,7 @@ export const numberToBucketIndex = (totalBuckets: number, targetNumber: number) 
 };
 
 export const calculateABTestForUser = (tests: ABVariant[], userId: string) => {
-  const number = mongoIdToNumber(userId);
+  const number = calculateRemainderByUserData(userId);
   const bucketNumber = numberToBucketIndex(tests.length, number);
 
   return tests[bucketNumber];
