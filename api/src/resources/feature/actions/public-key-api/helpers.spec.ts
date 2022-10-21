@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { generateId } from '@paralect/node-mongo';
 
 import * as helpers from './helpers';
 import type { UserData } from './types';
@@ -286,6 +287,22 @@ describe('calculateFlagsForUser', () => {
 
       expect(variantACount).toEqual(variantBCount);
       expect(variantACount).toEqual(variantCCount);
+    });
+
+    test('100000 user ids should split almost evenly', () => {
+      const totalIDs = 100000;
+      const userIds = new Array(totalIDs).fill(null).map(() => generateId());
+      const tests = [{ name: 'Basic', remoteConfig: '' }, { name: 'Variant B', remoteConfig: '' }];
+
+      const buckets = userIds.map(u => helpers.calculateABTestForUser(tests, u));
+
+      const variantACount = _.filter(buckets, v => v.name === 'Basic').length;
+      const variantBCount = buckets.length - variantACount;
+
+      const variantAPercentage = 100 / (totalIDs / variantBCount);
+      const variantBPercentage = 100 / (totalIDs / variantACount);
+
+      expect(variantAPercentage).toBeCloseTo(variantBPercentage, 0);
     });
   });
 });
