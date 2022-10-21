@@ -87,7 +87,7 @@ const Settings = ({ featureId, env }) => {
         <Tabs defaultValue="mainVariant" value={openedVariant} onTabChange={setOpenedVariant} keepMounted={false}>
           <Tabs.List>
             <Tabs.Tab value="mainVariant">
-              Variant A
+              Basic
             </Tabs.Tab>
             {isABTestingOn && feature?.tests?.map((variant, index) => (
               <Tabs.Tab key={variant.name} value={index.toString()}>
