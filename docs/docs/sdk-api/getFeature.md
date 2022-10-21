@@ -69,11 +69,13 @@ const Page = () => {
 
 ```jsx
 /* ... */
+import analytics from 'any-analytics-you-using';
+
 const defaultConfig = { buttonText: 'Click me' };
 const { enabled, config, variant } = growthflags.getFeature('feature-with-ab', { defaultConfig });
 
 const trackClicks = () => 
-  analytics.sendEvent({
+  analytics.sendEvent({ // Any analytics you use
     name: 'button-clicked',
     variant: variant.name,
     config: config,
