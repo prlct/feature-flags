@@ -76,11 +76,15 @@ export const calculateFlagsForUser = async (
   return flags;
 };
 
-export const featuresToConfigsForUser = (features: FlatFeature[]) => {
+export const featuresToConfigsForUser = (features: FlatFeature[], variants: { [name: string]: ABVariant } = {}) => {
   const configs: { [key: string]: string } = {};
   for (const feature of features) {
     const { name } = feature;
-    configs[name] = feature.remoteConfig;
+    if (variants[name]) {
+      configs[name] = variants[name].remoteConfig;
+    } else {
+      configs[name] = feature.remoteConfig;
+    }
   }
 
   return configs;

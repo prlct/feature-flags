@@ -12,7 +12,12 @@ Returns feature with remote config
 ```ts
 interface Growthflags {
   //...
-  getFeature(featureName: string): { name: string, config: JSONObject, enabled: boolean }
+  getFeature(featureName: string): { 
+    name: string,
+    config: JSONObject,
+    enabled: boolean,
+    variant: { name: string, remoteConfig: JSONObject },
+  }
 }
 ```
 
@@ -48,6 +53,40 @@ const Page = () => {
     {
       enabled && (
         <Button>
+          {config.buttonText}
+        </Button>
+      )
+    }
+  );
+};
+
+```
+
+### Variants
+:::info Since js-sdk version >=1.4.1
+
+:::
+
+```jsx
+/* ... */
+const defaultConfig = { buttonText: 'Click me' };
+const { enabled, config, variant } = growthflags.getFeature('feature-with-ab', { defaultConfig });
+
+const trackClicks = () => 
+  analytics.sendEvent({
+    name: 'button-clicked',
+    variant: variant.name,
+    config: config,
+    ... 
+  });
+
+
+const Page = () => {
+  return (
+    // ...    
+    {
+      enabled && (
+        <Button onClick={trackClicks}>
           {config.buttonText}
         </Button>
       )

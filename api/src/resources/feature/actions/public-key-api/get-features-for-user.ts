@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import _ from 'lodash';
 
 import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
@@ -41,10 +42,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const features = await featureService.getFeaturesForEnv(application._id, env);
   
   const flagsForUser = await calculateFlagsForUser(features, user);
- 
-  const configs: { [key: string]: string } = featuresToConfigsForUser(features);
 
   const variants = calculateABTestsForUser(userId || user?._id || '', features);
+
+  const configs: { [key: string]: string } = featuresToConfigsForUser(features, variants);
 
   ctx.body = { features: flagsForUser, configs, variants };
 }
