@@ -10,6 +10,11 @@ export const calculateRemainderByUserData = (id: string) => {
   return decimal.modulo(100).toNumber();
 };
 
+export const mongoIdToNumber = (id: string) => {
+  const incrPart = id.substring(18);
+  return  parseInt(incrPart, 16);
+};
+
 const calculateFlagForUser = async (
   feature: FlatFeature,
   user: UserData | null,
@@ -101,7 +106,7 @@ export const numberToBucketIndex = (totalBuckets: number, targetNumber: number) 
 };
 
 export const calculateABTestForUser = (tests: ABVariant[], userId: string) => {
-  const number = calculateRemainderByUserData(userId);
+  const number = mongoIdToNumber(userId);
   const bucketNumber = numberToBucketIndex(tests.length, number);
 
   return tests[bucketNumber];

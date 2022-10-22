@@ -289,7 +289,7 @@ describe('calculateFlagsForUser', () => {
       expect(variantACount).toEqual(variantCCount);
     });
 
-    test('100000 user ids should split almost evenly', () => {
+    test('100000 user ids should split almost evenly 50/50', () => {
       const totalIDs = 100000;
       const userIds = new Array(totalIDs).fill(null).map(() => generateId());
       const tests = [{ name: 'Basic', remoteConfig: '' }, { name: 'Variant B', remoteConfig: '' }];
@@ -303,6 +303,27 @@ describe('calculateFlagsForUser', () => {
       const variantBPercentage = 100 / (totalIDs / variantACount);
 
       expect(variantAPercentage).toBeCloseTo(variantBPercentage, 0);
+    });
+
+    test('100000 user ids should split almost evenly 25/25/25/25', () => {
+      const totalIDs = 100000;
+      const userIds = new Array(totalIDs).fill(null).map(() => generateId());
+      const tests = [
+        { name: 'varA', remoteConfig: '' },
+        { name: 'varB', remoteConfig: '' },
+        { name: 'varC', remoteConfig: '' },
+        { name: 'varD', remoteConfig: '' },
+      ];
+
+      const buckets = userIds.map(u => helpers.calculateABTestForUser(tests, u));
+
+      const counts = _.countBy(buckets, variant => variant.name);
+      const percentageCounts = _.mapValues(counts, (count) => 100 / (totalIDs / count));
+
+
+      expect(percentageCounts.varA).toBeCloseTo(percentageCounts.varB, 0);
+      expect(percentageCounts.varA).toBeCloseTo(percentageCounts.varC, 0);
+      expect(percentageCounts.varA).toBeCloseTo(percentageCounts.varD, 0);
     });
   });
 });
