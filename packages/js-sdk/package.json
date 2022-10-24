@@ -1,6 +1,6 @@
 {
   "name": "@growthflags/js-sdk",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "license": "MIT",
   "description": "Growthflags Javascript SDK",
   "main": "dist/index.js",
