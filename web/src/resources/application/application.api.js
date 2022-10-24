@@ -12,7 +12,7 @@ export function useCreateFeatureFlag() {
 
   return useMutation(createFeatureFlag, {
     onSuccess: () => {
-      queryClient.invalidateQueries(['featureFlags'])
+      queryClient.invalidateQueries(['featureFlags']);
     },
   });
 }

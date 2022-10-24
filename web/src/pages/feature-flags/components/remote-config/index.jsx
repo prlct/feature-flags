@@ -47,8 +47,12 @@ RemoteConfig.propTypes = {
     })).isRequired,
   }).isRequired,
   env: PropTypes.string.isRequired,
-  initialRemoteConfig: PropTypes.string.isRequired,
+  initialRemoteConfig: PropTypes.string,
   configSaveHandler: PropTypes.func.isRequired,
+};
+
+RemoteConfig.defaultProps = {
+  initialRemoteConfig: '',
 };
 
 export default RemoteConfig;
