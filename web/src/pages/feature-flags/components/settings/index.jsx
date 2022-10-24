@@ -24,10 +24,8 @@ import ABVariant from '../ab-variant';
 const MAX_AB_VARIANTS = 3;
 const CONFIG_SAVE_DEBOUNCE_TIME = 500;
 
-const Settings = ({ featureId, env }) => {
+const Settings = ({ feature, env }) => {
   const growthFlags = useGrowthFlags();
-
-  const { data: feature } = featureFlagApi.useGetById({ featureId, env });
 
   const [openedVariant, setOpenedVariant] = useState('mainVariant');
 
@@ -131,7 +129,14 @@ const Settings = ({ featureId, env }) => {
 };
 
 Settings.propTypes = {
-  featureId: PropTypes.string.isRequired,
+  feature: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    remoteConfig: PropTypes.string,
+    tests: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      remoteConfig: PropTypes.string,
+    })).isRequired,
+  }).isRequired,
   env: PropTypes.string.isRequired,
 };
 

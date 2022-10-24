@@ -23,7 +23,11 @@ import Settings from './components/settings';
 
 const FeatureFlag = () => {
   const router = useRouter();
-  const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
 
   const { id } = router.query;
 
@@ -93,7 +97,7 @@ const FeatureFlag = () => {
               </Tabs.Tab>
             </Tabs.List>
             <Tabs.Panel value="settings">
-              <Settings featureId={id} env={env} />
+              <Settings feature={feature} env={env} featureRefetch={refetch} />
             </Tabs.Panel>
           </Tabs>
         </Stack>

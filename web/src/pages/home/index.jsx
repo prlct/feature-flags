@@ -43,7 +43,12 @@ const Home = () => {
 
   const growthFlags = useGrowthFlags();
 
-  const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
+
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);

@@ -7,7 +7,7 @@ import { featureFlagApi } from 'resources/feature-flag';
 import TargetingRules from '../targeting-rules';
 
 const FeatureTargetingRules = ({ feature, sx }) => {
-  const [rules, setRules] = useState();
+  const [rules, setRules] = useState([]);
 
   useEffect(() => {
     setRules(feature.targetingRules);
