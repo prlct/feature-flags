@@ -31,6 +31,7 @@ import { applicationApi } from 'resources/application';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
@@ -40,6 +41,8 @@ import MessagingText from './components/targeting-message';
 const Home = () => {
   const modals = useModals();
 
+  const growthFlags = useGrowthFlags();
+
   const [env] = useLocalStorage({ key: LOCAL_STORAGE_ENV_KEY, defaultValue: ENV.DEVELOPMENT });
   const [isFeatureCreateModalOpened, setIsFeatureCreateModalOpened] = useState(false);
   const [search, setSearch] = useState('');
@@ -47,6 +50,8 @@ const Home = () => {
   const [filteredFeatureFlags, setFilteredFeatureFlags] = useState([]);
 
   const { data, refetch, isRefetching, isLoading } = applicationApi.useGetFeaturesList(env);
+
+  const isABTestingOn = growthFlags && growthFlags.isOn('abTesting');
 
   useEffect(() => {
     refetch();
@@ -204,7 +209,7 @@ const Home = () => {
                               <Text size="md" weight={700}>
                                 {name}
                               </Text>
-                              {tests.length && <Badge variant="gradient" gradient={{ from: 'lime', to: 'blue' }}>A/B testing</Badge>}
+                              {isABTestingOn && tests.length && <Badge variant="gradient" gradient={{ from: 'lime', to: 'blue' }}>A/B testing</Badge>}
                             </Group>
                             <Text size="sm" color="grey">{description}</Text>
                           </td>
