@@ -97,7 +97,7 @@ const FeatureFlag = () => {
               </Tabs.Tab>
             </Tabs.List>
             <Tabs.Panel value="settings">
-              <Settings feature={feature} env={env} featureRefetch={refetch} />
+              <Settings feature={feature} env={env} />
             </Tabs.Panel>
           </Tabs>
         </Stack>
