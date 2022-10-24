@@ -24,18 +24,28 @@ type ValidatedData = {
   env: Env;
   email?: string;
   userId?: string;
+  id?: string;
+  data?: { [key: string]: any }
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { application } = ctx.state;
-  const { env, email, userId } = ctx.validatedData;
+  const { env, email, userId, id, data } = ctx.validatedData;
+  const externalId = userId || email;
 
-  let user = null;
-  if (userId) {
-    user = await userService.findOne({ _id: userId });
-    if (!user) {
-      user = { email };
-    }
+  let user = userId || email
+    ? await userService.findOne({ $or: [{ _id: userId }, { email: email }] })
+    : null;
+
+  if (!user) {
+    user = await userService.insertOne({
+      applicationId: application._id,
+      externalId: externalId,
+      env,
+      email,
+      data: { email, id, ...data },
+      lastVisitedOn: new Date(),
+    });
   }
 
   const features = await featureService.getFeaturesForEnv(application._id, env);

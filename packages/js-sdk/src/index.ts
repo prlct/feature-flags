@@ -106,14 +106,6 @@ class FeatureFlags {
   }
 
   async fetchFeatureFlags(user: AppUser)  {
-    if (user?.email || user?.id) {
-        await this._createUser({
-          id: user.id,
-          email: user.email,
-          data: user.data
-        });
-    }
-
     const storageData = this._getFromStorage();
 
     if (storageData) {
@@ -121,7 +113,7 @@ class FeatureFlags {
       this._configs = storageData.configs || {};
     }
 
-    return this._fetchFlags();
+    return this._fetchFlags(user);
   }
 
   isOn(featureName: string): boolean {
@@ -187,8 +179,13 @@ class FeatureFlags {
     }
   }
 
-  private async _fetchFlags() {
-    const params: FetchFlagsParams = { env: this._env };
+  private async _fetchFlags(user: AppUser) {
+    const params: FetchFlagsParams | FetchFlagsParams & CreateUserParams = {
+      env: this._env,
+      id: user.id,
+      email: user.email,
+      data: user.data,
+    };
 
     if (this._user) {
       params.userId = this._user._id;
