@@ -94,11 +94,13 @@ const Settings = ({ featureId, env }) => {
                 {variant.name}
               </Tabs.Tab>
             ))}
-            <Tabs.Tab value="Add new" onClick={handleAddVariant} disabled={feature?.tests?.length >= MAX_AB_VARIANTS}>
-              <Text color="blue">
-                Add New
-              </Text>
-            </Tabs.Tab>
+            {isABTestingOn && (
+              <Tabs.Tab value="Add new" onClick={handleAddVariant} disabled={feature?.tests?.length >= MAX_AB_VARIANTS}>
+                <Text color="blue">
+                  Add New
+                </Text>
+              </Tabs.Tab>
+            )}
           </Tabs.List>
 
           <Tabs.Panel value="mainVariant" mt={8}>
