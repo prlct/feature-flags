@@ -2,7 +2,7 @@ import Joi from 'joi';
 import { Env } from 'resources/application';
 import { TargetingRuleOperator } from './feature.types';
 import extendedJoi from '../../utils/joi.extension';
-import { MAX_REMOTE_CONFIG_LENGTH } from './feature.constants';
+import { MAX_REMOTE_CONFIG_LENGTH, RULES_MAX_DESCRIPTION_LENGTH } from './feature.constants';
 
 const targetingRuleSchema = Joi.object({
   attribute: Joi.string().allow(null, ''),
@@ -16,6 +16,7 @@ const targetingRuleSchema = Joi.object({
       is: TargetingRuleOperator.INCLUDES,
       then: Joi.array().items(Joi.string()),
     }),
+  description: Joi.string().trim().max(RULES_MAX_DESCRIPTION_LENGTH).allow(null, '').default(''),
 });
 
 export const remoteConfigSchema = extendedJoi.json()
