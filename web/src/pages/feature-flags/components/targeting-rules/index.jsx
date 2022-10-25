@@ -146,6 +146,7 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
           <TextInput
             label="description"
             value={description}
+            disabled={disabled}
             onChange={(e) => handleInputChange(index, 'description', e.currentTarget.value)}
           />
           <ActionIcon
