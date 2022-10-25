@@ -17,33 +17,45 @@ const schema = Joi.object({
       'string.empty': 'env is required',
     }),
   email: Joi.string().trim(),
-  userId: Joi.string().trim(),
+  id: Joi.string().trim(),
+  data: Joi.object(),
 });
 
 type ValidatedData = {
   env: Env;
   email?: string;
-  userId?: string;
   id?: string;
   data?: { [key: string]: any }
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { application } = ctx.state;
-  const { env, email, userId, id, data } = ctx.validatedData;
-  const externalId = userId || email;
+  const { env, email, id, data } = ctx.validatedData;
+  const externalId = id || email;
 
-  let user = userId || email
-    ? await userService.findOne({ $or: [{ _id: userId }, { email: email }] })
-    : null;
+  let user = null;
+  if (id) {
+    user = await userService.findOne({ $or: [{ externalId: id }, { _id: id }] } );
+  }
+  if (!user && !id && email) {
+    user = await userService.findOne({ email } );
+  }
 
-  if (!user) {
+  if (user) {
+    user = await userService.updateOne(
+      { applicationId: application._id, env, _id: user._id },
+      (u) => ({
+        data: { email : u.email || email, id : u._id || id, ...data },
+        lastVisitedOn: new Date(),
+      }),
+    );
+  } else {
     user = await userService.insertOne({
       applicationId: application._id,
-      externalId: externalId,
       env,
+      externalId: externalId,
       email,
-      data: { email, id, ...data },
+      data: { email, id: id, ...data },
       lastVisitedOn: new Date(),
     });
   }
@@ -52,11 +64,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   
   const flagsForUser = await calculateFlagsForUser(features, user);
 
-  const variants = calculateABTestsForUser(userId || user?._id || '', features);
+  const variants = calculateABTestsForUser(id || user?._id || '', features);
 
   const configs: { [key: string]: string } = featuresToConfigsForUser(features, variants);
 
-  ctx.body = { features: flagsForUser, configs, variants };
+  ctx.body = { features: flagsForUser, configs, variants, user };
 }
 
 export default (router: AppRouter) => {

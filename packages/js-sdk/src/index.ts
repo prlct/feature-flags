@@ -187,8 +187,8 @@ class FeatureFlags {
       data: user.data,
     };
 
-    if (this._user) {
-      params.userId = this._user._id;
+    if (this._user && !user.id && !user.email) {
+        params.id = this._user._id;
     }
 
     const config = {
@@ -204,6 +204,7 @@ class FeatureFlags {
       this._features = this.mergeFeatures(features);
       this._configs = response.configs || {};
       this._variants = response.variants || {};
+      this._user = response.user || {};
 
       this._saveToStorage(response);
 
