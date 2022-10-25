@@ -6,8 +6,8 @@ import { Env } from 'resources/application';
 import { featureService, Feature } from 'resources/feature';
 import featureAuth from '../middlewares/feature-auth.middleware';
 import { TargetingRule, TargetingRuleOperator } from '../feature.types';
+import { RULES_MAX_COUNT, RULES_MAX_DESCRIPTION_LENGTH } from '../feature.constants';
 
-const RULES_MAX_COUNT = 50;
 
 const schema = Joi.object({
   env: Joi.string()
@@ -29,6 +29,7 @@ const schema = Joi.object({
         is: TargetingRuleOperator.INCLUDES,
         then: Joi.array().items(Joi.string()),
       }),
+    description: Joi.string().trim().max(RULES_MAX_DESCRIPTION_LENGTH).allow('', null).default(''),
   })).max(RULES_MAX_COUNT),
 });
  

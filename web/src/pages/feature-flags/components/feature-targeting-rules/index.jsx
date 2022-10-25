@@ -15,7 +15,6 @@ const FeatureTargetingRules = ({ feature, sx }) => {
 
   const updateTargetingRulesMutation = featureFlagApi.useUpdateTargetingRules();
 
-  // eslint-disable-next-line no-shadow
   const saveTargetingRules = useMemo(() => debounce((rules, feature, mutation) => {
     mutation.mutate({
       _id: feature._id,
@@ -26,7 +25,10 @@ const FeatureTargetingRules = ({ feature, sx }) => {
 
   const handleRulesChange = useCallback((newRules) => {
     setRules(newRules);
-    saveTargetingRules(newRules, feature, updateTargetingRulesMutation);
+    const nonEmptyRules = newRules.filter((rule) => rule.value?.length > 0
+      && rule.attribute?.length > 0);
+
+    saveTargetingRules(nonEmptyRules, feature, updateTargetingRulesMutation);
   }, [feature, saveTargetingRules, updateTargetingRulesMutation]);
 
   return (

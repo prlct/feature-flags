@@ -1,1 +1,3 @@
 export const MAX_REMOTE_CONFIG_LENGTH = 500;
+export const RULES_MAX_DESCRIPTION_LENGTH = 100;
+export const RULES_MAX_COUNT = 50;
