@@ -1,12 +1,13 @@
 import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
-import { AppKoaContext, AppRouter } from 'types';
+import { AppKoaContext, AppRouter, Next } from 'types';
 import { Env } from 'resources/application';
 import { featureService, Feature } from 'resources/feature';
 import featureAuth from '../middlewares/feature-auth.middleware';
 import { TargetingRule, TargetingRuleOperator } from '../feature.types';
 import { RULES_MAX_COUNT, RULES_MAX_DESCRIPTION_LENGTH } from '../feature.constants';
+import saveChangesMiddleware from '../middlewares/save-changes.middleware';
 
 
 const schema = Joi.object({
@@ -39,7 +40,7 @@ type ValidatedData = {
   targetingRules: Array<TargetingRule>;
 };
 
-async function handler(ctx: AppKoaContext<ValidatedData>) {
+async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { featureId } = ctx.params;
   const { env, targetingRules } = ctx.validatedData;
   
@@ -51,9 +52,18 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     },
   ) as Feature;
 
+  ctx.state.featureChanges = {
+    env,
+    featureId,
+    data: {
+      targetingRules: updatedFeature.envSettings[env].targetingRules,
+    },
+  };
+
   ctx.body = updatedFeature;
+  return next();
 }
 
 export default (router: AppRouter) => {
-  router.put('/:featureId/targeting-rules', featureAuth, validateMiddleware(schema), handler);
+  router.put('/:featureId/targeting-rules', featureAuth, validateMiddleware(schema), handler, saveChangesMiddleware);
 };

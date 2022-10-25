@@ -25,6 +25,31 @@ export const remoteConfigSchema = extendedJoi.json()
     'json.invalid': 'Invalid JSON format',
   });
 
+const changeHistorySchema = Joi.object({
+  featureId: Joi.string().required(),
+  env: Joi.string().valid(...Object.values(Env)),
+  changedOn: Joi.date(),
+
+  data: Joi.object({
+    enabled: Joi.boolean().optional(),
+    enabledForEveryone: Joi.boolean().optional(),
+    usersPercentage: Joi.number().optional(),
+    usersViewedCount: Joi.number().optional(),
+    tests: Joi.array().items(
+      Joi.object({
+        name: Joi.string().trim().required(),
+        remoteConfig: remoteConfigSchema,
+      })).optional(),
+    targetingRules: Joi.array().items(targetingRuleSchema).optional(),
+    remoteConfig: remoteConfigSchema.optional(),
+  }).required(),
+
+  admin: Joi.object({
+    _id: Joi.string().required(),
+    email: Joi.string().email().required(),
+  }).required(),
+});
+
 const envSettingsSchema = Joi.object({
   enabled: Joi.boolean().required().default(false),
   enabledForEveryone: Joi.boolean().required().default(false),
@@ -52,6 +77,8 @@ const schema = Joi.object({
     [Env.DEMO]: envSettingsSchema,
     [Env.PRODUCTION]: envSettingsSchema,
   }),
+
+  changeHistory: Joi.array().items(changeHistorySchema).default([]),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

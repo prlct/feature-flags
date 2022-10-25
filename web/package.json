@@ -17,7 +17,7 @@
     "precommit": "lint-staged && next lint"
   },
   "dependencies": {
-    "@growthflags/js-sdk": "1.4.0",
+    "@growthflags/js-sdk": "1.4.1",
     "@hookform/resolvers": "2.8.8",
     "@mantine/core": "5.5.6",
     "@mantine/dates": "5.5.6",

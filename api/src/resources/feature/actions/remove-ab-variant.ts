@@ -33,6 +33,14 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     },
   ) as Feature;
 
+  ctx.state.featureChanges = {
+    featureId,
+    env,
+    data: {
+      tests: updatedFeature.envSettings[env].tests,
+    },
+  };
+
   ctx.body = updatedFeature;
 }
 
