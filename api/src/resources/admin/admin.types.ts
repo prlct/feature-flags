@@ -1,7 +1,7 @@
 export type Admin = {
   _id: string;
 
-  issuer?: string;
+  issuer: string;
   firstName: string | null;
   lastName: string | null;
   email: string;
@@ -18,8 +18,4 @@ export type Admin = {
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;
-
-  oauth?: {
-    google: boolean;
-  },
 };
