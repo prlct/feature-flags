@@ -5,7 +5,7 @@
   "apiUrl": "https://api.growthflags.com",
   "webUrl": "https://app.growthflags.com",
   "google": {
-    "redirectUri" : "https://app.growthflags.com/users/google/code",
-    "authRedirectUri": "https://app.growthflags.com/account/sign-in/google"
+    "redirectUri" : "https://api.growthflags.com/users/google/code",
+    "authRedirectUri": "https://api.growthflags.com/account/sign-in/google"
   }
 }
