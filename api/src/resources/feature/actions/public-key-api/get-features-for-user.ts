@@ -17,58 +17,36 @@ const schema = Joi.object({
       'string.empty': 'env is required',
     }),
   email: Joi.string().trim(),
-  id: Joi.string().trim(),
-  data: Joi.object(),
+  userId: Joi.string().trim(),
 });
 
 type ValidatedData = {
   env: Env;
   email?: string;
-  id?: string;
-  data?: { [key: string]: any }
+  userId?: string;
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { application } = ctx.state;
-  const { env, email, id, data } = ctx.validatedData;
-  const externalId = id || email;
+  const { env, email, userId } = ctx.validatedData;
 
   let user = null;
-  if (id) {
-    user = await userService.findOne({ $or: [{ externalId: id }, { _id: id }] } );
-  }
-  if (!user && !id && email) {
-    user = await userService.findOne({ email } );
-  }
-
-  if (user) {
-    user = await userService.updateOne(
-      { applicationId: application._id, env, _id: user._id },
-      (u) => ({
-        data: { email : u.email || email, id : u._id || id, ...data },
-        lastVisitedOn: new Date(),
-      }),
-    );
-  } else {
-    user = await userService.insertOne({
-      applicationId: application._id,
-      env,
-      externalId: externalId,
-      email,
-      data: { email, id: id, ...data },
-      lastVisitedOn: new Date(),
-    });
+  if (userId) {
+    user = await userService.findOne({ _id: userId });
+    if (!user) {
+      user = { email };
+    }
   }
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
   
   const flagsForUser = await calculateFlagsForUser(features, user);
 
-  const variants = calculateABTestsForUser(id || user?._id || '', features);
+  const variants = calculateABTestsForUser(userId || user?._id || '', features);
 
   const configs: { [key: string]: string } = featuresToConfigsForUser(features, variants);
 
-  ctx.body = { features: flagsForUser, configs, variants, user };
+  ctx.body = { features: flagsForUser, configs, variants };
 }
 
 export default (router: AppRouter) => {
