@@ -1,22 +1,42 @@
 import PropTypes from 'prop-types';
 
 import { Table, Text } from '@mantine/core';
+import { useGetFeatureHistory } from 'resources/feature-flag/feature-flag.api';
 
-const changesMap = {
-  enabled: 'Feature toggle',
-  enabledForEveryone: 'Enabled for everyone toggle',
-  usersPercentage: 'Percentage value',
-  tests: 'Variants settings',
-  targetingRules: 'Targeting rules',
-  remoteConfig: 'Remote config',
+const getActionMessage = (data) => {
+  if (data.enabled === false) {
+    return 'Disabled';
+  }
+  if (data.enabled === true) {
+    let message = 'Enabled';
+    if (data.enabledForEveryone === true) {
+      message = `${message} for everyone`;
+      return message;
+    }
+
+    if (data.usersPercentage !== undefined && data.usersPercentage > 0) {
+      message = `${message} for ${data.usersPercentage}% users`;
+      return message;
+    }
+
+    if (data.enabledForEveryone !== true) {
+      message = `${message} for some users`;
+    }
+    return message;
+  }
+
+  const changesMap = {
+    usersPercentage: 'Edited default coverage',
+    tests: 'Edited a/b settings',
+    targetingRules: 'Edited targeting rules',
+    remoteConfig: 'Edited remote config',
+  };
+
+  return Object.keys(data).map((key) => changesMap[key]).join(', ');
 };
 
-const History = ({ feature }) => {
-  const renderDataChanges = (data) => (
-    Object.keys(data)
-      .map((key) => changesMap[key] || key)
-      .map((text) => <Text>{text}</Text>)
-  );
+const History = ({ featureId, env }) => {
+  const { data: history } = useGetFeatureHistory(featureId, env);
 
   const getDate = (date) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' })
     .format(new Date(date));
@@ -25,26 +45,22 @@ const History = ({ feature }) => {
     <Table>
       <thead>
         <tr>
-          <th>Environment</th>
-          <th>Changed on</th>
-          <th>Changes</th>
-          <th>Admin</th>
+          <th>Action</th>
+          <th>Changed By</th>
+          <th>Date</th>
         </tr>
       </thead>
       <tbody>
-        {feature?.history?.map((historyRecord) => (
+        {history?.map((historyRecord) => (
           <tr>
             <td>
-              <Text>{historyRecord.env}</Text>
-            </td>
-            <td>
-              <Text>{getDate(historyRecord.changedOn)}</Text>
-            </td>
-            <td>
-              <Text>{renderDataChanges(historyRecord.data)}</Text>
+              <Text>{getActionMessage(historyRecord.data)}</Text>
             </td>
             <td>
               <Text>{historyRecord.admin.email}</Text>
+            </td>
+            <td>
+              <Text>{getDate(historyRecord.changedOn)}</Text>
             </td>
           </tr>
         ))}
@@ -54,13 +70,8 @@ const History = ({ feature }) => {
 };
 
 History.propTypes = {
-  feature: PropTypes.shape({
-    history: PropTypes.arrayOf(PropTypes.shape({
-      env: PropTypes.string,
-      changedOn: PropTypes.string,
-      data: PropTypes.shape({}),
-    })),
-  }).isRequired,
+  env: PropTypes.string.isRequired,
+  featureId: PropTypes.string.isRequired,
 };
 
 export default History;

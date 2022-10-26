@@ -239,3 +239,9 @@ export function useRemoveABVariant(featureId) {
     },
   });
 }
+
+export function useGetFeatureHistory(featureId, env) {
+  const getById = () => apiService.get(`${resource}/${featureId}/history`, { env });
+
+  return useQuery(['featureFlagHistory', env], getById, { enabled: !!featureId });
+}

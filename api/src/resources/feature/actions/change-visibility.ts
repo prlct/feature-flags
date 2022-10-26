@@ -46,7 +46,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
   ctx.state.featureChanges = {
     env,
     featureId,
-    data: { enabledForEveryone },
+    data: {
+      enabled: feature.envSettings[env].enabled,
+      usersPercentage: feature.envSettings[env].usersPercentage,
+      enabledForEveryone,
+    },
   };
 
   ctx.body = getFlatFeature(feature, env);

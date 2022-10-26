@@ -40,6 +40,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
     env,
     data: {
       enabled: feature.envSettings[env].enabled,
+      enabledForEveryone: feature.envSettings[env].enabledForEveryone,
+      usersPercentage: feature.envSettings[env].usersPercentage,
     },
   };
 

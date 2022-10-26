@@ -109,7 +109,7 @@ const FeatureFlag = () => {
               <Settings feature={feature} env={env} />
             </Tabs.Panel>
             <Tabs.Panel value="history">
-              <History feature={feature} />
+              <History featureId={feature._id} env={env} />
             </Tabs.Panel>
           </Tabs>
         </Stack>
