@@ -13,6 +13,10 @@ const base = {
     bucket: '',
     endpoint: '',
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || '',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+  },
   apiUrl: '',
   webUrl: '',
   sendgridApiKey: process.env.SENDGRID_API_KEY || '',
