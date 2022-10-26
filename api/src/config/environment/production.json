@@ -5,8 +5,8 @@
   "apiUrl": "https://api.growthflags.com",
   "webUrl": "https://app.growthflags.com",
   "google": {
-    "clientId": "1075721425229-mn124au9ujpo7folp66unerkkfn1o9d4.apps.googleusercontent.com",
-    "clientSecret": "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",
+    "clientId": "configure in local.ts file",
+    "clientSecret": "configure in local.ts file",
     "redirectUri" : "https://app.growthflags.com/users/google/code",
     "authRedirectUri": "https://app.growthflags.com/account/sign-in/google"
   }

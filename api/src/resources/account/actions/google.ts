@@ -1,5 +1,7 @@
 import config from 'config';
 import { googleService, authService } from 'services';
+import slackService from 'services/slack.service';
+import mailerLiteService from 'services/mailerlite.service';
 import { AppRouter, AppKoaContext } from 'types';
 import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
@@ -89,7 +91,7 @@ const signinGoogleWithCode = async (ctx: AppKoaContext) => {
       },
     });
 
-    if (newAdmin){
+    if (newAdmin) {
       await Promise.all([
         adminService.updateLastRequest(newAdmin._id),
         authService.setTokens(ctx, newAdmin._id),
@@ -106,6 +108,10 @@ const signinGoogleWithCode = async (ctx: AppKoaContext) => {
           }),
         ),
       ]);
+      const name = `${payload.given_name} ${payload.family_name}`.trim();
+
+      slackService.send(`${name} just signed up! Reach out by email: ${payload.email}.`);
+      mailerLiteService.addOnboardingSubscriber({ email: payload.email, name });
     }
   }
   ctx.redirect(config.webUrl);
