@@ -13,7 +13,7 @@ const saveChangesMiddleware = async (ctx: AppKoaContext, next: Next) => {
     };
 
     featureService.atomic.updateOne({ _id: featureChanges.featureId }, {
-      $push: { changeHistory: changes },
+      $push: { history: changes },
     });
   }
 

@@ -39,7 +39,6 @@ export type Changes = {
     enabled?: boolean;
     enabledForEveryone?: boolean;
     usersPercentage?: number;
-    usersViewedCount?: number;
     tests?: ABVariant[];
     targetingRules?: TargetingRule[];
     remoteConfig?: string,
@@ -60,7 +59,7 @@ export type Feature = {
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;
-  changeHistory?: Changes[] | null,
+  history?: Changes[] | null,
 };
 
 export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: Env };

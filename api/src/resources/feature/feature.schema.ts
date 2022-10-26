@@ -25,7 +25,7 @@ export const remoteConfigSchema = extendedJoi.json()
     'json.invalid': 'Invalid JSON format',
   });
 
-const changeHistorySchema = Joi.object({
+const historySchema = Joi.object({
   featureId: Joi.string().required(),
   env: Joi.string().valid(...Object.values(Env)),
   changedOn: Joi.date(),
@@ -78,7 +78,7 @@ const schema = Joi.object({
     [Env.PRODUCTION]: envSettingsSchema,
   }),
 
-  changeHistory: Joi.array().items(changeHistorySchema).default([]),
+  history: Joi.array().items(historySchema).default([]),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

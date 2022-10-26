@@ -20,6 +20,7 @@ import { handleError } from 'helpers';
 
 import { useRouter } from 'next/router';
 import Settings from './components/settings';
+import History from './components/history';
 
 const FeatureFlag = () => {
   const router = useRouter();
@@ -28,6 +29,8 @@ const FeatureFlag = () => {
     defaultValue: ENV.DEVELOPMENT,
     getInitialValueInEffect: false,
   });
+
+  const tab = router.asPath.split('#')?.[1] || 'settings';
 
   const { id } = router.query;
 
@@ -89,15 +92,24 @@ const FeatureFlag = () => {
             />
           </Group>
 
-          {/* TODO: Connect tabs with url */}
-          <Tabs defaultValue="settings">
+          <Tabs
+            defaultValue="settings"
+            value={tab}
+            onTabChange={(value) => router.push(`#${value}`)}
+          >
             <Tabs.List>
               <Tabs.Tab value="settings">
                 Settings
               </Tabs.Tab>
+              <Tabs.Tab value="history">
+                History
+              </Tabs.Tab>
             </Tabs.List>
             <Tabs.Panel value="settings">
               <Settings feature={feature} env={env} />
+            </Tabs.Panel>
+            <Tabs.Panel value="history">
+              <History feature={feature} />
             </Tabs.Panel>
           </Tabs>
         </Stack>
