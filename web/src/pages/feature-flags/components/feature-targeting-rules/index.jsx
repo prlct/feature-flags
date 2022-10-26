@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { PropTypes } from 'prop-types';
+import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
 
 import { featureFlagApi } from 'resources/feature-flag';
+import { DEFAULT_TARGETING_RULE } from 'helpers/constants';
 
 import TargetingRules from '../targeting-rules';
 
@@ -25,8 +27,8 @@ const FeatureTargetingRules = ({ feature, sx }) => {
 
   const handleRulesChange = useCallback((newRules) => {
     setRules(newRules);
-    const nonEmptyRules = newRules.filter((rule) => rule.value?.length > 0
-      && rule.attribute?.length > 0);
+    const nonEmptyRules = newRules.filter((rule) => rule.value !== ''
+      && rule.attribute?.length > 0 && !isEqual(DEFAULT_TARGETING_RULE, rule));
 
     saveTargetingRules(nonEmptyRules, feature, updateTargetingRulesMutation);
   }, [feature, saveTargetingRules, updateTargetingRulesMutation]);

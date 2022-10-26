@@ -12,27 +12,23 @@ import {
 } from '@mantine/core';
 import { IconPlus, IconTrash } from '@tabler/icons';
 
+import { DEFAULT_TARGETING_RULE, TARGETING_RULES_OPERATORS } from 'helpers/constants';
+
 import TargetingRuleMultipleValues from '../targeting-rule-multiple-value';
 
-const OPERATORS = {
-  EQUALS: 'equals',
-  INCLUDES: 'includes',
-};
-
 const selectOptions = [
-  { label: 'equals', value: OPERATORS.EQUALS },
-  { label: 'includes', value: OPERATORS.INCLUDES },
+  { label: 'equals', value: TARGETING_RULES_OPERATORS.EQUALS },
+  { label: 'includes', value: TARGETING_RULES_OPERATORS.INCLUDES },
 ];
 
 const makeRule = () => ({
   attribute: '',
-  operator: OPERATORS.EQUALS,
+  operator: TARGETING_RULES_OPERATORS.EQUALS,
   value: '',
   description: '',
 });
 
 const defaultAttributes = ['email', 'companyId', 'id'];
-const defaultEmptyRule = { attribute: 'email', value: '', description: '', operator: OPERATORS.EQUALS };
 
 const TargetingRules = ({ rules, onChange, disabled, sx }) => {
   const [attributes, setAttributes] = useState(defaultAttributes);
@@ -55,14 +51,14 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
     }
   };
 
-  const shownRules = rules.length > 0 ? rules : [defaultEmptyRule];
+  const shownRules = rules.length > 0 ? rules : [DEFAULT_TARGETING_RULE];
 
   const handleInputChange = (index, prop, value) => {
     const rulesToUpdate = rules.length ? rules : shownRules;
     const updatedRules = rulesToUpdate.map((f, i) => {
       if (i === index) {
         if (prop === 'operator') {
-          const defaultValue = value === OPERATORS.INCLUDES ? [] : '';
+          const defaultValue = value === TARGETING_RULES_OPERATORS.INCLUDES ? [] : '';
           return { ...f, [prop]: value, value: defaultValue };
         }
         return { ...f, [prop]: value };
@@ -125,7 +121,7 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
             onChange={(v) => handleInputChange(index, 'operator', v)}
             sx={{ width: '120px' }}
           />
-          {operator === OPERATORS.EQUALS
+          {operator === TARGETING_RULES_OPERATORS.EQUALS
             ? (
               <TextInput
                 label={(<Text size="sm">Value</Text>)}
