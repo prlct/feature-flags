@@ -20,9 +20,6 @@ const schema = Joi.object({
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),
-  oauth: Joi.object().keys({
-    google: Joi.boolean().default(false),
-  }),
 });
 
 export default schema;
