@@ -14,8 +14,8 @@
     "bucket": "yourBucket"
   },
   "google": {
-    "clientId": "1075721425229-mn124au9ujpo7folp66unerkkfn1o9d4.apps.googleusercontent.com",
-    "clientSecret": "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",
+    "clientId": "",
+    "clientSecret": "",
     "redirectUri" : "http://localhost:3001/users/google/code",
     "authRedirectUri": "http://localhost:3001/account/sign-in/google"
   },
