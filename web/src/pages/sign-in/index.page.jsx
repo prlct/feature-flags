@@ -4,8 +4,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
-import { magic } from 'libs/magic';
+import { IconBrandGoogle } from '@tabler/icons';
 
+import { magic } from 'libs/magic';
+import config from 'config';
 import { Link } from 'components';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
@@ -76,6 +78,9 @@ const SignIn = () => {
                 Sign up
               </Link>
             </Group>
+            <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
+              Continue with Google
+            </Button>
           </Stack>
         </form>
       </Stack>
