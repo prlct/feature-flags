@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
-import { IconBrandGoogle } from '@tabler/icons';
+import { IconBrandGoogle, IconBrandGithub } from '@tabler/icons';
 
 import { magic } from 'libs/magic';
 import config from 'config';
@@ -80,6 +80,9 @@ const SignIn = () => {
             </Group>
             <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
               Continue with Google
+            </Button>
+            <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
+              Continue with GitHub
             </Button>
           </Stack>
         </form>

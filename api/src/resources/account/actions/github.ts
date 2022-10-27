@@ -1,5 +1,5 @@
 import config from 'config';
-import { googleService, authService } from 'services';
+import { authService, githubService } from 'services';
 import slackService from 'services/slack.service';
 import mailerLiteService from 'services/mailerlite.service';
 import { AppRouter, AppKoaContext } from 'types';
@@ -16,17 +16,17 @@ type ValidatedData = {
 };
 
 const getOAuthUrl = async (ctx: AppKoaContext) => {
-  const isValidCredentials = config.google.clientId || config.google.clientSecret;
+  const isValidCredentials = config.github.clientId || config.github.clientSecret;
   ctx.assertClientError(isValidCredentials, {
-    global: 'Setup Google Oauth credentials on API',
+    global: 'Setup Github Oauth creadentials on API',
   });
-  ctx.redirect(googleService.oAuthURL);
+  ctx.redirect(githubService.oAuthURL);
 };
 
-const signinGoogleWithCode = async (ctx: AppKoaContext) => {
+const signinGithubWithCode = async (ctx: AppKoaContext) => {
   const { code } = ctx.request.query;
 
-  const { isValid, payload } = await googleService.
+  const { isValid, payload }  = await githubService.
     exchangeCodeForToken(code as string) as { isValid: boolean, payload: ValidatedData };
 
   ctx.assertError(isValid, `Exchange code for token error: ${payload}`);
@@ -44,10 +44,10 @@ const signinGoogleWithCode = async (ctx: AppKoaContext) => {
   });
 
   if (admin) {
-    if (!admin.oauth?.google) {
+    if (!admin.oauth?.github) {
       adminChanged = await adminService.updateOne(
         { _id: admin._id },
-        (old) => ({ ...old, oauth: { ...old.oauth, google: true } }),
+        (old) => ({ ...old, oauth: { ...old.oauth, github: true } }),
       );
     }
     const adminUpdated = adminChanged || admin;
@@ -61,9 +61,9 @@ const signinGoogleWithCode = async (ctx: AppKoaContext) => {
       firstName: payload.given_name,
       lastName: payload.family_name,
       email: payload.email,
-      isEmailVerified: true,
+      isEmailVerified: !!payload.email,
       oauth: {
-        google: true,
+        github: true,
       },
     });
 
@@ -123,6 +123,6 @@ const signinGoogleWithCode = async (ctx: AppKoaContext) => {
 
 
 export default (router: AppRouter) => {
-  router.get('/sign-in/google/auth', getOAuthUrl);
-  router.get('/sign-in/google', signinGoogleWithCode);
+  router.get('/sign-in/github/auth', getOAuthUrl);
+  router.get('/sign-in/github', signinGithubWithCode);
 };

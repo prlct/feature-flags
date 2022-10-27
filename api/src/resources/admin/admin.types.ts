@@ -20,6 +20,7 @@ export type Admin = {
   deletedOn?: Date | null;
 
   oauth?: {
-    google: boolean;
+    google?: boolean;
+    github?:boolean;
   },
 };
