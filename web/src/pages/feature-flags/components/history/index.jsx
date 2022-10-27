@@ -53,13 +53,13 @@ const History = ({ featureId, env }) => {
       <tbody>
         {history?.map((historyRecord) => (
           <tr>
-            <td>
+            <td style={{ width: '50%' }}>
               <Text>{getActionMessage(historyRecord.data)}</Text>
             </td>
-            <td>
+            <td style={{ width: '25%' }}>
               <Text>{historyRecord.admin.email}</Text>
             </td>
-            <td>
+            <td style={{ width: '25%' }}>
               <Text>{getDate(historyRecord.changedOn)}</Text>
             </td>
           </tr>
