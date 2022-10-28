@@ -3,19 +3,28 @@ import { Octokit } from 'octokit';
 
 import config from 'config';
 
-const urlParams = {
-  gitHub:'https://github.com/login/oauth',
+const oAuthURLParams = {
   client_id: config.github.clientId,
   redirect_uri: `${config.apiUrl}/account/sign-in/github`,
+  scope: 'user',
+};
+
+const oAuthURLPostParams = {
+  ...oAuthURLParams,
   client_secret: config.github.clientSecret,
 };
 
-const oAuthURL = `${urlParams.gitHub}/authorize?client_id=${urlParams.client_id}&redirect_uri=${urlParams.redirect_uri}&scope=user`;
+const gitAuthURL = new URL('https://github.com/login/oauth');
+const searchParams = new URLSearchParams(oAuthURLParams).toString();
+const oAuthURL = `${gitAuthURL}/authorize?${searchParams}`;
 
 const exchangeCodeForToken = async (code: string) => {
+  const postSearchParams = new URLSearchParams({ ...oAuthURLPostParams, code }).toString();
+  const url = `${gitAuthURL}/access_token?${postSearchParams}`;
+
   try {
     const { data } = await axios.request({
-      url: `${urlParams.gitHub}/access_token?client_id=${urlParams.client_id}&client_secret=${urlParams.client_secret}&code=${code}&redirect_uri=${urlParams.redirect_uri}&scope=user`,
+      url,
       method: 'post',
       headers: {
         accept: 'application/json',
@@ -31,9 +40,9 @@ const exchangeCodeForToken = async (code: string) => {
     let primaryEmail = email;
 
     if (!email) {
-      const emails = await octokit.request('GET /user/emails', {});
+      const { data: emails } = await octokit.request('GET /user/emails', {});
 
-      primaryEmail = emails.data.find((em)=> em.primary)?.email || '';
+      primaryEmail = emails.find((em)=> em.primary)?.email || emails[0].email;
     }
 
     const [givenName, familyName] = name?.split(' ') || ['User', 'User'];

@@ -16,6 +16,8 @@ import {
   Text,
 } from '@mantine/core';
 import { accountApi } from 'resources/account';
+import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons';
+import config from '../../config';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
@@ -106,6 +108,12 @@ const SignUp = () => {
             the Privacy Policy
           </Text>
         </Text>
+        <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
+          Continue with Google
+        </Button>
+        <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
+          Continue with GitHub
+        </Button>
         <Group sx={{ fontSize: '14px' }}>
           Have an account?
           <Link
