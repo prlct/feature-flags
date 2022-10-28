@@ -28,7 +28,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const feature = await featureService.findOne({ _id: featureId }) as Feature;
 
-  ctx.body = feature.history?.filter((h) => h.env === env);
+  ctx.body = feature.history?.filter((h) => h.env === env) || [];
 }
 
 export default (router: AppRouter) => {
