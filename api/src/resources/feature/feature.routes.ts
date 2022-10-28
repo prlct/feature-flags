@@ -15,6 +15,7 @@ import getFeaturesForUserPublicKey from './actions/public-key-api/get-features-f
 import createAbVariant from './actions/create-ab-variant';
 import updateAbVariant from './actions/update-ab-variant';
 import removeAbVariant from './actions/remove-ab-variant';
+import getHistory from './actions/get-history';
 
 const privateRoutes = routeUtil.getRoutes([
   deleteFeature,
@@ -28,6 +29,7 @@ const privateRoutes = routeUtil.getRoutes([
   createAbVariant,
   updateAbVariant,
   removeAbVariant,
+  getHistory,
 ]);
 
 const privateKeyRoutes = [

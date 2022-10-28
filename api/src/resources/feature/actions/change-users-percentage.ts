@@ -1,11 +1,12 @@
 import Joi from 'joi';
 
 import { validateMiddleware } from 'middlewares';
-import { AppKoaContext, AppRouter } from 'types';
+import { AppKoaContext, AppRouter, Next } from 'types';
 import { featureService, Feature } from 'resources/feature';
 import { Env } from 'resources/application';
 import { getFlatFeature } from '../utils/get-flat-feature';
 import featureAuth from '../middlewares/feature-auth.middleware';
+import saveChangesMiddleware from '../middlewares/save-changes.middleware';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -30,7 +31,7 @@ type ValidatedData = {
   percentage: number;
 };
 
-async function handler(ctx: AppKoaContext<ValidatedData>) {
+async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
   const { featureId } = ctx.params;
   const { env, percentage } = ctx.validatedData;
 
@@ -43,9 +44,18 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     },
   ) as Feature;
 
+  ctx.state.featureChanges = {
+    env,
+    featureId,
+    data: {
+      usersPercentage: percentage,
+    },
+  };
+
   ctx.body = getFlatFeature(feature, env);
+  return next();
 }
 
 export default (router: AppRouter) => {
-  router.put('/:featureId/users-percentage', featureAuth, validateMiddleware(schema), handler);
+  router.put('/:featureId/users-percentage', featureAuth, validateMiddleware(schema), handler, saveChangesMiddleware);
 };

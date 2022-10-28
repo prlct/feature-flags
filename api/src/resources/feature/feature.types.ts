@@ -16,7 +16,7 @@ export type ABVariant = {
   remoteConfig: string,
 };
 
-type EnvSettings = {
+export type EnvSettings = {
   enabled: boolean;
   enabledForEveryone: boolean;
   usersPercentage: number;
@@ -25,6 +25,24 @@ type EnvSettings = {
   targetingRules?: TargetingRule[];
   visibilityChangedOn?: Date;
   remoteConfig: string,
+};
+
+export type Changes = {
+  featureId: string,
+  env: Env,
+  changedOn: Date,
+  admin: {
+    _id: string,
+    email: string,
+  };
+  data: {
+    enabled?: boolean;
+    enabledForEveryone?: boolean;
+    usersPercentage?: number;
+    tests?: ABVariant[];
+    targetingRules?: TargetingRule[];
+    remoteConfig?: string,
+  }
 };
 
 export type Feature = {
@@ -41,6 +59,7 @@ export type Feature = {
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;
+  history?: Changes[] | null,
 };
 
 export type FlatFeature = Omit<Feature, 'envSettings'> & EnvSettings & { env: Env };

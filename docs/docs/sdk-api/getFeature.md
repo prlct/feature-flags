@@ -63,7 +63,7 @@ const Page = () => {
 ```
 
 ### Variants
-:::info Since js-sdk version >=1.4.1
+:::info Since js-sdk version >=1.4.2
 
 :::
 
