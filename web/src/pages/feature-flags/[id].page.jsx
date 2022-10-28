@@ -96,6 +96,7 @@ const FeatureFlag = () => {
             defaultValue="settings"
             value={tab}
             onTabChange={(value) => router.push(`#${value}`)}
+            keepMounted={false}
           >
             <Tabs.List>
               <Tabs.Tab value="settings">

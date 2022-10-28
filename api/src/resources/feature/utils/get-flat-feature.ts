@@ -5,5 +5,5 @@ import { Feature } from 'resources/feature';
 export const getFlatFeature = (feature: Feature, env: Env) => {
   const envSettings = feature.envSettings[env];
 
-  return omit({ ...feature, ...envSettings, env }, ['envSettings']);
+  return omit({ ...feature, ...envSettings, env }, ['envSettings', 'history']);
 };

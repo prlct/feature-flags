@@ -52,7 +52,7 @@ const History = ({ featureId, env }) => {
       </thead>
       <tbody>
         {history?.map((historyRecord) => (
-          <tr>
+          <tr key={historyRecord.changedOn}>
             <td style={{ width: '50%' }}>
               <Text>{getActionMessage(historyRecord.data)}</Text>
             </td>
