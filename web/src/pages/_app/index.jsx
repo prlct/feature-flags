@@ -2,6 +2,9 @@ import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
+import getConfig from 'next/config';
+import * as amplitude from '@amplitude/analytics-browser';
+
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { ModalsProvider } from '@mantine/modals';
@@ -15,6 +18,10 @@ import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
 import Hotjar from './Hotjar';
 import GoogleTag from './GoogleTag';
+
+const { publicRuntimeConfig } = getConfig();
+
+amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY);
 
 const App = ({ Component, pageProps }) => (
   <>
