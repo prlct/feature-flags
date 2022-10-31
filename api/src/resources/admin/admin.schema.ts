@@ -22,6 +22,7 @@ const schema = Joi.object({
   deletedOn: Joi.date(),
   oauth: Joi.object().keys({
     google: Joi.boolean().default(false),
+    github: Joi.boolean().default(false),
   }),
 });
 

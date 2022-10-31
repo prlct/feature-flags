@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
-import { IconBrandGoogle } from '@tabler/icons';
+import { IconBrandGoogle, IconBrandGithub } from '@tabler/icons';
 
 import { magic } from 'libs/magic';
 import config from 'config';
@@ -65,7 +65,14 @@ const SignIn = () => {
               type="submit"
               fullWidth
             >
-              Sign in
+              Sign In
+            </Button>
+            <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
+            <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
+              Continue with Google
+            </Button>
+            <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
+              Continue with GitHub
             </Button>
             <Group sx={{ fontSize: '14px' }}>
               Don’t have an account?
@@ -78,9 +85,6 @@ const SignIn = () => {
                 Sign up
               </Link>
             </Group>
-            <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
-              Continue with Google
-            </Button>
           </Stack>
         </form>
       </Stack>

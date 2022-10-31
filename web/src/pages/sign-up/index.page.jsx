@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { magic } from 'libs/magic';
 
+import config from 'config';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { Link } from 'components';
@@ -16,6 +17,7 @@ import {
   Text,
 } from '@mantine/core';
 import { accountApi } from 'resources/account';
+import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
@@ -106,6 +108,13 @@ const SignUp = () => {
             the Privacy Policy
           </Text>
         </Text>
+        <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
+        <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
+          Continue with Google
+        </Button>
+        <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
+          Continue with GitHub
+        </Button>
         <Group sx={{ fontSize: '14px' }}>
           Have an account?
           <Link

@@ -14,8 +14,11 @@
     "bucket": "yourBucket"
   },
   "google": {
-    "redirectUri" : "http://localhost:3001/users/google/code",
+    "redirectUri": "http://localhost:3001/users/google/code",
     "authRedirectUri": "http://localhost:3001/account/sign-in/google"
+  },
+  "github": {
+    "redirectUri": "http://localhost:3001/account/sign-in/github"
   },
   "adminKey": "replaceWithSecureApiKey",
   "MAGIC_SECRET_KEY": "configure in local.ts file",
