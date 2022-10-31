@@ -26,12 +26,14 @@ const getOAuthUrl = async (ctx: AppKoaContext) => {
 const signinGithubWithCode = async (ctx: AppKoaContext) => {
   const { code } = ctx.request.query;
 
-  const { isValid, payload }  = await githubService.
-    exchangeCodeForToken(code as string) as { isValid: boolean, payload: ValidatedData };
+  const {
+    isValid,
+    payload,
+  } = await githubService.exchangeCodeForToken(code as string) as { isValid: boolean, payload: ValidatedData };
 
   ctx.assertError(isValid, `Exchange code for token error: ${payload}`);
 
-  const  admin = await adminService.findOne({ email: payload.email });
+  const admin = await adminService.findOne({ email: payload.email });
   let adminChanged;
 
   const publicApiKey = 'pk_' + securityUtil.generateSecureToken(PUBLIC_API_KEY_SECURITY_LENGTH);
@@ -119,7 +121,6 @@ const signinGithubWithCode = async (ctx: AppKoaContext) => {
   }
   ctx.redirect(config.webUrl);
 };
-
 
 
 export default (router: AppRouter) => {

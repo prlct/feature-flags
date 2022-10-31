@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { magic } from 'libs/magic';
 
+import config from 'config';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { Link } from 'components';
@@ -17,7 +18,6 @@ import {
 } from '@mantine/core';
 import { accountApi } from 'resources/account';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons';
-import config from '../../config';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { TextInput, Button, Stack, Title, Group, Text } from '@mantine/core';
+import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
 import { IconBrandGoogle, IconBrandGithub } from '@tabler/icons';
 
 import { magic } from 'libs/magic';

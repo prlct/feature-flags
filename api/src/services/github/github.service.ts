@@ -36,13 +36,13 @@ const exchangeCodeForToken = async (code: string) => {
       auth: data.access_token,
     });
 
-    const { data : { name, email } }  = await octokit.request('GET /user', {});
+    const { data: { name, email } } = await octokit.request('GET /user', {});
     let primaryEmail = email;
 
     if (!email) {
       const { data: emails } = await octokit.request('GET /user/emails', {});
 
-      primaryEmail = emails.find((em)=> em.primary)?.email || emails[0].email;
+      primaryEmail = emails.find((em) => em.primary)?.email || emails[0].email;
     }
 
     const [givenName, familyName] = name?.split(' ') || ['User', 'User'];
