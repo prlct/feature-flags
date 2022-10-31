@@ -108,6 +108,7 @@ const SignUp = () => {
             the Privacy Policy
           </Text>
         </Text>
+        <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
         <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
           Continue with Google
         </Button>

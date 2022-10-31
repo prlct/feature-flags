@@ -6,7 +6,7 @@ import config from 'config';
 const oAuthURLParams = {
   client_id: config.github.clientId,
   redirect_uri: `${config.apiUrl}/account/sign-in/github`,
-  scope: 'user',
+  scope: 'user:email,read:user',
 };
 
 const oAuthURLPostParams = {
