@@ -9,8 +9,9 @@ import {
   Select,
   Text,
   ActionIcon,
+  Tooltip,
 } from '@mantine/core';
-import { IconPlus, IconTrash } from '@tabler/icons';
+import { IconHelp, IconTrash } from '@tabler/icons';
 
 import { DEFAULT_TARGETING_RULE, TARGETING_RULES_OPERATORS } from 'helpers/constants';
 
@@ -121,30 +122,39 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
             onChange={(v) => handleInputChange(index, 'operator', v)}
             sx={{ width: '120px' }}
           />
-          {operator === TARGETING_RULES_OPERATORS.EQUALS
-            ? (
-              <TextInput
-                label={(<Text size="sm">Value</Text>)}
-                value={value}
-                disabled={disabled}
-                onChange={(e) => handleInputChange(index, 'value', e.currentTarget.value)}
-                sx={{ minWidth: '200px', flexGrow: 1 }}
-              />
-            )
-            : (
-              <TargetingRuleMultipleValues
-                values={value}
-                disabled={disabled}
-                onChange={(v) => handleInputChange(index, 'value', v)}
-                sx={{ minWidth: '200px', flexGrow: 1 }}
-              />
-            )}
-          <TextInput
-            label="description"
-            value={description}
-            disabled={disabled}
-            onChange={(e) => handleInputChange(index, 'description', e.currentTarget.value)}
-          />
+          <Stack sx={{ flexGrow: 1 }}>
+            {operator === TARGETING_RULES_OPERATORS.EQUALS
+              ? (
+                <TextInput
+                  label={(<Text size="sm">Value</Text>)}
+                  value={value}
+                  disabled={disabled}
+                  onChange={(e) => handleInputChange(index, 'value', e.currentTarget.value)}
+                  sx={{ minWidth: '200px', flexGrow: 1 }}
+                />
+              )
+              : (
+                <TargetingRuleMultipleValues
+                  values={value}
+                  disabled={disabled}
+                  onChange={(v) => handleInputChange(index, 'value', v)}
+                  sx={{ minWidth: 200, maxWidth: 340, flexGrow: 1 }}
+                />
+              )}
+            <TextInput
+              label={(
+                <Group spacing={3}>
+                  <Text>Title</Text>
+                  <Tooltip label="When added, value title is shown instead of value. Useful for id values." withArrow position="right">
+                    <Group><IconHelp size={20} color="#ced4da" /></Group>
+                  </Tooltip>
+                </Group>
+                )}
+              value={description}
+              disabled={disabled}
+              onChange={(e) => handleInputChange(index, 'description', e.currentTarget.value)}
+            />
+          </Stack>
           <ActionIcon
             size="lg"
             color="red"
@@ -162,12 +172,20 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
           </ActionIcon>
         </Group>
       ))}
-      <Group position="right">
+      <Group position="left">
         <Button
           variant="subtle"
-          leftIcon={<IconPlus />}
           disabled={disabled}
           onClick={handleAddRuleClick}
+          sx={{
+            padding: 0,
+            '@media( hover: hover)': {
+              '&:hover': {
+                backgroundColor: 'transparent',
+                textDecoration: 'underline',
+              },
+            },
+          }}
         >
           Add rule
         </Button>
