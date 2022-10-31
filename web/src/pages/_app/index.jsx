@@ -2,8 +2,6 @@ import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import getConfig from 'next/config';
-import * as amplitude from '@amplitude/analytics-browser';
 
 import { MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
@@ -13,15 +11,12 @@ import queryClient from 'query-client';
 import shipTheme from 'theme/ship-theme';
 
 import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
+import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
 import Hotjar from './Hotjar';
 import GoogleTag from './GoogleTag';
-
-const { publicRuntimeConfig } = getConfig();
-
-amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY);
 
 const App = ({ Component, pageProps }) => (
   <>
@@ -46,9 +41,11 @@ const App = ({ Component, pageProps }) => (
         <ModalsProvider>
           <NotificationsProvider autoClose={5000} limit={2}>
             <GrowthFlagsContextProvider>
-              <PageConfig>
-                <Component {...pageProps} />
-              </PageConfig>
+              <AmplitudeContextProvider>
+                <PageConfig>
+                  <Component {...pageProps} />
+                </PageConfig>
+              </AmplitudeContextProvider>
             </GrowthFlagsContextProvider>
           </NotificationsProvider>
         </ModalsProvider>
