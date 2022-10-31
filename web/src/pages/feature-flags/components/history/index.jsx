@@ -41,8 +41,12 @@ const History = ({ featureId, env }) => {
   const getDate = (date) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' })
     .format(new Date(date));
 
+  if (!history?.length) {
+    return <Text mt={20}>There is no history yet.</Text>;
+  }
+
   return (
-    <Table>
+    <Table mt={20}>
       <thead>
         <tr>
           <th>Action</th>
@@ -52,7 +56,7 @@ const History = ({ featureId, env }) => {
       </thead>
       <tbody>
         {history?.map((historyRecord) => (
-          <tr key={historyRecord.changedOn}>
+          <tr key={historyRecord.changedOn.toString()}>
             <td style={{ width: '50%' }}>
               <Text>{getActionMessage(historyRecord.data)}</Text>
             </td>
@@ -60,7 +64,7 @@ const History = ({ featureId, env }) => {
               <Text>{historyRecord.admin.email}</Text>
             </td>
             <td style={{ width: '25%' }}>
-              <Text>{getDate(historyRecord.changedOn)}</Text>
+              <Text>{getDate(historyRecord.changedOn.toString())}</Text>
             </td>
           </tr>
         ))}
