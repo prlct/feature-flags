@@ -29,9 +29,9 @@ const TargetingRuleMultipleValues = ({ values, onChange, disabled, sx }) => {
   }, [onChange, values]);
 
   return (
-    <Stack sx={sx}>
+    <Stack sx={sx} spacing={0}>
       <TextInput
-        label={<Text size="sm">Values</Text>}
+        label={<Text size="sm">Value</Text>}
         value={inputValue}
         disabled={disabled}
         onInput={(e) => setInputValue(e.currentTarget.value)}
@@ -53,31 +53,33 @@ const TargetingRuleMultipleValues = ({ values, onChange, disabled, sx }) => {
           </Button>
               )}
       />
-
-      <Group spacing="sm">
-        {values.map((value, index) => (
-          <Badge
-            key={value}
-            variant="outline"
-            disabled={disabled}
-            sx={{ height: 26 }}
-            rightSection={(
-              <ActionIcon
-                size="xs"
-                color="blue"
-                radius="xl"
-                variant="transparent"
-                disabled={disabled}
-                onClick={() => handleValueDelete(index)}
-              >
-                <IconX size={16} />
-              </ActionIcon>
-                  )}
-          >
-            {value}
-          </Badge>
-        ))}
-      </Group>
+      {!!values.length
+            && (
+            <Group spacing="sm" mt={16}>
+              {values.map((value, index) => (
+                <Badge
+                  key={value}
+                  variant="outline"
+                  disabled={disabled}
+                  sx={{ height: 26 }}
+                  rightSection={(
+                    <ActionIcon
+                      size="xs"
+                      color="blue"
+                      radius="xl"
+                      variant="transparent"
+                      disabled={disabled}
+                      onClick={() => handleValueDelete(index)}
+                    >
+                      <IconX size={16} />
+                    </ActionIcon>
+                        )}
+                >
+                  {value}
+                </Badge>
+              ))}
+            </Group>
+            )}
     </Stack>
   );
 };
