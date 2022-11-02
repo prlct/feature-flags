@@ -31,7 +31,13 @@ const signinGoogleWithCode = async (ctx: AppKoaContext, next: Next) => {
   const  admin = await adminService.findOne({ email: payload.email });
 
   if (admin) {
-    ctx.state.admin = admin;
+    ctx.state.admin = {
+      ...admin,
+      isEmailVerified: true,
+      oauth: {
+        google: true,
+      },
+    };
   } else {
     ctx.state.authAdminData = {
       email: payload.email,

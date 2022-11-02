@@ -25,12 +25,11 @@ const createAdmin = async (ctx: AppKoaContext) => {
   });
 
   if (admin) {
-    if (!admin.oauth) {
-      adminChanged = await adminService.updateOne(
-        { _id: admin._id },
-        (old) => ({ ...old, oauth: { ...old.oauth, ...admin.oauth } }),
-      );
-    }
+    adminChanged = await adminService.updateOne(
+      { _id: admin._id },
+      (old) => ({ ...old, oauth: { ...old.oauth, ...admin.oauth } }),
+    );
+      
     const adminUpdated = adminChanged || admin;
     await Promise.all([
       adminService.updateLastRequest(adminUpdated._id),
@@ -38,7 +37,6 @@ const createAdmin = async (ctx: AppKoaContext) => {
     ]);
 
   } else {
-
     const adminId = generateId();
     const applicationId = generateId();
     const companyId = generateId();
