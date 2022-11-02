@@ -25,8 +25,8 @@ const createAdmin = async (ctx: AppKoaContext) => {
   if (admin) {
     if (!admin.oauth) {
       adminChanged = await adminService.updateOne(
-        { _id: admin._id },
-        (old) => ({ ...old, oauth: { ...old.oauth, ...admin.oauth } }),
+          { _id: admin._id },
+          (old) => ({ ...old, oauth: { ...old.oauth, ...admin.oauth } }),
       );
     }
     const adminUpdated = adminChanged || admin;
@@ -37,59 +37,62 @@ const createAdmin = async (ctx: AppKoaContext) => {
 
   } else {
     const { newAdmin } = await adminService
-      .withTransaction(async (session): Promise<{
-        application: Application;
-        newAdmin: Admin;
-        company: Company
-      }> => {
-        const createdAdmin = await adminService.insertOne({
-          ...authAdminData,
-        }, { session });
+        .withTransaction(async (mainSession) : Promise<{ newAdmin: Admin }> => {
+          const { createdAdmin, company, application } = await adminService
+              .withTransaction(async (session): Promise<{
+                application: Application;
+                createdAdmin: Admin;
+                company: Company
+              }> => {
+                const insertedAdmin = await adminService.insertOne({
+                  ...authAdminData,
+                }, { session });
 
-        const createdCompany = await companyService.insertOne({
-          ownerId: createdAdmin._id,
-          applicationIds: [],
-          adminIds: [createdAdmin._id],
-        }, { session });
+                const createdCompany = await companyService.insertOne({
+                  ownerId: insertedAdmin._id,
+                  applicationIds: [],
+                  adminIds: [insertedAdmin._id],
+                }, { session });
 
-        const createdApplication = await applicationService.insertOne({
-          publicApiKey,
-          privateApiKey,
-          companyId: createdCompany._id,
-          featureIds: [],
-          envs: {
-            [Env.DEVELOPMENT]: {
-              totalUsersCount: 0,
-            },
-            [Env.STAGING]: {
-              totalUsersCount: 0,
-            },
-            [Env.DEMO]: {
-              totalUsersCount: 0,
-            },
-            [Env.PRODUCTION]: {
-              totalUsersCount: 0,
-            },
-          },
-        }, { session });
+                const createdApplication = await applicationService.insertOne({
+                  publicApiKey,
+                  privateApiKey,
+                  companyId: createdCompany._id,
+                  featureIds: [],
+                  envs: {
+                    [Env.DEVELOPMENT]: {
+                      totalUsersCount: 0,
+                    },
+                    [Env.STAGING]: {
+                      totalUsersCount: 0,
+                    },
+                    [Env.DEMO]: {
+                      totalUsersCount: 0,
+                    },
+                    [Env.PRODUCTION]: {
+                      totalUsersCount: 0,
+                    },
+                  },
+                }, { session });
+                return { createdAdmin: insertedAdmin, company: createdCompany, application: createdApplication };
+              });
 
-        await companyService.updateOne(
-          { _id: createdCompany._id },
-          () => ({ applicationIds: [createdApplication._id] }),
-          { session },
-        );
-        await adminService.updateOne(
-          { _id: createdAdmin._id },
-          () => ({
-            ownCompanyId: createdCompany._id,
-            companyIds: [createdCompany._id],
-            applicationIds: [createdApplication._id],
-          }),
-          { session },
-        );
-
-        return { newAdmin: createdAdmin, company: createdCompany, application: createdApplication };
-      });
+          await companyService.updateOne(
+              { _id: company._id },
+              () => ({ applicationIds: [application._id] }),
+              { session: mainSession },
+          );
+          const updatedAdmin = await adminService.updateOne(
+              { _id: createdAdmin._id },
+              () => ({
+                ownCompanyId: company._id,
+                companyIds: [company._id],
+                applicationIds: [application._id],
+              }),
+              { session: mainSession },
+          );
+          return { newAdmin: updatedAdmin || createdAdmin };
+        });
 
     if (newAdmin) {
       await adminService.updateLastRequest(newAdmin._id);
