@@ -36,68 +36,62 @@ const createAdmin = async (ctx: AppKoaContext) => {
     ]);
 
   } else {
-    const { newAdmin } = await adminService
-      .withTransaction(async (mainSession) : Promise<{ newAdmin: Admin }> => {
-        const { createdAdmin, company, application } = await adminService
-          .withTransaction(async (session): Promise<{
-            application: Application;
-            createdAdmin: Admin;
-            company: Company
-          }> => {
-            const insertedAdmin = await adminService.insertOne({
-              ...authAdminData,
-            }, { session });
+    const { newAdmin, company, application } = await adminService
+      .withTransaction(async (session): Promise<{
+        newAdmin: Admin;
+        application: Application;
+        company: Company
+      }> => {
+        const createdAdmin = await adminService.insertOne({
+          ...authAdminData,
+        }, { session });
 
-            const createdCompany = await companyService.insertOne({
-              ownerId: insertedAdmin._id,
-              applicationIds: [],
-              adminIds: [insertedAdmin._id],
-            }, { session });
+        const createdCompany = await companyService.insertOne({
+          ownerId: createdAdmin._id,
+          applicationIds: [],
+          adminIds: [createdAdmin._id],
+        }, { session });
 
-            const createdApplication = await applicationService.insertOne({
-              publicApiKey,
-              privateApiKey,
-              companyId: createdCompany._id,
-              featureIds: [],
-              envs: {
-                [Env.DEVELOPMENT]: {
-                  totalUsersCount: 0,
-                },
-                [Env.STAGING]: {
-                  totalUsersCount: 0,
-                },
-                [Env.DEMO]: {
-                  totalUsersCount: 0,
-                },
-                [Env.PRODUCTION]: {
-                  totalUsersCount: 0,
-                },
-              },
-            }, { session });
-            return { createdAdmin: insertedAdmin, company: createdCompany, application: createdApplication };
-          });
-
-        await companyService.updateOne(
+        const createdApplication = await applicationService.insertOne({
+          publicApiKey,
+          privateApiKey,
+          companyId: createdCompany._id,
+          featureIds: [],
+          envs: {
+            [Env.DEVELOPMENT]: {
+              totalUsersCount: 0,
+            },
+            [Env.STAGING]: {
+              totalUsersCount: 0,
+            },
+            [Env.DEMO]: {
+              totalUsersCount: 0,
+            },
+            [Env.PRODUCTION]: {
+              totalUsersCount: 0,
+            },
+          },
+        }, { session });
+        return { newAdmin: createdAdmin, company: createdCompany, application: createdApplication };
+      });
+    
+    if (newAdmin) {
+      await Promise.all([
+        adminService.updateLastRequest(newAdmin._id),
+        authService.setTokens(ctx, newAdmin._id),
+        companyService.updateOne(
           { _id: company._id },
           () => ({ applicationIds: [application._id] }),
-          { session: mainSession },
-        );
-        const updatedAdmin = await adminService.updateOne(
-          { _id: createdAdmin._id },
+        ),
+        adminService.updateOne(
+          { _id: newAdmin._id },
           () => ({
             ownCompanyId: company._id,
             companyIds: [company._id],
             applicationIds: [application._id],
           }),
-          { session: mainSession },
-        );
-        return { newAdmin: updatedAdmin || createdAdmin };
-      });
-    
-    if (newAdmin) {
-      await adminService.updateLastRequest(newAdmin._id);
-      await authService.setTokens(ctx, newAdmin._id);
-
+        ),
+      ]);
       const name = `${newAdmin.firstName} ${newAdmin.lastName}`.trim();
 
       slackService.send(`${name} just signed up! Reach out by email: ${newAdmin.email}.`);
