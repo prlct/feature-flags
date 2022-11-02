@@ -1,10 +1,12 @@
+import { generateId } from '@paralect/node-mongo';
+
 import { securityUtil } from 'utils';
 import { PRIVATE_API_KEY_SECURITY_LENGTH, PUBLIC_API_KEY_SECURITY_LENGTH } from 'app.constants';
 import { AppKoaContext } from 'types';
 import { authService } from 'services';
-import { Application, applicationService, Env } from 'resources/application';
+import { applicationService, Env } from 'resources/application';
 import { Admin, adminService } from 'resources/admin';
-import { Company, companyService } from 'resources/company';
+import { companyService } from 'resources/company';
 import slackService from 'services/slack.service';
 import mailerLiteService from 'services/mailerlite.service';
 
@@ -36,26 +38,35 @@ const createAdmin = async (ctx: AppKoaContext) => {
     ]);
 
   } else {
-    const { newAdmin, company, application } = await adminService
+
+    const adminId = generateId();
+    const applicationId = generateId();
+    const companyId = generateId();
+
+    const { newAdmin } = await adminService
       .withTransaction(async (session): Promise<{
         newAdmin: Admin;
-        application: Application;
-        company: Company
       }> => {
         const createdAdmin = await adminService.insertOne({
+          _id: adminId,
           ...authAdminData,
+          ownCompanyId: companyId,
+          companyIds: [companyId],
+          applicationIds: [applicationId],
         }, { session });
 
-        const createdCompany = await companyService.insertOne({
-          ownerId: createdAdmin._id,
-          applicationIds: [],
-          adminIds: [createdAdmin._id],
+        await companyService.insertOne({
+          _id: companyId,
+          ownerId: adminId,
+          applicationIds: [applicationId],
+          adminIds: [adminId],
         }, { session });
 
-        const createdApplication = await applicationService.insertOne({
+        await applicationService.insertOne({
+          _id: applicationId,
           publicApiKey,
           privateApiKey,
-          companyId: createdCompany._id,
+          companyId: companyId,
           featureIds: [],
           envs: {
             [Env.DEVELOPMENT]: {
@@ -72,25 +83,13 @@ const createAdmin = async (ctx: AppKoaContext) => {
             },
           },
         }, { session });
-        return { newAdmin: createdAdmin, company: createdCompany, application: createdApplication };
+        return { newAdmin: createdAdmin };
       });
     
     if (newAdmin) {
       await Promise.all([
         adminService.updateLastRequest(newAdmin._id),
         authService.setTokens(ctx, newAdmin._id),
-        companyService.updateOne(
-          { _id: company._id },
-          () => ({ applicationIds: [application._id] }),
-        ),
-        adminService.updateOne(
-          { _id: newAdmin._id },
-          () => ({
-            ownCompanyId: company._id,
-            companyIds: [company._id],
-            applicationIds: [application._id],
-          }),
-        ),
       ]);
       const name = `${newAdmin.firstName} ${newAdmin.lastName}`.trim();
 
