@@ -92,7 +92,12 @@ const SubscriptionPlans = () => {
       >
         {currentSubscription
           && !currentSubscription.cancelAtPeriodEnd
-          && <CurrentSubscriptionBlock onCancelSubscription={refetch} />}
+          && (
+          <CurrentSubscriptionBlock
+            onCancelSubscription={refetch}
+            currentSubscription={currentSubscription}
+          />
+          )}
       </Group>
 
       {selectedUpgradePlan && (
