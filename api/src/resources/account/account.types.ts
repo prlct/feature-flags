@@ -5,6 +5,6 @@ export type AuthAdminData = {
   isEmailVerified: boolean;
   oauth?: {
     google?: boolean;
-    github?:boolean;
+    github?: boolean;
   },
 };

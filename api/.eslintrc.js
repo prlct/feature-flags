@@ -20,6 +20,7 @@ module.exports = {
     'arrow-body-style': 0,
     'no-underscore-dangle': 0,
     'function-paren-newline': 1,
+    'key-spacing': ["error", { "afterColon": true }],
     'import/no-extraneous-dependencies': ['error', {
       devDependencies: [
         '**/*.spec.{js,ts}',
