@@ -9,6 +9,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import dayjs from 'dayjs';
 
 import { subscriptionApi } from 'resources/subscription';
 
@@ -90,6 +91,17 @@ const SubscriptionPlans = () => {
         component="section"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
+        {currentSubscription
+              && currentSubscription.cancelAtPeriodEnd
+              && (
+              <Text>
+                You current subscription ends
+                {' '}
+                {dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY')}
+                .
+              </Text>
+              )}
+
         {currentSubscription
           && !currentSubscription.cancelAtPeriodEnd
           && (

@@ -1,7 +1,6 @@
 import { useCallback, memo } from 'react';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
-
 import {
   Button,
   Text,
@@ -37,11 +36,11 @@ const CurrentSubscriptionBlock = ({ onCancelSubscription, currentSubscription })
         <Text size="sm">
           Your subscription started on
           {' '}
-          {dayjs(currentSubscription.startDate).format('MMM DD, YYYY')}
+          {dayjs(new Date(currentSubscription.startDate * 1000)).format('MMM DD, YYYY')}
           {' '}
-          and expires
+          and renews
           {' '}
-          {dayjs(currentSubscription.endDate).format('MMM DD, YYYY')}
+          {dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY')}
           .
         </Text>
       </Stack>

@@ -3,6 +3,7 @@ import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import schema from './subscription.schema';
 import { Subscription } from './subscription.types';
+import { emailService } from 'services';
 
 const service = db.createService<Subscription>(DATABASE_DOCUMENTS.SUBSCRIPTIONS, { schema });
 
@@ -25,6 +26,9 @@ const updateSubscription = async (data: any) => {
       upsert: true,
     },
   );
+  if (data.cancel_at_period_end) {
+    emailService.sendSubscriptionDeleted(data);
+  }
 };
 
 const deleteSubscription = async (data: any) => {

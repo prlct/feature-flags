@@ -2,14 +2,12 @@
   <mj-class
     name="big-text"
     align="center"
-    font-weight="bold"
-    font-family="Trebuchet MS, Arial, sans-serif"
-    color="#3b1d6c"
-    font-size="30px"
-    padding-left="25px"
-    padding-right="25px"
-  />
-
+    font-weight="700"
+    color="#232134"
+    font-size="28px"
+    line-height= "42px"
+    font-family="'Poppins', sans-serif"
+/>
   <mj-class
     name="text"
     align="center"
