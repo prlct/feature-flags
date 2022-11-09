@@ -5,12 +5,12 @@ import { Container, Tabs, Text } from '@mantine/core';
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
-import { EmailSequencesContextProvider } from './email-sequences-context';
+import { EmailSequencesContextProvider, EXAMPLE_PIPELINES } from './email-sequences-context';
 
 const EmailSequences = () => {
   const router = useRouter();
 
-  const [pipelines, setPipelines] = useState([]);
+  const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
   const [openedPipeline, setOpenedPipeline] = useState(router.asPath.split('#')?.[1] || pipelines[0]?.name);
 
   const defaultTab = pipelines[0]?.name;

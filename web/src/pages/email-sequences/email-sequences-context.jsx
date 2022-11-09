@@ -1,7 +1,7 @@
 import { createContext, useMemo, useReducer } from 'react';
 import PropTypes from 'prop-types';
 
-const EXAMPLE_PIPELINES = [{
+export const EXAMPLE_PIPELINES = [{
   name: 'Pipeline 1',
   sequences: [
     {
