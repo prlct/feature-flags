@@ -50,7 +50,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
       doc.envSettings[env].targetingRules = targetingRules;
       return doc;
     },
-  ) as Feature;
+  ) as Feature || await featureService.findOne({ _id: featureId });
 
   ctx.state.featureChanges = {
     env,
