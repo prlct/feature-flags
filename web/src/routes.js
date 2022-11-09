@@ -24,6 +24,7 @@ export const route = {
   profile: '/profile',
   admins: '/admins',
   featureFlag: '/feature-flags/[id]',
+  emailSequences: '/email-sequences',
   apiKey: '/api-key',
   members: '/members',
   subscriptionPlans: '/subscription-plans',
@@ -96,6 +97,11 @@ export const configuration = {
   },
   featureFlag: {
     route: route.featureFlag,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  emailSequences: {
+    route: route.emailSequences,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
