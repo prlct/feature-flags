@@ -25,6 +25,8 @@ const SubscriptionPlans = () => {
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
+  const endSubscriptionDate = currentSubscription && dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
+
   const renderItems = () => subscriptionList.map((item) => (
     <PlanItem
       key={item.planIds[interval]}
@@ -95,10 +97,7 @@ const SubscriptionPlans = () => {
               && currentSubscription.cancelAtPeriodEnd
               && (
               <Text>
-                You current subscription ends
-                {' '}
-                {dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY')}
-                .
+                  {`You current subscription ends ${endSubscriptionDate}.`}
               </Text>
               )}
 

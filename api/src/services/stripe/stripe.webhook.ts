@@ -13,7 +13,10 @@ export default function (event: Stripe.Event) {
       subscriptionService.updateSubscription(event.data.object);
       return;
     case 'invoice.payment_succeeded':
-      emailService.sendSuccessfulSubscription(event.data.object);
+      emailService.sendSuccessfulSubscription(event.data.object as Stripe.Invoice);
+      return;
+    case 'invoice.upcoming':
+      emailService.sendRenewalReminder(event.data.object as Stripe.Invoice);
       return;
     case 'customer.subscription.deleted':
       subscriptionService.deleteSubscription(event.data.object);

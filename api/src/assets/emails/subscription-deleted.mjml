@@ -16,7 +16,7 @@
           This is to confirm that we have canceled your subscription and will not deduct further payments from you.
         </mj-text>
         <mj-text mj-class="text">
-          Your subscription will be valid until .
+          Your subscription will be valid until {{endDate}} .
         </mj-text>
 
       </mj-column>

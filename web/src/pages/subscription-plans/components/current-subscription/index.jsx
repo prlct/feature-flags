@@ -1,4 +1,4 @@
-import { useCallback, memo } from 'react';
+import { useCallback, memo, useMemo } from 'react';
 import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import {
@@ -14,6 +14,15 @@ import subscriptionList from '../../subscription-list';
 const CurrentSubscriptionBlock = ({ onCancelSubscription, currentSubscription }) => {
   const cancelMutation = subscriptionApi.useCancelMutation();
   const amplitude = useAmplitude();
+
+  const startSubscriptionDate = useMemo(
+    () => dayjs(new Date(currentSubscription.startDate * 1000)).format('MMM DD, YYYY'),
+    [currentSubscription.startDate],
+  );
+  const endSubscriptionDate = useMemo(
+    () => dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY'),
+    [currentSubscription.endDate],
+  );
 
   const onCancelCurrentSubscription = useCallback(() => {
     cancelMutation.mutate(null, {
@@ -34,14 +43,7 @@ const CurrentSubscriptionBlock = ({ onCancelSubscription, currentSubscription })
       <Text size="lg" align="center" sx={{ flex: '1 1 100%' }}>Cancel Subscription</Text>
       <Stack>
         <Text size="sm">
-          Your subscription started on
-          {' '}
-          {dayjs(new Date(currentSubscription.startDate * 1000)).format('MMM DD, YYYY')}
-          {' '}
-          and renews
-          {' '}
-          {dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY')}
-          .
+          {`Your subscription started on ${startSubscriptionDate} and renews ${endSubscriptionDate}.`}
         </Text>
       </Stack>
       <Text size="sm" sx={{ flex: '1 1 100%' }}>Cancelling your team subscription will affect members access to Growthflags.</Text>
@@ -54,10 +56,10 @@ const CurrentSubscriptionBlock = ({ onCancelSubscription, currentSubscription })
 CurrentSubscriptionBlock.propTypes = {
   onCancelSubscription: PropTypes.func.isRequired,
   currentSubscription: PropTypes.shape({
-    startDate: PropTypes.instanceOf(Date).isRequired,
-    endDate: PropTypes.instanceOf(Date).isRequired,
     interval: PropTypes.oneOf(['month', 'year']).isRequired,
     planId: PropTypes.string.isRequired,
+    startDate: PropTypes.number.isRequired,
+    endDate: PropTypes.number.isRequired,
   }).isRequired,
 };
 

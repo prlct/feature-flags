@@ -9,15 +9,13 @@
     <mj-section mj-class="main-section">
       <mj-column vertical-align="middle" width="100%">
         <mj-text mj-class="big-text">
-          Subscription Confirmation
+          Subscription Reminder
         </mj-text>
-         <mj-text mj-class="text">
-         This email confirms your subscription purchase.
-         </mj-text>
 
-        <mj-text mj-class="text">
-          Your subscription automatically renews for {{price}} starting {{endDate}} until cancelled.
-        </mj-text>
+         <mj-text mj-class="text">
+         Thank you for using Growthflags – we hope you enjoyed your experience. Just letting you know that your subscription expired in 7 days
+         and will be automatically renewed for {{price}} starting {{endDate}}.
+         </mj-text>
 
       </mj-column>
     </mj-section>
