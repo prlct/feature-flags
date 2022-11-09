@@ -57,7 +57,11 @@ const MainLayout = ({ children }) => {
           </Container>
         </Group>
         )}
-        {!sideBarIsOn && children}
+        {!sideBarIsOn && (
+        <Container fluid size="xl" p={32}>
+          {children}
+        </Container>
+        )}
       </>
     </AppShell>
   );
