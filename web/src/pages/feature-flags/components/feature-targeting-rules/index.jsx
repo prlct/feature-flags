@@ -12,8 +12,10 @@ const FeatureTargetingRules = ({ feature, sx }) => {
   const [rules, setRules] = useState([]);
 
   useEffect(() => {
-    setRules(feature.targetingRules);
-  }, [feature.targetingRules]);
+    if (!rules.length) {
+      setRules(feature.targetingRules);
+    }
+  }, [feature.targetingRules, rules.length]);
 
   const updateTargetingRulesMutation = featureFlagApi.useUpdateTargetingRules();
 
