@@ -48,6 +48,9 @@ const Header = () => {
           <Link type="router" href={routes.route.members} underline={false}>
             <Text color="white" size="lg">Team members</Text>
           </Link>
+          <Link type="router" href={routes.route.subscriptionPlans} underline={false}>
+            <Text color="white" size="lg">Pricing</Text>
+          </Link>
         </Group>
         <Group spacing="lg" sx={{ marginLeft: 'auto' }}>
           <EnvSelect />
