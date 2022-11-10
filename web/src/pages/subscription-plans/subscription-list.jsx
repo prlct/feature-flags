@@ -16,11 +16,11 @@ export default [
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
       <span>
-        <b>Up to 3</b>
+        <b>Up to 3 </b>
         <span>product users</span>
       </span>,
       <span>
-        <b>Up to 2K</b>
+        <b>Up to 2K </b>
         <span>MAU</span>
       </span>,
     ],
@@ -40,11 +40,11 @@ export default [
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
       <span>
-        <b>Up to 10</b>
+        <b>Up to 10 </b>
         <span>product users</span>
       </span>,
       <span>
-        <b>Up to 10K</b>
+        <b>Up to 10K </b>
         <span>MAU</span>
       </span>,
     ],
@@ -64,11 +64,11 @@ export default [
       <span>Unlimited Growthflags</span>,
       <span>Unlimited A/B tests</span>,
       <span>
-        <b>Unlimited</b>
+        <b>Unlimited </b>
         <span>product users</span>
       </span>,
       <span>
-        <b>Up to 100K</b>
+        <b>Up to 100K </b>
         <span>MAU</span>
       </span>,
     ],
