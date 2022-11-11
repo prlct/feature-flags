@@ -28,6 +28,7 @@ export const route = {
   apiKey: '/api-key',
   members: '/members',
   subscriptionPlans: '/subscription-plans',
+  emailEditor: '/email-editor',
 };
 
 export const path = {
@@ -117,6 +118,11 @@ export const configuration = {
   },
   subscriptionPlans: {
     route: route.subscriptionPlans,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  emailEditor: {
+    route: route.emailEditor,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
