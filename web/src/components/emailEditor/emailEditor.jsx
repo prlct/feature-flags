@@ -21,8 +21,6 @@ function EmailEditor() {
   const { classes } = useStyles();
   const [value, setValue] = useState('');
 
-  console.dir(value);
-
   const editorId = React.useMemo(() => `q${nanoid()}`);
   const modules = React.useMemo(() => {
     return {
