@@ -1,0 +1,8 @@
+.ql-toolbar {
+  display: flex !important;
+  align-items: center !important;
+}
+.ql-container {
+  border: none !important;
+  min-height: 300px !important;
+}
