@@ -17,7 +17,7 @@ const EmailCard = (props) => {
     delay,
   } = email;
 
-  const { openEditEmailModal } = useContext(EmailSequencesContext);
+  const { openEditEmailModal, toggleEmailEnabled } = useContext(EmailSequencesContext);
 
   const textColor = enabled ? 'black' : 'dimmed';
 
@@ -33,7 +33,10 @@ const EmailCard = (props) => {
                 <CardSettingsButton />
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item icon={<IconPlayerPlay size={16} />}>
+                <Menu.Item
+                  icon={<IconPlayerPlay size={16} />}
+                  onClick={() => toggleEmailEnabled(email)}
+                >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
                 <Menu.Item icon={<IconEdit size={16} />} onClick={() => openEditEmailModal(email)}>

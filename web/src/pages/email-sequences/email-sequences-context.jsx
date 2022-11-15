@@ -157,6 +157,12 @@ export const EmailSequencesContextProvider = ({ children }) => {
     });
   }, [modals, openedPipeline, pipelines]);
 
+  const toggleEmailEnabled = (email) => {
+    // eslint-disable-next-line no-param-reassign
+    email.enabled = !email.enabled;
+    setPipelines([...pipelines]);
+  };
+
   const contextValue = useMemo(
     () => ({
       closeTriggerModal,
@@ -168,6 +174,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       openAddUsersModal,
       closeEditEmailModal,
       openEditEmailModal,
+      toggleEmailEnabled,
       addEmptyEmail,
       removePipeline,
       saveCurrentEmail,
