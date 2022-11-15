@@ -1,93 +1,86 @@
 import PropTypes from 'prop-types';
-import { Card, Group, Space, Stack, Switch, Text } from '@mantine/core';
+import { IconEdit, IconPlayerPlay } from '@tabler/icons';
+import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
+import { useContext } from 'react';
 import Arrow from './arrow';
-import CardSettingsButton from './CardSettingsButton';
+import CardSettingsButton from './card-settings-button';
+import { EmailSequencesContext } from '../email-sequences-context';
 
 const EmailCard = (props) => {
-  const { value } = props;
+  const { email } = props;
   const {
     name,
     enabled,
     sent,
     unsubscribed,
-    converted,
-    reactions,
     delay,
-  } = value;
+  } = email;
+
+  const { openEditEmailModal } = useContext(EmailSequencesContext);
+
+  const textColor = enabled ? 'black' : 'dimmed';
 
   return (
     <Stack>
       <Arrow days={delay} />
-      <Card shadow="sm" p="sm" withBorder>
+      <Card shadow="sm" p="sm" withBorder sx={{ position: 'relative', color: textColor }}>
         <Stack spacing={0}>
           <Group position="apart">
-            <Text size="lg" weight="bold">{name}</Text>
-            <CardSettingsButton />
+            <Text size="lg" weight="bold" color={textColor}>{name}</Text>
+            <Menu withinPortal>
+              <Menu.Target>
+                <CardSettingsButton />
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item icon={<IconPlayerPlay size={16} />}>
+                  {enabled ? 'Disable' : 'Enable'}
+                </Menu.Item>
+                <Menu.Item icon={<IconEdit size={16} />} onClick={() => openEditEmailModal(email)}>
+                  Edit
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
           <Space h="sm" />
-          <Switch label={<Text weight="bold" size="sm" pr={16}>Enable</Text>} labelPosition="left" checked={enabled} />
           <Space h="sm" />
           <Group position="apart">
-            <Text size="sm">
+            <Text size="sm" color={textColor}>
               Sent:
             </Text>
-            <Text size="sm" weight="bold">
+            <Text size="sm" weight="bold" color={textColor}>
               {sent}
             </Text>
           </Group>
+          {unsubscribed >= 5 && (
           <Group position="apart">
-            <Text size="sm">
-              Unsubscribed:
+            <Text size="sm" color={textColor}>
+              Unsubscribes:
             </Text>
-            <Text size="sm" weight="bold">
+            <Text size="sm" weight="bold" color={textColor}>
               {unsubscribed}
             </Text>
           </Group>
-          <Group position="apart">
-            <Text size="sm">
-              Converted:
-            </Text>
-            <Text size="sm" weight="bold">
-              {converted}
-            </Text>
-          </Group>
-
-          <Group mt={16} spacing="xl">
-            <Group align="center" sx={{ background: '#edf4ff', borderRadius: 16 }} px={6} position="apart" spacing={6}>
-              <Text size="lg">&#128512;</Text>
-              <Text size="xs">{reactions.happy}</Text>
-            </Group>
-            <Group align="center" sx={{ background: '#edf4ff', borderRadius: 16 }} px={6} position="apart" spacing={6}>
-              <Text size="lg">&#128528;</Text>
-              <Text size="xs">{reactions.unhappy}</Text>
-            </Group>
-            <Group align="center" sx={{ background: '#edf4ff', borderRadius: 16 }} px={6} position="apart" spacing={6}>
-              <Text size="lg">&#128525;</Text>
-              <Text size="xs">{reactions.love}</Text>
-            </Group>
-          </Group>
-
+          )}
         </Stack>
+        {!enabled && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Text size="sm" p={2} color="dimmed">Draft</Text>
+          </Box>
+        )}
       </Card>
     </Stack>
   );
 };
 
 EmailCard.propTypes = {
-  value: PropTypes.shape({
+  email: PropTypes.shape({
     id: PropTypes.string,
     delay: PropTypes.number,
     name: PropTypes.string,
     enabled: PropTypes.bool,
     sent: PropTypes.number,
     unsubscribed: PropTypes.number,
-    converted: PropTypes.number,
-    reactions: PropTypes.shape({
-      happy: PropTypes.number,
-      unhappy: PropTypes.number,
-      love: PropTypes.number,
-    }),
   }).isRequired,
 };
 
