@@ -17,6 +17,7 @@ export const EXAMPLE_PIPELINES = [{
       trigger: {
         name: 'Sign up',
         description: 'Description',
+        value: 'user-sign-up',
       },
       emails: [
         {
