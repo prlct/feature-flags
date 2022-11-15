@@ -30,15 +30,15 @@ const TriggerSelectionModal = () => {
     addSequence,
   } = useContext(EmailSequencesContext);
 
-  const [triggerName, setTriggerName] = useState('');
+  const [triggerName, setTriggerName] = useState(currentSequence?.trigger?.name || '');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
-  const currentEvent = currentSequence?.trigger.value || null;
+  const currentEvent = currentSequence?.trigger?.value || null;
 
   const [selectedEvent, setSelectedEvent] = useState(currentEvent || events[0].value);
 
   const [webhooksShown, setWebhooksShown] = useState(false);
-  const [triggerDescription, setTriggerDescription] = useState('');
+  const [triggerDescription, setTriggerDescription] = useState(currentSequence?.trigger?.description || '');
 
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
