@@ -1,23 +1,23 @@
-import { createContext, useMemo, useReducer } from 'react';
+import { createContext, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
+import { useModals } from '@mantine/modals';
+import { Text, Title } from '@mantine/core';
 
 export const EXAMPLE_PIPELINES = [{
-  name: 'Pipeline 1',
+  name: 'Activation pipeline',
   sequences: [
     {
       id: '1',
-      name: 'Sign up',
+      name: 'Sign up sequence',
       enabled: true,
+      total: 103,
+      completed: 100,
+      dropped: 3,
       trigger: {
         name: 'Sign up',
         description: 'Description',
       },
-
-      audience: {
-        name: 'Audience name',
-        value: 'All users',
-      },
-
       emails: [
         {
           id: '1',
@@ -26,26 +26,14 @@ export const EXAMPLE_PIPELINES = [{
           enabled: true,
           sent: 12,
           unsubscribed: 4,
-          converted: 2,
-          reactions: {
-            happy: 2,
-            unhappy: 1,
-            love: 8,
-          },
         },
         {
           id: '2',
           delay: 2,
           name: 'SDK, Rules, call',
-          enabled: true,
+          enabled: false,
           sent: 12,
           unsubscribed: 4,
-          converted: 2,
-          reactions: {
-            happy: 2,
-            unhappy: 1,
-            love: 8,
-          },
         },
       ],
 
@@ -63,23 +51,153 @@ const initialContext = {
 
 export const EmailSequencesContext = createContext(initialContext);
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'open-modal':
-      return { ...state, [action.name]: true };
-    case 'close-modal':
-      return { ...state, [action.name]: false };
-    case 'set-current-sequence':
-      return { ...state, currentSequence: action.sequence };
-    default:
-      return state;
-  }
+const createEmptyPipeline = (prev) => {
+  const name = `Pipeline ${prev.length + 1}`;
+  return { name, sequences: [] };
 };
 
-export const EmailSequencesContextProvider = ({ children }) => {
-  const [context, dispatch] = useReducer(reducer, initialContext, () => initialContext);
+const createEmptySequence = (trigger) => ({
+  name: 'Empty sequence',
+  id: `${Math.random() * 10000}`, // FIXME
+  emails: [],
+  trigger,
+  enabled: false,
+  total: 0,
+  completed: 0,
+  dropped: 0,
+});
 
-  const contextValue = useMemo(() => ({ context, dispatch }), [context, dispatch]);
+const createEmptyEmail = () => ({
+  name: 'Email name',
+  id: `${Math.random() * 10000}`, // FIXME
+  delay: 1,
+  enabled: false,
+  sent: 0,
+  unsubscribed: 0,
+});
+
+export const EmailSequencesContextProvider = ({ children }) => {
+  const router = useRouter();
+  const modals = useModals();
+  const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
+  const [triggerSelectionModal, setTriggerSelectionModal] = useState(false);
+  const [sendTestEmailModal, setSendTestEmailModal] = useState(false);
+  const [addUsersModal, setAddUsersModal] = useState(false);
+  const [currentSequence, setCurrentSequence] = useState(null);
+  const [emailModal, setEmailModal] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState(null);
+
+  const [openedPipeline, setOpenedPipeline] = useState(router.asPath.split('#')?.[1] || pipelines[0]?.name);
+
+  const closeTriggerModal = () => setTriggerSelectionModal(false);
+
+  const openTriggerModal = (sequence) => {
+    setCurrentSequence(sequence);
+    setTriggerSelectionModal(true);
+  };
+
+  const openSendTestEmailModal = () => setSendTestEmailModal(true);
+  const closeSendTestEmailModal = () => setSendTestEmailModal(false);
+  const addEmptyPipeline = () => setPipelines((prev) => [...prev, createEmptyPipeline(prev)]);
+  const closeAddUsersModal = () => setAddUsersModal(false);
+  const openAddUsersModal = () => setAddUsersModal(true);
+
+  const closeEditEmailModal = () => {
+    setEmailModal(false);
+    setCurrentEmail(null);
+  };
+
+  const openEditEmailModal = (email) => {
+    setEmailModal(true);
+    setCurrentEmail(email);
+  };
+
+  const addSequence = useMemo(() => (trigger) => {
+    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+    currentPipeline.sequences = [...currentPipeline.sequences, createEmptySequence(trigger)];
+  }, [openedPipeline, pipelines]);
+
+  const setTrigger = useMemo(() => (trigger) => {
+    currentSequence.trigger = trigger;
+    setPipelines([...pipelines]);
+  }, [currentSequence, pipelines]);
+
+  const saveCurrentEmail = useMemo(() => () => {
+    setPipelines([...pipelines]);
+  }, [pipelines]);
+
+  const addEmptyEmail = useMemo(() => (sequence) => {
+    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+    const currentSequence = currentPipeline.sequences.find((s) => s === sequence);
+    const email = createEmptyEmail();
+    currentSequence.emails = [...currentSequence.emails, email];
+    setPipelines([...pipelines]);
+    openEditEmailModal(email);
+  }, [openedPipeline, pipelines]);
+
+  const removePipeline = useMemo(() => () => {
+    modals.openConfirmModal({
+      title: (<Title order={3}>{`Delete pipeline ${openedPipeline}`}</Title>),
+      centered: true,
+      children: (
+        <Text>
+          {`Delete pipeline ${openedPipeline}?`}
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      onConfirm: () => {
+        setPipelines(
+          (prev) => prev.filter((p) => p.name !== openedPipeline),
+        );
+        setOpenedPipeline(pipelines[0]?.name);
+      },
+    });
+  }, [modals, openedPipeline, pipelines]);
+
+  const contextValue = useMemo(
+    () => ({
+      closeTriggerModal,
+      openTriggerModal,
+      addEmptyPipeline,
+      openSendTestEmailModal,
+      closeSendTestEmailModal,
+      closeAddUsersModal,
+      openAddUsersModal,
+      closeEditEmailModal,
+      openEditEmailModal,
+      addEmptyEmail,
+      removePipeline,
+      saveCurrentEmail,
+      currentEmail,
+      emailModal,
+      setTrigger,
+      addSequence,
+      openedPipeline,
+      setOpenedPipeline,
+      pipelines,
+      triggerSelectionModal,
+      sendTestEmailModal,
+      addUsersModal,
+      currentSequence,
+    }),
+    [
+      addEmptyEmail,
+      removePipeline,
+      saveCurrentEmail,
+      currentEmail,
+      emailModal,
+      setTrigger,
+      addSequence,
+      openedPipeline,
+      pipelines,
+      triggerSelectionModal,
+      sendTestEmailModal,
+      addUsersModal,
+      currentSequence,
+    ],
+  );
 
   return (
     <EmailSequencesContext.Provider value={contextValue}>

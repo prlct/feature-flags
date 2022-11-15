@@ -9,7 +9,11 @@ import { EmailSequencesContext } from '../email-sequences-context';
 const ICON_SIZE = 16;
 
 const SequenceMenu = ({ sequence }) => {
-  const { dispatch } = useContext(EmailSequencesContext);
+  const {
+    openTriggerModal,
+    openSendTestEmailModal,
+    openAddUsersModal,
+  } = useContext(EmailSequencesContext);
   const isEdit = !!sequence?.name;
 
   const addOrEditIcon = isEdit ? <IconEdit size={ICON_SIZE} /> : <IconPlus size={ICON_SIZE} />;
@@ -20,13 +24,11 @@ const SequenceMenu = ({ sequence }) => {
     : <IconPlayerPlay size={ICON_SIZE} />;
 
   const addTriggerHandler = () => {
-    dispatch({ type: 'open-modal', name: 'triggerSelection' });
-    dispatch({ type: 'set-current-sequence', sequence });
+    openTriggerModal(sequence);
   };
 
-  const sendTestEmailHandler = () => {
-    dispatch({ type: 'open-modal', name: 'testEmail' });
-    dispatch({ type: 'set-current-sequence', sequence });
+  const addUsersHandler = () => {
+    openAddUsersModal();
   };
 
   return (
@@ -35,14 +37,11 @@ const SequenceMenu = ({ sequence }) => {
         <UnstyledButton p={0} variant="subtle"><IconDots /></UnstyledButton>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item icon={addOrEditIcon}>
-          {`${addOrEditText} audience`}
+        <Menu.Item icon={addOrEditIcon} onClick={addUsersHandler}>
+          Add users
         </Menu.Item>
         <Menu.Item icon={addOrEditIcon} onClick={addTriggerHandler}>
           {`${addOrEditText} trigger`}
-        </Menu.Item>
-        <Menu.Item icon={addOrEditIcon}>
-          {`${addOrEditText} email`}
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item icon={startStopIcon}>{`${startOrStopText} sequence`}</Menu.Item>
@@ -50,7 +49,7 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Divider />
         <Menu.Item
           icon={<IconSend size={16} />}
-          onClick={sendTestEmailHandler}
+          onClick={openSendTestEmailModal}
         >
           Send a test sequence
         </Menu.Item>

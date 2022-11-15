@@ -20,11 +20,10 @@ export const useStyles = createStyles((theme) => ({
   },
 
   separator: {
-    borderTop: `solid 1px grey`,
+    borderTop: 'solid 1px grey',
     paddingTop: 16,
     width: '100%',
   },
-
 
   toolbar: {
     display: 'flex',

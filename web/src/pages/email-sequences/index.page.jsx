@@ -1,54 +1,73 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { Container, Tabs, Text } from '@mantine/core';
+import { useContext } from 'react';
+import { Container, Group, Tabs, Text } from '@mantine/core';
 
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
-import { EmailSequencesContextProvider, EXAMPLE_PIPELINES } from './email-sequences-context';
+import { EmailSequencesContext, EmailSequencesContextProvider } from './email-sequences-context';
+import AddUsersModal from './components/add-users-modal';
+import EditEmailModal from './components/edit-email-modal';
 
 const EmailSequences = () => {
-  const router = useRouter();
-
-  const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
-  const [openedPipeline, setOpenedPipeline] = useState(router.asPath.split('#')?.[1] || pipelines[0]?.name);
+  const {
+    pipelines,
+    openedPipeline,
+    setOpenedPipeline,
+    addEmptyPipeline,
+    removePipeline,
+  } = useContext(EmailSequencesContext);
 
   const defaultTab = pipelines[0]?.name;
 
   const handleCreatePipeline = () => {
     const newPipelineName = `Pipeline ${(pipelines.length + 1)}`;
-    setPipelines((prev) => [...prev, {
-      name: newPipelineName,
-      sequences: [],
-    }]);
+    addEmptyPipeline();
     setOpenedPipeline(newPipelineName);
   };
 
+  const handleTabChange = (newTabName) => {
+    if (['add-new', 'remove-current'].includes(newTabName)) {
+      return;
+    }
+    setOpenedPipeline(newTabName);
+  };
+
   return (
-    <EmailSequencesContextProvider>
-      <Container sx={{ maxWidth: 'fit-content' }}>
-        <SendTestEmailModal />
-        <TriggerSelectionModal />
-        <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={setOpenedPipeline}>
-          <Tabs.List grow={false}>
-            {pipelines.map((pipeline) => (
-              <Tabs.Tab key={pipeline.name} value={pipeline.name}>
-                {pipeline.name}
-              </Tabs.Tab>
-            ))}
-            <Tabs.Tab value="add-new" onClick={handleCreatePipeline}>
-              <Text color="blue">Add pipeline</Text>
-            </Tabs.Tab>
-          </Tabs.List>
+    <Container sx={{ maxWidth: 'fit-content' }}>
+      <SendTestEmailModal />
+      <TriggerSelectionModal />
+      <AddUsersModal />
+      <EditEmailModal />
+      <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange}>
+        <Tabs.List grow={false}>
           {pipelines.map((pipeline) => (
-            <Tabs.Panel key={pipeline.name} value={pipeline.name}>
-              <Pipeline sequences={pipeline.sequences} />
-            </Tabs.Panel>
+            <Tabs.Tab key={pipeline.name} value={pipeline.name}>
+              <Group position="apart">
+                <Text>{pipeline.name}</Text>
+              </Group>
+            </Tabs.Tab>
           ))}
-        </Tabs>
-      </Container>
-    </EmailSequencesContextProvider>
+          <Tabs.Tab value="add-new" onClick={handleCreatePipeline}>
+            <Text color="blue">Add pipeline</Text>
+          </Tabs.Tab>
+          <Tabs.Tab value="remove-current" onClick={removePipeline}>
+            <Text color="red">Remove pipeline</Text>
+          </Tabs.Tab>
+        </Tabs.List>
+        {pipelines.map((pipeline) => (
+          <Tabs.Panel key={pipeline.name} value={pipeline.name}>
+            <Pipeline sequences={pipeline.sequences} />
+          </Tabs.Panel>
+        ))}
+      </Tabs>
+    </Container>
   );
 };
 
-export default EmailSequences;
+const WithProvider = () => (
+  <EmailSequencesContextProvider>
+    <EmailSequences />
+  </EmailSequencesContextProvider>
+);
+
+export default WithProvider;

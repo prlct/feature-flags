@@ -4,21 +4,19 @@ import { Modal, TextInput, Button, Group } from '@mantine/core';
 import { EmailSequencesContext } from '../email-sequences-context';
 
 const SendTestEmailModal = () => {
-  const { context, dispatch } = useContext(EmailSequencesContext);
-
-  const onClose = () => dispatch({ name: 'testEmail', type: 'close-modal' });
+  const { sendTestEmailModal, closeSendTestEmailModal } = useContext(EmailSequencesContext);
 
   return (
     <Modal
-      opened={context.testEmail}
-      onClose={onClose}
+      opened={sendTestEmailModal}
+      onClose={closeSendTestEmailModal}
       title="Send test email"
       withCloseButton={false}
       centered
     >
       <TextInput label="Your email address" mt={16} />
       <Group position="apart" mt={16}>
-        <Button variant="subtle" onClick={onClose}>Cancel</Button>
+        <Button variant="subtle" onClick={closeSendTestEmailModal}>Cancel</Button>
         <Button color="green">Send</Button>
       </Group>
     </Modal>
