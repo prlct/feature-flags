@@ -90,7 +90,10 @@ export const EmailSequencesContextProvider = ({ children }) => {
 
   const [openedPipeline, setOpenedPipeline] = useState(router.asPath.split('#')?.[1] || pipelines[0]?.name);
 
-  const closeTriggerModal = () => setTriggerSelectionModal(false);
+  const closeTriggerModal = () => {
+    setCurrentSequence(null);
+    setTriggerSelectionModal(false);
+  };
 
   const openTriggerModal = (sequence) => {
     setCurrentSequence(sequence);
@@ -157,11 +160,11 @@ export const EmailSequencesContextProvider = ({ children }) => {
     });
   }, [modals, openedPipeline, pipelines]);
 
-  const toggleEmailEnabled = (email) => {
+  const toggleEmailEnabled = useMemo(() => (email) => {
     // eslint-disable-next-line no-param-reassign
     email.enabled = !email.enabled;
     setPipelines([...pipelines]);
-  };
+  }, [pipelines]);
 
   const contextValue = useMemo(
     () => ({
@@ -191,6 +194,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       currentSequence,
     }),
     [
+      toggleEmailEnabled,
       addEmptyEmail,
       removePipeline,
       saveCurrentEmail,

@@ -1,5 +1,5 @@
 import { UnstyledButton, Stack, Group, Modal, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { IconCopy } from '@tabler/icons';
 import { EmailSequencesContext } from '../email-sequences-context';
 
@@ -40,6 +40,16 @@ const TriggerSelectionModal = () => {
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState(currentSequence?.trigger?.description || '');
 
+  useEffect(() => {
+    if (currentSequence?.trigger) {
+      setTriggerName(currentSequence.trigger.name);
+      setTriggerDescription(currentSequence.trigger.description);
+    } else {
+      setTriggerDescription('');
+      setTriggerName('');
+    }
+  }, [currentSequence]);
+
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
@@ -65,7 +75,7 @@ const TriggerSelectionModal = () => {
       opened={triggerSelectionModal}
       onClose={closeTriggerModal}
       title="Choose trigger"
-      withCloseButton={false}
+      withCloseButton
       centered
     >
 
