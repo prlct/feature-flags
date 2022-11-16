@@ -7,6 +7,8 @@ import Arrow from './arrow';
 import CardSettingsButton from './card-settings-button';
 import { EmailSequencesContext } from '../email-sequences-context';
 
+const UNSUBSCRIBE_SHOW_THRESHOLD = 10;
+
 const EmailCard = (props) => {
   const { email } = props;
   const {
@@ -20,6 +22,8 @@ const EmailCard = (props) => {
   const { openEditEmailModal, toggleEmailEnabled } = useContext(EmailSequencesContext);
 
   const textColor = enabled ? 'black' : 'dimmed';
+
+  const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
   return (
     <Stack>
@@ -55,13 +59,13 @@ const EmailCard = (props) => {
               {sent}
             </Text>
           </Group>
-          {unsubscribed >= 5 && (
+          {unsubPercentage >= UNSUBSCRIBE_SHOW_THRESHOLD && (
           <Group position="apart">
             <Text size="sm" color={textColor}>
               Unsubscribes:
             </Text>
             <Text size="sm" weight="bold" color={textColor}>
-              {unsubscribed}
+              {`${unsubPercentage}%`}
             </Text>
           </Group>
           )}
