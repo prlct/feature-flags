@@ -32,7 +32,7 @@ const SignIn = () => {
 
   const handleSignInRequest = (data) => signIn(data, {
     onError: (e) => handleError(e, setError),
-    onSuccess: () => amplitude.track('Admin sing in', { method: 'magic-link' }),
+    onSuccess: () => amplitude.track('Admin sign in', { method: 'magic-link' }),
   });
 
   // TODO: Do check if email exists before login with magic.link

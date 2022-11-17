@@ -18,9 +18,9 @@ export const AmplitudeContextProvider = ({ children }) => {
   const { data: currentAdmin } = adminApi.useGetCurrent();
 
   useEffect(() => {
-    if (router.isReady && !ref.current) {
+    if (router.isReady && !ref.current && currentAdmin?._id) {
       ref.current = true;
-      Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin?._id);
+      Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin._id);
       setAmplitude(Amplitude);
     }
   }, [router.isReady, ref, currentAdmin?._id]);

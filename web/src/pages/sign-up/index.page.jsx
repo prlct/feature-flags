@@ -44,7 +44,7 @@ const SignUp = () => {
 
   const handleSignInRequest = (data) => signIn(data, {
     onError: (e) => handleError(e, setError),
-    onSuccess: () => amplitude.track('Admin sing up', { method: 'magic-link' }),
+    onSuccess: () => amplitude.track('Admin sign up', { method: 'magic-link' }),
   });
 
   const { mutate: signUp, isLoading: isSignUpLoading } = accountApi.useSignUp();
