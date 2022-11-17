@@ -6,6 +6,7 @@ import attachCustomErrors from './middlewares/attach-custom-errors.middleware';
 import routeErrorHandler from './middlewares/route-error-handler.middleware';
 import publicRoutes from './public.routes';
 import privateRoutes from './private.routes';
+import adminRoutes from './admin.routes';
 
 const defineRoutes = (app: AppKoa) => {
   app.use(attachCustomErrors);
@@ -16,6 +17,7 @@ const defineRoutes = (app: AppKoa) => {
 
   publicRoutes(app);
   privateRoutes(app);
+  adminRoutes(app);
 };
 
 export default defineRoutes;
