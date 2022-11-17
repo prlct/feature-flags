@@ -158,6 +158,15 @@ export const EmailSequencesContextProvider = ({ children }) => {
     openEditEmailModal(email);
   }, [openedPipeline, pipelines]);
 
+  const removeEmail = useMemo(() => (emailId) => {
+    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+    const currentSequence = currentPipeline.sequences.find(
+      (s) => !!s.emails.find((e) => e.id === emailId),
+    );
+    currentSequence.emails = currentSequence.emails.filter((e) => e.id !== emailId);
+    setPipelines([...pipelines]);
+  }, [openedPipeline, pipelines]);
+
   const removePipeline = useMemo(() => () => {
     modals.openConfirmModal({
       title: (<Title order={3}>{`Delete pipeline ${openedPipeline}`}</Title>),
@@ -196,6 +205,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       openAddUsersModal,
       closeEditEmailModal,
       openEditEmailModal,
+      removeEmail,
       setUsers,
       toggleEmailEnabled,
       addEmptyEmail,
@@ -215,6 +225,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       users,
     }),
     [
+      removeEmail,
       toggleEmailEnabled,
       addEmptyEmail,
       removePipeline,

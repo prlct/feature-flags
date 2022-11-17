@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Container, Group, Tabs, Text } from '@mantine/core';
+import { Container, Tabs, Text } from '@mantine/core';
 
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
@@ -43,9 +43,7 @@ const EmailSequences = () => {
         <Tabs.List grow={false}>
           {pipelines.map((pipeline) => (
             <Tabs.Tab key={pipeline.name} value={pipeline.name}>
-              <Group position="apart">
-                <Text>{pipeline.name}</Text>
-              </Group>
+              <Text>{pipeline.name}</Text>
             </Tabs.Tab>
           ))}
           <Tabs.Tab value="add-new" onClick={handleCreatePipeline}>
