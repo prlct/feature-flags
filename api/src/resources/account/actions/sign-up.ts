@@ -61,7 +61,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>, next: Next) {
     firstName,
     lastName,
     email,
-    isEmailVerified:false,
+    isEmailVerified: false,
   };
 
   await next();

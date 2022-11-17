@@ -26,6 +26,7 @@ import { useQueryClient } from 'react-query';
 
 import { handleError } from 'helpers';
 import { companyApi } from 'resources/company';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
@@ -37,6 +38,8 @@ const Members = () => {
   const queryClient = useQueryClient();
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const { data, isLoading } = companyApi.useGetMembers();
+
+  const amplitude = useAmplitude();
 
   const {
     register, handleSubmit, formState: { errors }, setError, reset,
@@ -64,6 +67,7 @@ const Members = () => {
       inviteMemberMutation.mutate({ email: trimmedEmail }, {
         onSuccess: () => {
           reset({ email: '' });
+          amplitude.track('Invite member');
 
           showNotification({
             title: 'Success',

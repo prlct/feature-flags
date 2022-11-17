@@ -1,9 +1,10 @@
+import { useCallback } from 'react';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
-import { magic } from 'libs/magic';
 
+import { magic } from 'libs/magic';
 import config from 'config';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
@@ -16,8 +17,10 @@ import {
   Title,
   Text,
 } from '@mantine/core';
-import { accountApi } from 'resources/account';
 import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons';
+
+import { accountApi } from 'resources/account';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
@@ -37,8 +40,11 @@ const SignUp = () => {
 
   const { mutate: signIn } = accountApi.useSignIn();
 
+  const amplitude = useAmplitude();
+
   const handleSignInRequest = (data) => signIn(data, {
     onError: (e) => handleError(e, setError),
+    onSuccess: () => amplitude.track('Admin sing up', { method: 'magic-link' }),
   });
 
   const { mutate: signUp, isLoading: isSignUpLoading } = accountApi.useSignUp();

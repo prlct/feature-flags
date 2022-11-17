@@ -32,6 +32,7 @@ import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 import { dashboardColumns } from './index.constants';
 import FeatureFlagCreateModal from './components/feature-flag-create-modal';
@@ -42,6 +43,7 @@ const Home = () => {
   const modals = useModals();
 
   const growthFlags = useGrowthFlags();
+  const amplitude = useAmplitude();
 
   const [env] = useLocalStorage({
     key: LOCAL_STORAGE_ENV_KEY,
@@ -99,6 +101,7 @@ const Home = () => {
           message: 'Feature flag has been successfully deleted.',
           color: 'green',
         });
+        amplitude.track('Delete feature flag');
       },
     });
   };
