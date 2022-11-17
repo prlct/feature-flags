@@ -20,7 +20,7 @@ export const AmplitudeContextProvider = ({ children }) => {
   useEffect(() => {
     if (router.isReady && !ref.current) {
       ref.current = true;
-      Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin?._id, { plan: { branch: 'development' } });
+      Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin?._id);
       setAmplitude(Amplitude);
     }
   }, [router.isReady, ref, currentAdmin?._id]);

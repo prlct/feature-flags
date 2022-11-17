@@ -32,7 +32,7 @@ const base = {
   STRIPE_API_KEY: process.env.STRIPE_API_KEY || '',
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
   MONTHLY_ACTIVE_USERS_LIMIT: process.env.MONTHLY_ACTIVE_USERS_LIMIT || 2000,
-  NEXT_PUBLIC_AMPLITUDE_API_KEY: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY || '',
+  AMPLITUDE_API_KEY: process.env.AMPLITUDE_API_KEY || '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);

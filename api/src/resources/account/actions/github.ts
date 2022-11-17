@@ -53,7 +53,7 @@ const signinGithubWithCode = async (ctx: AppKoaContext, next: Next) => {
   }
   await next();
 
-  amplitudeService.trackEvent(ctx, admin ? 'Admin sing in' : 'Admin sing up', { method: 'github' });
+  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'github' });
 
   ctx.redirect(config.webUrl);
 };
