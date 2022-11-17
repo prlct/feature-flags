@@ -7,6 +7,7 @@ import TriggerSelectionModal from './components/trigger-selection-modal';
 import { EmailSequencesContext, EmailSequencesContextProvider } from './email-sequences-context';
 import AddUsersModal from './components/add-users-modal';
 import EditEmailModal from './components/edit-email-modal';
+import UsersList from './components/users-list';
 
 const EmailSequences = () => {
   const {
@@ -33,7 +34,7 @@ const EmailSequences = () => {
   };
 
   return (
-    <Container sx={{ maxWidth: 'fit-content' }}>
+    <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }}>
       <SendTestEmailModal />
       <TriggerSelectionModal />
       <AddUsersModal />
@@ -53,12 +54,18 @@ const EmailSequences = () => {
           <Tabs.Tab value="remove-current" onClick={removePipeline}>
             <Text color="red">Remove pipeline</Text>
           </Tabs.Tab>
+          <Tabs.Tab value="users" ml="auto">
+            <Text>Users</Text>
+          </Tabs.Tab>
         </Tabs.List>
         {pipelines.map((pipeline) => (
           <Tabs.Panel key={pipeline.name} value={pipeline.name}>
             <Pipeline sequences={pipeline.sequences} />
           </Tabs.Panel>
         ))}
+        <Tabs.Panel value="users">
+          <UsersList />
+        </Tabs.Panel>
       </Tabs>
     </Container>
   );
