@@ -5,6 +5,7 @@ import { useModals } from '@mantine/modals';
 import { Text, Title } from '@mantine/core';
 
 export const EXAMPLE_PIPELINES = [{
+  id: 'pipeline1',
   name: 'Activation pipeline',
   sequences: [
     {
@@ -50,6 +51,15 @@ export const EXAMPLE_PIPELINES = [{
   ],
 }];
 
+const EXAMPLE_USERS = [{
+  id: 'user1',
+  email: 'johndoe@examplemail.com',
+  firstName: 'John',
+  lastName: 'Doe',
+  pipeline: 'pipeline1',
+  sequence: '1',
+}];
+
 const initialContext = {
   audience: false,
   testEmail: false,
@@ -89,6 +99,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
   const router = useRouter();
   const modals = useModals();
   const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
+  const [users, setUsers] = useState(EXAMPLE_USERS);
   const [triggerSelectionModal, setTriggerSelectionModal] = useState(false);
   const [sendTestEmailModal, setSendTestEmailModal] = useState(false);
   const [addUsersModal, setAddUsersModal] = useState(false);
@@ -185,6 +196,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       openAddUsersModal,
       closeEditEmailModal,
       openEditEmailModal,
+      setUsers,
       toggleEmailEnabled,
       addEmptyEmail,
       removePipeline,
@@ -200,6 +212,7 @@ export const EmailSequencesContextProvider = ({ children }) => {
       sendTestEmailModal,
       addUsersModal,
       currentSequence,
+      users,
     }),
     [
       toggleEmailEnabled,
@@ -216,6 +229,8 @@ export const EmailSequencesContextProvider = ({ children }) => {
       sendTestEmailModal,
       addUsersModal,
       currentSequence,
+      users,
+      setUsers,
     ],
   );
 
