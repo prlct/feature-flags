@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { IconEdit, IconPlayerPlay } from '@tabler/icons';
+import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
 import { useContext } from 'react';
@@ -17,9 +17,10 @@ const EmailCard = (props) => {
     sent,
     unsubscribed,
     delay,
+    id,
   } = email;
 
-  const { openEditEmailModal, toggleEmailEnabled } = useContext(EmailSequencesContext);
+  const { openEditEmailModal, toggleEmailEnabled, removeEmail } = useContext(EmailSequencesContext);
 
   const textColor = enabled ? 'black' : 'dimmed';
 
@@ -45,6 +46,9 @@ const EmailCard = (props) => {
                 </Menu.Item>
                 <Menu.Item icon={<IconEdit size={16} />} onClick={() => openEditEmailModal(email)}>
                   Edit
+                </Menu.Item>
+                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => removeEmail(id)}>
+                  Remove
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
