@@ -19,7 +19,7 @@ npm i @growthflags/js-sdk
 
 Initialize SDK
 
-```
+```js
 import GrowthFlags from "@growthflags/js-sdk";
 
 const flags = GrowthFlags.create({
@@ -30,13 +30,13 @@ const flags = GrowthFlags.create({
 
 ## Add method to fetch Growthflags on page load, pass the user
 
-```
+```js
 await flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
 ```
 
 ## Use flags
 
-```
+```jsx
 const Page = () => (
   <Layout mode={flags.isOn("DarkMode") ? 'dark' : 'light'}>
     ...
