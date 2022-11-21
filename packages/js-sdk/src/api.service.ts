@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as qs from 'qs';
 
-const DEV_API_URL = 'http://localhost:3001';
 const PROD_API_URL = 'https://api.growthflags.com';
 
 const API_URL = PROD_API_URL;
@@ -11,7 +10,7 @@ class ApiError extends Error {
   data: unknown;
   status: number;
   __proto__: unknown;
-  
+
   constructor(data: unknown, status: number = 500, statusText: string = 'Internal Server Error') {
     super(`${status} ${statusText}`);
 
