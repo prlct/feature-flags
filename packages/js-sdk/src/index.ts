@@ -10,6 +10,7 @@ const consoleLogPrefix = '@growthflags/js-sdk error:';
 export interface Constructor {
   publicApiKey: string;
   env: string;
+  defaultFeatures: { [key: string]: boolean };
 }
 
 export enum UserEventType {
@@ -39,11 +40,11 @@ export interface JSONObject {
 }
 
 export type JSONValue =
-    | string
-    | number
-    | boolean
-    | { [x: string]: JSONValue }
-    | Array<JSONValue>;
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
 
 export interface FetchFlagsParams {
   env: string;
@@ -94,24 +95,24 @@ class FeatureFlags {
   private _configs: { [key in string]: string };
   private _variants: { [key in string]: ABVariant };
 
-  constructor({ publicApiKey, env }: Constructor) {
+  constructor({ publicApiKey, env, defaultFeatures = {} }: Constructor) {
     this._apiKey = publicApiKey;
     this._env = env;
 
 
-    this._features = {};
+    this._features = defaultFeatures;
     this._featureOverrides = []
     this._configs = {};
     this._variants = {};
   }
 
-  async fetchFeatureFlags(user: AppUser)  {
+  async fetchFeatureFlags(user: AppUser) {
     if (user?.email || user?.id) {
-        await this._createUser({
-          id: user.id,
-          email: user.email,
-          data: user.data
-        });
+      await this._createUser({
+        id: user.id,
+        email: user.email,
+        data: user.data
+      });
     }
 
     const storageData = this._getFromStorage();
@@ -153,7 +154,7 @@ class FeatureFlags {
   }
 
   getVariant(featureName: string) {
-    return this._variants[featureName] || { name: "mainVariant", remoteConfig: this.getConfig(featureName) };
+    return this._variants[featureName] || { name: 'mainVariant', remoteConfig: this.getConfig(featureName) };
   }
 
   getConfig(featureName: string, defaultConfig?: JSONObject): JSONObject | undefined {
@@ -181,8 +182,8 @@ class FeatureFlags {
     };
 
     try {
-       await apiService.post(`${userEventResource}`, data, config);
-    } catch(error) {
+      await apiService.post(userEventResource, data, config);
+    } catch (error) {
       console.log(consoleLogPrefix, error);
     }
   }
@@ -211,7 +212,7 @@ class FeatureFlags {
       this._saveToStorage(response);
 
       return response;
-    } catch(error) {
+    } catch (error) {
       console.log(consoleLogPrefix, error);
     }
   }
@@ -232,7 +233,7 @@ class FeatureFlags {
       this._user = response;
 
       this._saveToStorage({ user: response })
-    } catch(error) {
+    } catch (error) {
       console.log(consoleLogPrefix, error);
     }
   }
@@ -243,9 +244,9 @@ class FeatureFlags {
     }
 
     try {
-      const localStorageData : LocalStorageData = this._getFromStorage();
+      const localStorageData: LocalStorageData = this._getFromStorage();
 
-      const updatedData = localStorageData ? {...localStorageData, ...data} : {...data};
+      const updatedData = localStorageData ? { ...localStorageData, ...data } : { ...data };
       const stringData = JSON.stringify(updatedData);
 
       storage.setItem(`${storagePath}`, stringData);
@@ -262,7 +263,7 @@ class FeatureFlags {
     try {
       const localStorageData = storage.getItem(`${storagePath}`);
 
-      return localStorageData ? JSON.parse(localStorageData): null;
+      return localStorageData ? JSON.parse(localStorageData) : null;
     } catch (error) {
       console.log(consoleLogPrefix, error);
     }
@@ -272,7 +273,7 @@ class FeatureFlags {
 let instance: FeatureFlags;
 
 export default {
-  create: ({ publicApiKey, env }: Constructor) => {
+  create: ({ publicApiKey, env, defaultFeatures }: Constructor) => {
     if (!publicApiKey) {
       throw new RangeError('Invalid arguments: "publicApiKey" must be provided.');
     }
@@ -285,7 +286,7 @@ export default {
       return instance;
     }
 
-    instance = new FeatureFlags({ publicApiKey, env });
+    instance = new FeatureFlags({ publicApiKey, env, defaultFeatures });
 
     return instance;
   }
