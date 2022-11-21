@@ -61,7 +61,8 @@ const Settings = ({ feature, env }) => {
   const handleAddVariant = async () => {
     const totalExtraVariants = feature.tests?.length || 0;
     const newVariantName = `Variant ${getLetterByAlphabetNumber(totalExtraVariants + 1).toUpperCase()}`;
-    await createABVariantMutation.mutate({ name: newVariantName, remoteConfig: '', env });
+    await createABVariantMutation.mutate({ name: newVariantName, remoteConfig: '', env }, { onSuccess: () => amplitude.track('Add a/b testing', { env }),
+    });
     setOpenedVariant(totalExtraVariants.toString());
   };
 
