@@ -52,7 +52,7 @@ const signinGoogleWithCode = async (ctx: AppKoaContext, next: Next) => {
 
   await next();
 
-  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'google' });
+  // amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'google' });
 
   ctx.redirect(config.webUrl);
 };
