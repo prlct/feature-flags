@@ -39,11 +39,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     }
   }
 
-  amplitudeService.trackEvent(ctx, 'Install SDK');
-  amplitudeService.identifyUser(ctx, 'sdk', true);
+  // amplitudeService.trackEvent(ctx, 'Install SDK');
+  // amplitudeService.identifyUser(ctx, 'sdk', true);
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
-  
+
   const flagsForUser = await calculateFlagsForUser(features, user);
 
   const variants = calculateABTestsForUser(userId || user?._id || '', features);
@@ -56,10 +56,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 export default (router: AppRouter) => {
   router.get(
     '/features',
-    extractTokenFromHeader, 
-    extractTokenFromQuery, 
+    extractTokenFromHeader,
+    extractTokenFromQuery,
     publicTokenAuth,
-    validateMiddleware(schema), 
+    validateMiddleware(schema),
     handler,
   );
 };
