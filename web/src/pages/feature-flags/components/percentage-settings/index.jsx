@@ -10,6 +10,7 @@ import { showNotification } from '@mantine/notifications';
 
 import { featureFlagApi } from 'resources/feature-flag';
 import { handleError } from 'helpers';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 export const percentageSelectList = [
   { value: '5', label: '5%' },
@@ -28,6 +29,9 @@ export const percentageSelectList = [
 
 const PercentageSettings = ({ feature }) => {
   const [usersPercentageValue, setUsersPercentageValue] = useState('');
+
+  const amplitude = useAmplitude();
+
   useEffect(() => {
     setUsersPercentageValue((feature?.usersPercentage || '').toString());
   }, [feature?.usersPercentage]);
@@ -46,10 +50,11 @@ const PercentageSettings = ({ feature }) => {
           message: `The feature will be displayed for ${usersPercentage || 0} percent of users.`,
           color: 'green',
         });
+        amplitude.track('Select percentage of users', { env: feature.env, usersPercentage: usersPercentage || 0 });
       },
       onError: (e) => handleError(e),
     });
-  }, [changeUsersPercentageMutation, feature?._id, feature?.env]);
+  }, [amplitude, changeUsersPercentageMutation, feature?._id, feature?.env]);
 
   return (
     <Stack spacing="xs">

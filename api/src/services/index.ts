@@ -4,6 +4,7 @@ import emailService from './email/email.service';
 import googleService from './google/google.service';
 import githubService from './github/github.service';
 import socketService from './socket/socket.service';
+import amplitudeService from './amplitude/amplitude.service';
 
 export {
   authService,
@@ -12,4 +13,5 @@ export {
   socketService,
   googleService,
   githubService,
+  amplitudeService,
 };

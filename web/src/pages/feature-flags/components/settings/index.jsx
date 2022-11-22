@@ -13,6 +13,7 @@ import {
 import { featureFlagApi } from 'resources/feature-flag';
 import { getLetterByAlphabetNumber } from 'helpers';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 import VisibilitySettings from '../visibility-settings';
 import PercentageSettings from '../percentage-settings';
@@ -26,6 +27,7 @@ const CONFIG_SAVE_DEBOUNCE_TIME = 500;
 
 const Settings = ({ feature, env }) => {
   const growthFlags = useGrowthFlags();
+  const amplitude = useAmplitude();
 
   const [openedVariant, setOpenedVariant] = useState('mainVariant');
 
@@ -43,16 +45,24 @@ const Settings = ({ feature, env }) => {
   const updateRemoteConfigMutation = featureFlagApi.useUpdateRemoteConfig();
 
   const debouncedRemoteConfigSave = useMemo(
-    () => debounce(({ env, featureId, remoteConfig }) => updateRemoteConfigMutation.mutate({
-      env, featureId, remoteConfig,
-    }), CONFIG_SAVE_DEBOUNCE_TIME),
-    [updateRemoteConfigMutation],
+    () => debounce(({ env, featureId, remoteConfig }) => updateRemoteConfigMutation.mutate(
+      {
+        env, featureId, remoteConfig,
+      },
+      {
+        onSuccess: () => {
+          amplitude.track('Add remote config', { env });
+        },
+      },
+    ), CONFIG_SAVE_DEBOUNCE_TIME),
+    [amplitude, updateRemoteConfigMutation],
   );
 
   const handleAddVariant = async () => {
     const totalExtraVariants = feature.tests?.length || 0;
     const newVariantName = `Variant ${getLetterByAlphabetNumber(totalExtraVariants + 1).toUpperCase()}`;
-    await createABVariantMutation.mutate({ name: newVariantName, remoteConfig: '', env });
+    await createABVariantMutation.mutate({ name: newVariantName, remoteConfig: '', env }, { onSuccess: () => amplitude.track('Add a/b testing', { env }),
+    });
     setOpenedVariant(totalExtraVariants.toString());
   };
 

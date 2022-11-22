@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-
 import { Table, Text } from '@mantine/core';
+
+import { useAmplitude } from 'contexts/amplitude-context';
 import { useGetFeatureHistory } from 'resources/feature-flag/feature-flag.api';
 
 const getActionMessage = (data) => {
@@ -38,8 +40,14 @@ const getActionMessage = (data) => {
 const History = ({ featureId, env }) => {
   const { data: history } = useGetFeatureHistory(featureId, env);
 
+  const amplitude = useAmplitude();
+
   const getDate = (date) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' })
     .format(new Date(date));
+
+  useEffect(() => {
+    amplitude.track('View history');
+  }, [amplitude]);
 
   if (!history?.length) {
     return <Text mt={20}>There is no history yet.</Text>;

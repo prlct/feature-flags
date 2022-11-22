@@ -1,6 +1,6 @@
 import { Next } from 'koa';
 import config from 'config';
-import { githubService } from 'services';
+import { githubService, amplitudeService } from 'services';
 import { AppRouter, AppKoaContext } from 'types';
 import { adminService } from 'resources/admin';
 
@@ -52,6 +52,8 @@ const signinGithubWithCode = async (ctx: AppKoaContext, next: Next) => {
     };
   }
   await next();
+
+  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'github' });
 
   ctx.redirect(config.webUrl);
 };

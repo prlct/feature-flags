@@ -12,6 +12,7 @@ import { Link } from 'components';
 import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { accountApi } from 'resources/account';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.').required('Field is required.'),
@@ -24,10 +25,13 @@ const SignIn = () => {
     register, handleSubmit, formState: { errors }, setError,
   } = useForm({ resolver: yupResolver(schema) });
 
+  const amplitude = useAmplitude();
+
   const { mutate: signIn, isLoading: isSignInLoading } = accountApi.useSignIn();
 
   const handleSignInRequest = (data) => signIn(data, {
     onError: (e) => handleError(e, setError),
+    onSuccess: () => amplitude.track('Admin sign in', { method: 'magic-link' }),
   });
 
   // TODO: Do check if email exists before login with magic.link

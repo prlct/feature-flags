@@ -15,6 +15,7 @@ import * as yup from 'yup';
 
 import { handleError } from 'helpers';
 import { applicationApi } from 'resources/application';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const schema = yup.object().shape({
   name: yup.string().trim().max(100).required('Field is required.'),
@@ -32,6 +33,8 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
     resolver: yupResolver(schema),
   });
 
+  const amplitude = useAmplitude();
+
   const handleClose = useCallback(() => {
     reset();
     onClose();
@@ -47,6 +50,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
         message: 'New feature flag has been successfully created.',
         color: 'green',
       });
+      amplitude.track('Create feature flag');
     },
     onError: (e) => handleError(e, setError),
   });

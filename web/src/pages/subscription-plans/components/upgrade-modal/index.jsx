@@ -13,6 +13,7 @@ import {
 
 import * as routes from 'routes';
 import { subscriptionApi } from 'resources/subscription';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 import { useStyles } from './styles';
 
@@ -20,12 +21,14 @@ const UpgradeModal = (props) => {
   const { plan, interval, onClose } = props;
   const { classes } = useStyles();
   const router = useRouter();
+  const amplitude = useAmplitude();
 
   const {
     data: invoicePreview,
     isFetching,
     remove,
   } = subscriptionApi.usePreviewUpgradeSubscription(plan.priceId);
+
   const upgradeMutation = subscriptionApi.useUpgradeSubscription();
 
   useEffect(() => () => remove(), [remove]);
@@ -54,10 +57,11 @@ const UpgradeModal = (props) => {
       priceId: plan.priceId,
     }, {
       onSuccess: () => {
+        amplitude.track('Subscribe', { priceId: plan.priceId, title: plan.title, interval, isUpdated: true });
         router.push(`${routes.route.home}?subscriptionPlan=${plan.priceId}&interval=${interval}`);
       },
     });
-  }, [upgradeMutation, plan.priceId, router, interval]);
+  }, [upgradeMutation, plan.priceId, plan.title, router, interval, amplitude]);
 
   const renderPrice = useCallback(() => {
     const { invoice } = invoicePreview;

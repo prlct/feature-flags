@@ -1,6 +1,6 @@
 import { Next } from 'koa';
 import config from 'config';
-import { googleService } from 'services';
+import { googleService, amplitudeService } from 'services';
 import { AppRouter, AppKoaContext } from 'types';
 import { adminService } from 'resources/admin';
 
@@ -51,6 +51,8 @@ const signinGoogleWithCode = async (ctx: AppKoaContext, next: Next) => {
   }
 
   await next();
+
+  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'google' });
 
   ctx.redirect(config.webUrl);
 };

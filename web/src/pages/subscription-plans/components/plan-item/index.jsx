@@ -15,6 +15,7 @@ import {
 import { IconCheck } from '@tabler/icons';
 
 import { subscriptionApi } from 'resources/subscription';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 import { useStyles } from './styles';
 
@@ -32,6 +33,8 @@ const PlanItem = (props) => {
 
   const subscribeMutation = subscriptionApi.useSubscribe();
 
+  const amplitude = useAmplitude();
+
   const isCurrentSubscription = useMemo(() => {
     if (!currentSubscription) {
       return planIds[interval] === '0';
@@ -47,8 +50,12 @@ const PlanItem = (props) => {
       return;
     }
 
-    subscribeMutation.mutate({ priceId: planIds[interval], interval });
-  }, [currentSubscription, subscribeMutation, planIds, interval, onPreviewUpgrade, title]);
+    subscribeMutation.mutate({ priceId: planIds[interval], interval }, {
+      onSuccess: () => {
+        amplitude.track('Subscribe', { priceId: planIds[interval], title, interval });
+      } });
+  }, [amplitude, currentSubscription, subscribeMutation, planIds, interval, onPreviewUpgrade,
+    title]);
 
   const priceText = useMemo(() => {
     if (price[interval]) {

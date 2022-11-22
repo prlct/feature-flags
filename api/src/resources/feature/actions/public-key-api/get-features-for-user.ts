@@ -6,6 +6,7 @@ import { featureService } from 'resources/feature';
 import { Env } from 'resources/application';
 import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userService } from 'resources/user';
+import  { amplitudeService } from 'services';
 import { calculateABTestsForUser, calculateFlagsForUser, featuresToConfigsForUser } from './helpers';
 
 const schema = Joi.object({
@@ -37,6 +38,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       user = { email };
     }
   }
+
+  amplitudeService.trackEvent(ctx, 'Install SDK');
+  amplitudeService.identifyUser(ctx, 'sdk', true);
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
   
