@@ -9,6 +9,8 @@ const DATABASE_DOCUMENTS = {
   USER_EVENTS: 'user-events',
   SUBSCRIPTIONS: 'subscriptions',
   STATISTICS: 'statistics',
+  PIPELINES: 'pipelines',
+  SEQUENCES: 'sequences',
 };
 
 const COOKIES = {
