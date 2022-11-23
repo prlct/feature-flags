@@ -4,27 +4,36 @@ import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 
 import featureAuth from '../../feature/middlewares/feature-auth.middleware';
-import pipelineService from '../pipeline.service';
-import { Env } from '../../application';
+import sequenceEmailService from '../sequence-email.service';
 
 const schema = Joi.object({
+  sequenceId: Joi.string().required(),
   name: Joi.string().required(),
-  env: Joi.string().valid(...Object.values(Env)),
+  subject: Joi.string().required(),
+  body: Joi.string().required(),
+  delayDays: Joi.number().integer().required(),
 });
 
 type ValidatedData = {
   name: string,
-  env: Env,
+  sequenceId: string,
+  subject: string,
+  body: string,
+  delayDays: number,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
-  const { name, env } = ctx.validatedData;
+  const { name, sequenceId, subject, body, delayDays } = ctx.validatedData;
 
-  ctx.body = await pipelineService.insertOne({
+  ctx.body = await sequenceEmailService.insertOne({
     applicationId,
     name,
-    env,
+    enabled: false,
+    delayDays,
+    sequenceId,
+    subject,
+    body,
   });
 };
 

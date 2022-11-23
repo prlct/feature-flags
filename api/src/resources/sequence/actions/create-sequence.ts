@@ -18,16 +18,14 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId, pipelineId } = ctx.params;
   const { name } = ctx.validatedData;
 
-  const createdSequence = await sequenceService.insertOne({
+  ctx.body = await sequenceService.insertOne({
     applicationId,
     pipelineId,
     name,
     enabled: false,
   });
-
-  ctx.body = createdSequence;
 };
 
 export default (router: AppRouter) => {
-  router.post('/sequences', featureAuth, validateMiddleware(schema), handler);
+  router.post('/', featureAuth, validateMiddleware(schema), handler);
 };
