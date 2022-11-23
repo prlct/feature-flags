@@ -3,6 +3,8 @@ export type SequenceEmail = {
   name: string,
   applicationId: string,
 
+  delayDays: number,
+  sequenceId: string,
   subject: string,
   body: string,
   enabled: boolean,

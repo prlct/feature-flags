@@ -4,6 +4,7 @@ export type Sequence = {
   applicationId: string,
   pipelineId: string,
 
+  trigger: object | null,
   enabled: boolean,
 
   createdOn?: Date;

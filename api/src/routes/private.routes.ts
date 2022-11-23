@@ -12,6 +12,7 @@ import subscription from 'resources/subscription/subscription.routes';
 import statistics from 'resources/statistics/statistics.routes';
 import pipelines from 'resources/pipeline/pipeline.routes';
 import sequences from 'resources/sequence/sequence.routes';
+import sequenceEmails from 'resources/sequence-email/sequence-email.routes';
 
 import auth from './middlewares/auth.middleware';
 
@@ -27,4 +28,5 @@ export default (app: AppKoa) => {
   app.use(mount('/statistics', compose([auth, statistics.privateRoutes])));
   app.use(mount('/pipelines', compose([auth, pipelines.privateRoutes])));
   app.use(mount('/sequences', compose([auth, sequences.privateRoutes])));
+  app.use(mount('/sequence-emails', compose([auth, sequenceEmails.privateRoutes])));
 };
