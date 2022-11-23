@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React from 'react';
 import { nanoid } from 'nanoid';
 import clsx from 'clsx';
 import { InputBase } from '@mantine/core';
@@ -18,7 +19,6 @@ const formats = [
 
 const EmailEditor = () => {
   const { classes } = useStyles();
-  const [value, setValue] = useState('');
 
   const editorId = React.useMemo(() => `q${nanoid()}`, []);
   const modules = React.useMemo(() => ({
