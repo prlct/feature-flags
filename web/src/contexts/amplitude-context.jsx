@@ -19,9 +19,16 @@ export const AmplitudeContextProvider = ({ children }) => {
 
   useEffect(() => {
     const init = async () => {
-      if (router.isReady && !ref.current && currentAdmin?._id && process.env.NEXT_PUBLIC_APP_ENV !== 'development') {
+      if (router.isReady && !ref.current && currentAdmin?._id) {
         try {
-          await Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin._id);
+          const options = {
+            optOut: process.env.NEXT_PUBLIC_APP_ENV === 'development',
+          };
+          await Amplitude.init(
+            publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY,
+            currentAdmin._id,
+            options,
+          );
           ref.current = true;
           setAmplitude(Amplitude);
         } catch (e) {
