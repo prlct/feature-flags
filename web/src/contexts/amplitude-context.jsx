@@ -20,10 +20,13 @@ export const AmplitudeContextProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       if (router.isReady && !ref.current && currentAdmin?._id && process.env.NEXT_PUBLIC_APP_ENV !== 'development') {
-        ref.current = true;
-        await Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin._id);
-
-        setAmplitude(Amplitude);
+        try {
+          await Amplitude.init(publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY, currentAdmin._id);
+          ref.current = true;
+          setAmplitude(Amplitude);
+        } catch (e) {
+          console.error('Failed to initialize amplitude. Pk:', publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY);
+        }
       }
     };
 
