@@ -7,6 +7,15 @@ const schema = Joi.object({
   name: Joi.string().required(),
   enabled: Joi.bool().required(),
 
+  trigger: Joi.object({
+    name: Joi.string().required(),
+    key: Joi.string().required(),
+    eventName: Joi.string(),
+    eventKey: Joi.string(),
+    allowRepeat: Joi.bool(),
+    repeatDelay: Joi.number(),
+  }),
+
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),
