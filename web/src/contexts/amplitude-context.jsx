@@ -1,12 +1,10 @@
 import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import getConfig from 'next/config';
 import * as Amplitude from '@amplitude/analytics-browser';
 
 import { adminApi } from 'resources/admin';
-
-const { publicRuntimeConfig } = getConfig();
+import config from 'config';
 
 const AmplitudeContext = createContext(null);
 
@@ -25,14 +23,14 @@ export const AmplitudeContextProvider = ({ children }) => {
             optOut: process.env.NEXT_PUBLIC_APP_ENV === 'development',
           };
           await Amplitude.init(
-            publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY,
+            config.amplitude.apiKey,
             currentAdmin._id,
             options,
           );
           ref.current = true;
           setAmplitude(Amplitude);
         } catch (e) {
-          console.error('Failed to initialize amplitude. Pk:', publicRuntimeConfig.NEXT_PUBLIC_AMPLITUDE_API_KEY);
+          console.error('Failed to initialize amplitude. Pk:', config.amplitude.apiKey);
         }
       }
     };
