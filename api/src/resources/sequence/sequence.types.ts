@@ -6,6 +6,9 @@ export type Sequence = {
 
   trigger: object | null,
   enabled: boolean,
+  total: number,
+  completed: number,
+  dropped: number,
 
   createdOn?: Date;
   updatedOn?: Date;
