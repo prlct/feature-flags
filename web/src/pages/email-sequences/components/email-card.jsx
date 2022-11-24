@@ -1,11 +1,11 @@
+import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
-import { useContext } from 'react';
-import Arrow from './arrow';
 import CardSettingsButton from './card-settings-button';
 import { EmailSequencesContext } from '../email-sequences-context';
+import DayBadge from './day-badge';
 
 const UNSUBSCRIBE_SHOW_THRESHOLD = 10;
 
@@ -22,17 +22,17 @@ const EmailCard = (props) => {
 
   const { openEditEmailModal, toggleEmailEnabled, removeEmail } = useContext(EmailSequencesContext);
 
-  const textColor = enabled ? 'black' : 'dimmed';
+  const textColor = enabled ? 'gray' : 'dimmed';
 
   const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
   return (
-    <Stack>
-      <Arrow days={delay} />
-      <Card shadow="sm" p="sm" withBorder sx={{ position: 'relative', color: textColor }}>
+    <Stack style={{ position: 'relative' }}>
+      <DayBadge days={delay} />
+      <Card shadow="sm" withBorder sx={{ position: 'relative', color: textColor, borderRadius: 12 }}>
         <Stack spacing={0}>
           <Group position="apart">
-            <Text size="lg" weight="bold" color={textColor}>{name}</Text>
+            <Text size={18} weight={600} color={enabled ? '#17181A' : 'dimmed'} style={{ lineHeight: '22px' }}>{name}</Text>
             <Menu withinPortal>
               <Menu.Target>
                 <CardSettingsButton />
@@ -56,19 +56,19 @@ const EmailCard = (props) => {
           <Space h="sm" />
           <Space h="sm" />
           <Group position="apart">
-            <Text size="sm" color={textColor}>
+            <Text size={14} color="#797C80" style={{ lineHeight: '20px' }}>
               Sent:
             </Text>
-            <Text size="sm" weight="bold" color={textColor}>
+            <Text size={14} weight="bold" color={textColor} style={{ lineHeight: '20px' }}>
               {sent}
             </Text>
           </Group>
           {unsubPercentage >= UNSUBSCRIBE_SHOW_THRESHOLD && (
           <Group position="apart">
-            <Text size="sm" color={textColor}>
+            <Text size={14} color="#797C80" style={{ lineHeight: '20px' }}>
               Unsubscribes:
             </Text>
-            <Text size="sm" weight="bold" color={textColor}>
+            <Text size={14} weight={600} color={textColor} mt={8} style={{ lineHeight: '20px' }}>
               {`${unsubPercentage}%`}
             </Text>
           </Group>

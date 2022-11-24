@@ -9,6 +9,8 @@ import AddUsersModal from './components/add-users-modal';
 import EditEmailModal from './components/edit-email-modal';
 import UsersList from './components/users-list';
 
+import { useStyles } from './styles';
+
 const EmailSequences = () => {
   const {
     pipelines,
@@ -19,6 +21,8 @@ const EmailSequences = () => {
   } = useContext(EmailSequencesContext);
 
   const defaultTab = pipelines[0]?.name;
+
+  const { classes } = useStyles();
 
   const handleCreatePipeline = () => {
     const newPipelineName = `Pipeline ${(pipelines.length + 1)}`;
@@ -34,26 +38,26 @@ const EmailSequences = () => {
   };
 
   return (
-    <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }}>
+    <Container sx={{ marginTop: 16 }} ml={0} p={0}>
       <SendTestEmailModal />
       <TriggerSelectionModal />
       <AddUsersModal />
       <EditEmailModal />
-      <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange}>
-        <Tabs.List grow={false}>
+      <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange} variant="pills">
+        <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
           {pipelines.map((pipeline) => (
-            <Tabs.Tab key={pipeline.name} value={pipeline.name}>
+            <Tabs.Tab key={pipeline.name} value={pipeline.name} className={classes.tabItem}>
               <Text>{pipeline.name}</Text>
             </Tabs.Tab>
           ))}
-          <Tabs.Tab value="add-new" onClick={handleCreatePipeline}>
-            <Text color="blue">Add pipeline</Text>
+          <Tabs.Tab value="add-new" onClick={handleCreatePipeline} className={classes.tabItem}>
+            <Text>+ New pipeline</Text>
           </Tabs.Tab>
-          <Tabs.Tab value="remove-current" onClick={removePipeline}>
-            <Text color="red">Remove pipeline</Text>
-          </Tabs.Tab>
-          <Tabs.Tab value="users" ml="auto">
-            <Text>Users</Text>
+          {/* <Tabs.Tab value="users" ml="auto"> */}
+          {/*  <Text>Users</Text> */}
+          {/* </Tabs.Tab> */}
+          <Tabs.Tab value="remove-current" onClick={removePipeline} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
+            <Text>Delete pipeline</Text>
           </Tabs.Tab>
         </Tabs.List>
         {pipelines.map((pipeline) => (

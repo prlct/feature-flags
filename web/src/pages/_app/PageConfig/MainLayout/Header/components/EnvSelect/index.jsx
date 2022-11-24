@@ -4,6 +4,7 @@ import {
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { ENV } from 'helpers/constants';
+import { IconChevronDown } from '@tabler/icons';
 
 const environmentsList = [
   { value: ENV.DEVELOPMENT, label: 'Development' },
@@ -14,8 +15,19 @@ const environmentsList = [
 
 const useStyles = createStyles((theme) => ({
   input: {
-    backgroundColor: theme.colors.gray[7],
-    color: theme.colors.gray[1] },
+    backgroundColor: theme.white,
+    color: theme.colors.gray[9],
+    fontSize: '16px',
+    fontWeight: 600,
+    width: 176,
+    padding: '8px 20px',
+    boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+    border: '1px solid #DAE0E5',
+    borderRadius: 12,
+  },
+  rightSection: {
+    pointerEvents: 'none',
+  },
 }));
 
 const EnvSelect = () => {
@@ -28,8 +40,10 @@ const EnvSelect = () => {
       size="sm"
       data={environmentsList}
       onChange={setEnv}
+      rightSection={<IconChevronDown size={18} />}
       classNames={{
         input: classes.input,
+        rightSection: classes.rightSection,
       }}
     />
   );

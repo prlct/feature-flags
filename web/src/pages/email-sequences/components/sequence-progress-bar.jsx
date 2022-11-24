@@ -5,8 +5,8 @@ const SequenceProgressBar = ({ total, dropped }) => {
   const percentage = 100 - ((100 * dropped) / total);
 
   return (
-    <Stack spacing={4}>
-      <Progress value={percentage} size="lg" />
+    <Stack spacing={18}>
+      <Progress value={percentage} size={4} color="#734AB7" sx={{ backgroundColor: 'rgba(115, 74, 183, 0.2)' }} />
       <Group position="apart" px={4}>
         <Text size="xs">
           {`Completed: ${total - dropped}`}
