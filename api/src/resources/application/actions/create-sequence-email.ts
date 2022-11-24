@@ -3,7 +3,8 @@ import Joi from 'joi';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 
-import sequenceEmailService from '../sequence-email.service';
+import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import applicationAuth from '../middlewares/application-auth.middleware';
 
 const schema = Joi.object({
   sequenceId: Joi.string().required(),
@@ -37,5 +38,5 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 };
 
 export default (router: AppRouter) => {
-  router.post('/', validateMiddleware(schema), handler);
+  router.post('/:applicationId/sequence-emails', applicationAuth, validateMiddleware(schema), handler);
 };

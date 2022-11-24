@@ -5,16 +5,15 @@ const schema = Joi.object({
 
   applicationId: Joi.string().required(),
   sequenceId: Joi.string().required(),
-  delay: Joi.number().positive().integer(),
+  delayDays: Joi.number().positive().integer(),
   name: Joi.string().required(),
   enabled: Joi.bool().required(),
   subject: Joi.string(),
-  body: Joi.string,
+  body: Joi.string(),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),
 });
-
 
 export default schema;
