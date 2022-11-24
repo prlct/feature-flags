@@ -29,23 +29,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   ctx.body = await sequenceEmailService.updateOne({
     _id: sequenceEmailId,
   },  (email) => {
-    if (name) {
-      email.name = name;
-    }
-    if (subject) {
-      email.subject = subject;
-    }
-    if (body) {
-      email.body = body;
-    }
-    if (delayDays) {
-      email.delayDays = delayDays;
-    }
-    if (enabled) {
-      email.enabled = enabled;
-    }
-
-    return email;
+    return { ...email, name, enabled, subject, body, delayDays };
   });
 };
 
