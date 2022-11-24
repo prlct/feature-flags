@@ -1,7 +1,8 @@
 import Joi from 'joi';
 
 const schema = Joi.object({
-  id: Joi.string().required(),
+  _id: Joi.string().required(),
+
   applicationId: Joi.string().required(),
   sequenceId: Joi.string().required(),
   delay: Joi.number().positive().integer(),

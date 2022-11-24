@@ -1,7 +1,8 @@
 import Joi from 'joi';
 
 const schema = Joi.object({
-  id: Joi.string().required(),
+  _id: Joi.string().required(),
+
   applicationId: Joi.string().required(),
   pipelineId: Joi.string().required(),
   name: Joi.string().required(),
@@ -16,7 +17,7 @@ const schema = Joi.object({
     eventKey: Joi.string(),
     allowRepeat: Joi.bool(),
     repeatDelay: Joi.number(),
-  }),
+  }).default(null),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

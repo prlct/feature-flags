@@ -3,9 +3,9 @@ import Joi from 'joi';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 
-import featureAuth from '../../feature/middlewares/feature-auth.middleware';
-import pipelineService from '../pipeline.service';
-import { Env } from '../../application';
+import pipelineService from 'resources/pipeline/pipeline.service';
+import { Env } from '../index';
+import applicationAuth from '../middlewares/application-auth.middleware';
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -18,8 +18,8 @@ type ValidatedData = {
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
-  const { applicationId } = ctx.params;
   const { name, env } = ctx.validatedData;
+  const { applicationId } = ctx.params;
 
   ctx.body = await pipelineService.insertOne({
     applicationId,
@@ -29,5 +29,5 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 };
 
 export default (router: AppRouter) => {
-  router.post('/', featureAuth, validateMiddleware(schema), handler);
+  router.post('/:applicationId/pipelines', applicationAuth, validateMiddleware(schema), handler);
 };
