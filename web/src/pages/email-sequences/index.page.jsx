@@ -38,7 +38,7 @@ const EmailSequences = () => {
   };
 
   return (
-    <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
+    <Container sx={{ marginTop: 16 }} ml={0} p={0}>
       <SendTestEmailModal />
       <TriggerSelectionModal />
       <AddUsersModal />

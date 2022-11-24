@@ -130,9 +130,6 @@ const MainLayout = ({ children }) => {
           minHeight: '100vh',
           backgroundColor: theme.white,
         },
-        main: {
-          width: '99vw',
-        },
       })}
     >
       <Container fluid size="xl" p={24}>
