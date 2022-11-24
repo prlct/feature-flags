@@ -70,7 +70,7 @@ const ABVariant = (props) => {
           onChange={(e) => setName(e.target.value)}
           onBlur={onNameBlurHandler}
         />
-        <Button color="red" leftIcon={<IconTrash color="white" size={24} />} onClick={handleRemove}>
+        <Button leftIcon={<IconTrash color="white" size={24} />} onClick={handleRemove}>
           Remove variant
         </Button>
       </Group>

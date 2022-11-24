@@ -164,7 +164,7 @@ const Home = () => {
             sx={{ overflow: !isLoading ? 'initial' : 'overflow' }}
           >
             <Group grow="1">
-              <Button leftIcon={<IconPlus />} onClick={() => setIsFeatureCreateModalOpened(true)}>
+              <Button variant="light" leftIcon={<IconPlus />} onClick={() => setIsFeatureCreateModalOpened(true)}>
                 Create feature flag
               </Button>
             </Group>

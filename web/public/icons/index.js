@@ -29,6 +29,7 @@ import ErrorSmallIcon from './error-small.svg';
 import AddIcon from './add.svg';
 import PenIcon from './pen.svg';
 import FileUploadIcon from './file-upload.svg';
+import PriceIcon from './price.svg';
 
 export {
   ArrowDownIcon,
@@ -61,4 +62,5 @@ export {
   AddIcon,
   PenIcon,
   FileUploadIcon,
+  PriceIcon,
 };
