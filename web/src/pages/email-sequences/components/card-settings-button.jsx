@@ -1,10 +1,10 @@
 import React, { forwardRef } from 'react';
 import { UnstyledButton } from '@mantine/core';
-import { IconTool } from '@tabler/icons';
+import { IconDots } from '@tabler/icons';
 
 const CardSettingsButton = forwardRef((props, ref) => (
   <UnstyledButton ref={ref} {...props}>
-    <IconTool size={20} p={2} />
+    <IconDots size={20} p={2} color="gray" />
   </UnstyledButton>
 ));
 

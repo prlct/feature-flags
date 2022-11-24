@@ -16,6 +16,7 @@ const Link = ({
   icon,
   inherit,
   align,
+  ...props
 }) => {
   switch (type) {
     case 'router':
@@ -28,6 +29,7 @@ const Link = ({
             underline={underline}
             sx={(theme) => styles(theme, disabled)}
             align={align}
+            {...props}
           >
             {icon}
             {children}

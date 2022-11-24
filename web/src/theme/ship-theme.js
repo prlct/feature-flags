@@ -1,12 +1,17 @@
+import { colors } from './colors';
+import components from './components';
+
 const shipTheme = {
+  components,
   fontFamily: 'Inter, sans-serif',
   fontFamilyMonospace: 'monospace',
   headings: {
     fontFamily: 'Inter, sans-serif',
     fontWeight: 600,
   },
-  primaryColor: 'blue',
-  primaryShade: 9,
+  colors,
+  primaryColor: 'primary',
+  primaryShade: 4,
   other: {
     transition: {
       speed: {

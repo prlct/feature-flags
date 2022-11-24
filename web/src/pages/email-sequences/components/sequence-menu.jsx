@@ -34,7 +34,7 @@ const SequenceMenu = ({ sequence }) => {
   return (
     <Menu position="bottom" transition="pop" withinPortal disabled={!isEdit}>
       <Menu.Target>
-        <UnstyledButton p={0} variant="subtle"><IconDots /></UnstyledButton>
+        <UnstyledButton p={0} variant="subtle"><IconDots color="gray" /></UnstyledButton>
       </Menu.Target>
       <Menu.Dropdown>
         <Menu.Item icon={addOrEditIcon} onClick={addUsersHandler}>

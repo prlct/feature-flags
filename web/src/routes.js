@@ -35,11 +35,20 @@ export const path = {
   featureFlag: '/feature-flags',
 };
 
+export const navbarTabs = {
+  FEATURE_FLAGS: 'Feature flags',
+  ACTIVATION_PIPELINES: 'Activation pipelines',
+  API_KEYS: 'Api Keys',
+  TEAM_MEMBERS: 'Team members',
+  PRICING: 'Pricing',
+};
+
 export const configuration = {
   home: {
     route: route.home,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+    navbarTab: navbarTabs.FEATURE_FLAGS,
   },
   404: {
     route: route['404'],
@@ -105,21 +114,25 @@ export const configuration = {
     route: route.emailSequences,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+    navbarTab: navbarTabs.ACTIVATION_PIPELINES,
   },
   apiKey: {
     route: route.apiKey,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+    navbarTab: navbarTabs.API_KEYS,
   },
   members: {
     route: route.members,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+    navbarTab: navbarTabs.TEAM_MEMBERS,
   },
   subscriptionPlans: {
     route: route.subscriptionPlans,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+    navbarTab: navbarTabs.PRICING,
   },
   emailEditor: {
     route: route.emailEditor,
