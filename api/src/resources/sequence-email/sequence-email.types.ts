@@ -8,6 +8,8 @@ export type SequenceEmail = {
   subject: string,
   body: string,
   enabled: boolean,
+  sent: number,
+  unsubscribed: number,
 
   createdOn?: Date;
   updatedOn?: Date;

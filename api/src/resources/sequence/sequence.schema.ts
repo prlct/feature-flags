@@ -6,7 +6,9 @@ const schema = Joi.object({
   pipelineId: Joi.string().required(),
   name: Joi.string().required(),
   enabled: Joi.bool().required(),
-
+  total: Joi.number().integer().default(0),
+  dropped: Joi.number().integer().default(0),
+  completed: Joi.number().integer().default(0),
   trigger: Joi.object({
     name: Joi.string().required(),
     key: Joi.string().required(),
