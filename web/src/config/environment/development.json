@@ -3,11 +3,11 @@
   "webUrl": "http://localhost:3002",
   "subscriptions": {
     "starter": {
-      "month": "replace_with_price_id",
+      "month": "price_1M1TBcLjxkekYnKDd60K7ZOf",
       "year": "replace_with_price_id"
     },
     "pro": {
-      "month": "replace_with_price_id",
+      "month": "price_1M1TBcLjxkekYnKDd60K7ZOf",
       "year": "replace_with_price_id"
     }
   },
