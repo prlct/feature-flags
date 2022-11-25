@@ -2,7 +2,8 @@ import { AppKoaContext, Next } from 'types';
 import sequenceService from '../sequence.service';
 
 const sequenceAccess = async (ctx: AppKoaContext, next: Next) => {
-  const { sequenceId } = ctx.params;
+  const sequenceId = ctx.params.sequenceId || ctx.query.sequenceId;
+
   const sequence = await sequenceService.findOne({
     _id: sequenceId,
     applicationId: { $in: ctx.state.admin.applicationIds },
