@@ -1,5 +1,5 @@
 import { useCallback, memo, useMemo } from 'react';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -16,11 +16,11 @@ const CurrentSubscriptionBlock = ({ onCancelSubscription, currentSubscription })
   const amplitude = useAmplitude();
 
   const startSubscriptionDate = useMemo(
-    () => dayjs(new Date(currentSubscription.startDate * 1000)).format('MMM DD, YYYY'),
+    () => moment(new Date(currentSubscription.startDate * 1000)).format('MMM DD, YYYY'),
     [currentSubscription.startDate],
   );
   const endSubscriptionDate = useMemo(
-    () => dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY'),
+    () => moment(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY'),
     [currentSubscription.endDate],
   );
 

@@ -9,7 +9,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import dayjs from 'dayjs';
+import moment from 'moment';
 
 import { subscriptionApi } from 'resources/subscription';
 
@@ -25,7 +25,7 @@ const SubscriptionPlans = () => {
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
-  const endSubscriptionDate = currentSubscription && dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
+  const endSubscriptionDate = currentSubscription && moment(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
 
   const renderItems = () => subscriptionList.map((item) => (
     <PlanItem
