@@ -10,5 +10,9 @@
   },
   "github": {
     "redirectUri": "https://api.growthflags.com/account/sign-in/github"
+  },
+  "subscriptions": {
+    "starter":  "",
+    "pro":  ""
   }
 }

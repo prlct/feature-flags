@@ -15,6 +15,10 @@ const updateSubscription = async (data: any) => {
     emailService.sendSubscriptionDeleted(data);
   }
 
+  if (subscription?.productId !== data.plan.product) {
+    emailService.sendSuccessfulSubscription(data);
+  }
+
   service.atomic.updateOne(
     { customer: data.customer },
     {

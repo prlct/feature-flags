@@ -28,17 +28,23 @@ const sentCompanyInvitation = (
   dynamicTemplateData,
 });
 
-const sendSuccessfulSubscription = async (data: Stripe.Invoice) => {
-  // if (!data.customer_email && !data.subscription) {
-  //   return;
-  // }
+const sendSuccessfulSubscription = async (data: any) => {
+  const admin = await adminService.findOne({ stripeId: data.customer });
 
-  getPlanInformation(data.subscription as string);
+  if (!admin) {
+    return; 
+  }
+
+  const planInfo = await getPlanInformation(data.plan.product as string);
+
+  if (!planInfo) {
+    return; 
+  }
 
   return emailService.sendSendgridTemplate({
-    to: data.customer_email as string,
+    to: admin.email as string,
     templateId: 'd-c07d368901f6464399b1692ba6e84ff3',
-    dynamicTemplateData: {  },
+    dynamicTemplateData: planInfo,
   });
 };
 
@@ -47,11 +53,10 @@ const sendSubscriptionDeleted = async (data: any) => {
   if (!admin?.email) return null;
 
 
-  return emailService.sendTemplate({
+  return emailService.sendSendgridTemplate({
     to: admin?.email,
-    subject: 'Your subscription deleted',
-    template: 'subscription-deleted.html',
-    dynamicTemplateData: {  },
+    templateId: 'd-727429f6db814a3e81da32e9dbacdd9d',
+    dynamicTemplateData: {},
   });
 };
 
@@ -59,15 +64,11 @@ const sendRenewalReminder = async (data: Stripe.Invoice) => {
   if (!data.customer_email && !data.subscription) {
     return;
   }
-  const subscription = await stripe.subscriptions.retrieve(data.subscription as string) as any;
 
-  const price = `${subscription.plan.amount / 100} ${subscription.plan.currency.toUpperCase()}/${subscription.plan.interval}`;
-
-  return emailService.sendTemplate({
+  return emailService.sendSendgridTemplate({
     to: data.customer_email as string,
-    subject: 'Your access to Growthflags expires in 7 days',
-    template: 'subscription-renewal_reminder.html',
-    dynamicTemplateData: { price },
+    templateId: 'd-d3d9bcc9e3d04e2f8f17471e37190ad4',
+    dynamicTemplateData: { },
   });
 };
 

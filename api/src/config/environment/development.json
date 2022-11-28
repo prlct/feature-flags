@@ -13,6 +13,10 @@
     "secretAccessKey": "yourSecretAccessKey",
     "bucket": "yourBucket"
   },
+  "subscriptions": {
+    "starter":  "",
+    "pro":  ""
+  },
   "google": {
     "redirectUri": "http://localhost:3001/users/google/code",
     "authRedirectUri": "http://localhost:3001/account/sign-in/google"

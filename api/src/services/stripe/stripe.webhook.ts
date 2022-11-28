@@ -12,9 +12,6 @@ export default function (event: Stripe.Event) {
     case 'customer.subscription.updated':
       subscriptionService.updateSubscription(event.data.object);
       return;
-    case 'invoice.payment_succeeded':
-      emailService.sendSuccessfulSubscription(event.data.object as Stripe.Invoice);
-      return;
     case 'invoice.upcoming':
       emailService.sendRenewalReminder(event.data.object as Stripe.Invoice);
       return;
