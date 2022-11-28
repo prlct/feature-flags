@@ -12,6 +12,7 @@ const DATABASE_DOCUMENTS = {
   PIPELINES: 'pipelines',
   SEQUENCES: 'sequences',
   SEQUENCE_EMAILS: 'sequence-emails',
+  PIPELINE_USERS: 'pipeline-users',
 };
 
 const COOKIES = {
