@@ -1,10 +1,8 @@
-import { join } from 'lodash';
 import Stripe from 'stripe';
 
 import config from 'config';
 import EmailService from './email.helper';
 import { adminService } from 'resources/admin';
-import stripe from 'services/stripe/stripe.service';
 import { getPlanInformation } from '../stripe/stripe.helper';
 
 // Do not send emails on development env
@@ -12,10 +10,17 @@ const apiKey = config.isDev ? '' : config.sendgridApiKey;
 
 const emailService = new EmailService({
   apiKey,
-  templatesDir: join(__dirname, '../../assets/emails/dist'),
   from: {
     email: 'team@growthflags.com',
     name: 'GrowthFlags',
+  },
+});
+
+const emailAlternativeService = new EmailService({
+  apiKey,
+  from: {
+    email: 'evgeniy@growthflags.com',
+    name: 'Evgeniy Sergeiev (GrowthFlags)',
   },
 });
 
@@ -41,7 +46,7 @@ const sendSuccessfulSubscription = async (data: any) => {
     return; 
   }
 
-  return emailService.sendSendgridTemplate({
+  return emailAlternativeService.sendSendgridTemplate({
     to: admin.email as string,
     templateId: 'd-c07d368901f6464399b1692ba6e84ff3',
     dynamicTemplateData: planInfo,
@@ -53,7 +58,7 @@ const sendSubscriptionDeleted = async (data: any) => {
   if (!admin?.email) return null;
 
 
-  return emailService.sendSendgridTemplate({
+  return emailAlternativeService.sendSendgridTemplate({
     to: admin?.email,
     templateId: 'd-727429f6db814a3e81da32e9dbacdd9d',
     dynamicTemplateData: {},
@@ -65,7 +70,7 @@ const sendRenewalReminder = async (data: Stripe.Invoice) => {
     return;
   }
 
-  return emailService.sendSendgridTemplate({
+  return emailAlternativeService.sendSendgridTemplate({
     to: data.customer_email as string,
     templateId: 'd-d3d9bcc9e3d04e2f8f17471e37190ad4',
     dynamicTemplateData: { },
