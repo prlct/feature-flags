@@ -30,7 +30,7 @@
     "@tabler/icons": "1.71.0",
     "axios": "0.27.2",
     "clsx": "1.2.1",
-    "dayjs": "1.11.3",
+    "dayjs": "1.11.6",
     "debug": "4.3.4",
     "lodash": "4.17.21",
     "magic-sdk": "8.1.1",

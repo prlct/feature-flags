@@ -9,6 +9,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import dayjs from 'dayjs';
 
 import { subscriptionApi } from 'resources/subscription';
 
@@ -23,6 +24,8 @@ const SubscriptionPlans = () => {
 
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
+
+  const endSubscriptionDate = currentSubscription && dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
 
   const renderItems = () => subscriptionList.map((item) => (
     <PlanItem
@@ -90,6 +93,14 @@ const SubscriptionPlans = () => {
         component="section"
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
+        {currentSubscription
+              && currentSubscription.cancelAtPeriodEnd
+              && (
+              <Text>
+                  {`You current subscription ends ${endSubscriptionDate}.`}
+              </Text>
+              )}
+
         {currentSubscription
           && !currentSubscription.cancelAtPeriodEnd
           && (

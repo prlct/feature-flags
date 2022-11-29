@@ -14,6 +14,7 @@ interface SendSendgridTemplate {
   to: string,
   templateId: string,
   dynamicTemplateData: { [key: string]: unknown; }
+  from?: From,
 }
 
 class MailService {
@@ -32,12 +33,14 @@ class MailService {
   }
 
   async sendSendgridTemplate({
+    from,
     to,
     templateId,
     dynamicTemplateData,
   }: SendSendgridTemplate) {
     if (!this.apiKey) {
       console.log('Email not sent because of development environment', {
+        from: from || this.from,
         to,
         templateId,
         dynamicTemplateData,
@@ -48,7 +51,7 @@ class MailService {
 
     return sendgrid.send({
       to,
-      from: this.from,
+      from: from || this.from,
       templateId,
       dynamicTemplateData,
     });
