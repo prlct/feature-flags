@@ -11,10 +11,24 @@ const getHandler = (job: ScheduledJob) => {
     case ScheduledJobType.EMAIL_SEQUENCE_SEND: {
 
       return async () => {
-        logger.info(`Starting job ${job._id}`);
-        await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
-          return { ...doc, status: ScheduledJobStatus.COMPLETED };
-        });
+        try {
+          logger.info(`Starting job ${job._id}`);
+          await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
+            return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
+          });
+        } catch (error) {
+          let message = 'unknown';
+          if (error instanceof Error) {
+            message = error.message;
+          }
+
+          await scheduledJobService.atomic.updateOne({ _id: job._id }, {
+            $set: {
+              status: ScheduledJobStatus.FAILED,
+              result: `Execute failed: ${message}`,
+            },
+          });
+        }
       };
     }
     default:
@@ -36,8 +50,7 @@ const onLoad = async () => {
   });
 
   todayScheduledJobs = jobsToday.map((jobInDB) => {
-    const job = schedule.scheduleJob(jobInDB.scheduledDate, getHandler(jobInDB));
-    return job;
+    return schedule.scheduleJob(jobInDB.scheduledDate, getHandler(jobInDB));
   });
 
   logger.debug(`Loaded ${todayScheduledJobs.length} scheduled jobs for today`);
