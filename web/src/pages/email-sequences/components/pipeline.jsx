@@ -2,15 +2,18 @@ import { useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
 
+import { emailSequenceApi } from 'resources/email-sequence';
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
 import { EmailSequencesContext } from '../email-sequences-context';
 
 import { useStyles } from './styles';
 
-const Pipeline = ({ sequences }) => {
+const Pipeline = () => {
+  const { data: sequences = [] } = emailSequenceApi.useGetSequences();
+
   const padSeqTo = 2;
-  const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
+  const paddedSequencesNumber = sequences.length || padSeqTo <= 0 ? 0 : padSeqTo - sequences.length || 0;
 
   const { classes } = useStyles();
 
@@ -21,9 +24,9 @@ const Pipeline = ({ sequences }) => {
     .map(() => ({ id: Math.random() * 10000 }))), [paddedSequencesNumber]);
 
   return (
-    <ScrollArea>
+    <ScrollArea style={{ height: 'calc(100vh - 200px)' }}>
       <Group align="stretch" noWrap>
-        {sequences.map((sequence) => (
+        {sequences?.map((sequence) => (
           <Sequence key={sequence.id} sequence={sequence} />
         ))}
         {emptySequences.map((seq) => (
@@ -58,14 +61,6 @@ const Pipeline = ({ sequences }) => {
       </Group>
     </ScrollArea>
   );
-};
-
-Pipeline.propTypes = {
-  sequences: PropTypes.arrayOf(PropTypes.shape({})),
-};
-
-Pipeline.defaultProps = {
-  sequences: [],
 };
 
 export default Pipeline;

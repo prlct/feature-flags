@@ -1,12 +1,12 @@
-export const getInputStyles = ({
-  colors,
-  other: {
-    transition: { speed, easing },
-  },
-}) => ({
+export const getInputStyles = (
+  {
+    colors,
+    other: {
+      transition: { speed, easing },
+    } },
+) => ({
   input: {
     minHeight: 40,
-    border: `1px solid ${colors.gray[2]}`,
     borderRadius: 6,
     fontSize: 14,
     lineHeight: '17px',

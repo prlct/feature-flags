@@ -10,7 +10,8 @@ const UsersList = () => {
 
   const getUserPipeline = (user) => {
     const pipeline = pipelines.find((p) => p.id === user.pipeline);
-    const seq = pipeline.sequences.find((s) => s.id === user.sequence);
+    const seq = pipeline?.sequences.find((s) => s.id === user.sequence);
+    if (!seq) return;
     return `${pipeline.name} / ${seq.name}`;
   };
 

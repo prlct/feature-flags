@@ -49,7 +49,7 @@ const Sequence = (props) => {
           </Stack>
         </Card>
         <Stack spacing={24}>
-          {sequence.emails.map((email) => <EmailCard key={email.name} email={email} />)}
+          {sequence.emails?.map((email) => <EmailCard key={email.name} email={email} />)}
           <Center>
             <Button variant="light" onClick={addEmail} className={classes.addButton}>
               + Add email

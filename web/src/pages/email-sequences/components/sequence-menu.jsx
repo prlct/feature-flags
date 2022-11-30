@@ -13,6 +13,7 @@ const SequenceMenu = ({ sequence }) => {
     openTriggerModal,
     openSendTestEmailModal,
     openAddUsersModal,
+    openRenameSequenceModal,
   } = useContext(EmailSequencesContext);
   const isEdit = !!sequence?.name;
 
@@ -31,12 +32,19 @@ const SequenceMenu = ({ sequence }) => {
     openAddUsersModal();
   };
 
+  const renameSequenceHandler = () => {
+    openRenameSequenceModal();
+  };
+
   return (
     <Menu position="bottom" transition="pop" withinPortal disabled={!isEdit}>
       <Menu.Target>
         <UnstyledButton p={0} variant="subtle"><IconDots color="gray" /></UnstyledButton>
       </Menu.Target>
       <Menu.Dropdown>
+        <Menu.Item icon={addOrEditIcon} onClick={renameSequenceHandler}>
+          Rename
+        </Menu.Item>
         <Menu.Item icon={addOrEditIcon} onClick={addUsersHandler}>
           Add users
         </Menu.Item>

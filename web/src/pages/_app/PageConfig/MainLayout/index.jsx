@@ -48,7 +48,7 @@ const navbarTabs = [{
 
 const MainLayout = ({ children }) => {
   const growthflags = useGrowthFlags();
-  const sideBarIsOn = growthflags?.isOn('email-sequences');
+  const sideBarIsOn = !growthflags?.isOn('email-sequences');
 
   const { classes } = useStyles();
 

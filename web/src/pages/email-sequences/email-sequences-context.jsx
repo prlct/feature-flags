@@ -1,11 +1,11 @@
 import { createContext, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import { useModals } from '@mantine/modals';
-import { Text, Title } from '@mantine/core';
+
+import { emailSequenceApi } from 'resources/email-sequence';
 
 export const EXAMPLE_PIPELINES = [{
-  id: 'pipeline1',
+  _id: 'pipeline1',
   name: 'Activation pipeline',
   sequences: [
     {
@@ -70,11 +70,6 @@ const initialContext = {
 
 export const EmailSequencesContext = createContext(initialContext);
 
-const createEmptyPipeline = (prev) => {
-  const name = `Pipeline ${prev.length + 1}`;
-  return { name, sequences: [] };
-};
-
 const createEmptySequence = (trigger) => ({
   name: 'Empty sequence',
   id: `${Math.random() * 10000}`, // FIXME
@@ -97,12 +92,12 @@ const createEmptyEmail = () => ({
 
 export const EmailSequencesContextProvider = ({ children }) => {
   const router = useRouter();
-  const modals = useModals();
   const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
   const [users, setUsers] = useState(EXAMPLE_USERS);
   const [triggerSelectionModal, setTriggerSelectionModal] = useState(false);
   const [sendTestEmailModal, setSendTestEmailModal] = useState(false);
   const [addUsersModal, setAddUsersModal] = useState(false);
+  const [renameSequenceModal, setRenameSequenceModal] = useState(false);
   const [currentSequence, setCurrentSequence] = useState(null);
   const [emailModal, setEmailModal] = useState(false);
   const [currentEmail, setCurrentEmail] = useState(null);
@@ -121,9 +116,16 @@ export const EmailSequencesContextProvider = ({ children }) => {
 
   const openSendTestEmailModal = () => setSendTestEmailModal(true);
   const closeSendTestEmailModal = () => setSendTestEmailModal(false);
-  const addEmptyPipeline = () => setPipelines((prev) => [...prev, createEmptyPipeline(prev)]);
   const closeAddUsersModal = () => setAddUsersModal(false);
   const openAddUsersModal = () => setAddUsersModal(true);
+
+  const openRenameSequenceModal = (sequence) => {
+    setCurrentSequence(sequence);
+    setRenameSequenceModal(true);
+  };
+  const closeRenameSequenceModal = () => setRenameSequenceModal(false);
+
+  const { mutate: createSequence } = emailSequenceApi.useAddSequence();
 
   const closeEditEmailModal = () => {
     setEmailModal(false);
@@ -137,8 +139,20 @@ export const EmailSequencesContextProvider = ({ children }) => {
 
   const addSequence = useMemo(() => (trigger) => {
     const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
-    currentPipeline.sequences = [...currentPipeline.sequences, createEmptySequence(trigger)];
-  }, [openedPipeline, pipelines]);
+
+    const sequence = createEmptySequence(trigger);
+    createSequence(
+      { pipelineId: currentPipeline.id || currentPipeline._id,
+        name: sequence.name,
+        trigger: { ...trigger, key: new Date().toISOString() } },
+      {
+        onSuccess: (data) => {
+          currentPipeline.sequences = [...currentPipeline.sequences, data];
+          setPipelines([...pipelines, currentPipeline]);
+        },
+      },
+    );
+  }, [createSequence, openedPipeline, pipelines]);
 
   const setTrigger = useMemo(() => (trigger) => {
     currentSequence.trigger = trigger;
@@ -167,27 +181,6 @@ export const EmailSequencesContextProvider = ({ children }) => {
     setPipelines([...pipelines]);
   }, [openedPipeline, pipelines]);
 
-  const removePipeline = useMemo(() => () => {
-    modals.openConfirmModal({
-      title: (<Title order={3}>{`Delete pipeline ${openedPipeline}`}</Title>),
-      centered: true,
-      children: (
-        <Text>
-          {`Delete pipeline ${openedPipeline}?`}
-        </Text>
-      ),
-      labels: { confirm: 'Delete', cancel: 'Cancel' },
-      confirmProps: { color: 'red', variant: 'subtle' },
-      cancelProps: { variant: 'subtle' },
-      onConfirm: () => {
-        setPipelines(
-          (prev) => prev.filter((p) => p.name !== openedPipeline),
-        );
-        setOpenedPipeline(pipelines[0]?.name);
-      },
-    });
-  }, [modals, openedPipeline, pipelines]);
-
   const toggleEmailEnabled = useMemo(() => (email) => {
     // eslint-disable-next-line no-param-reassign
     email.enabled = !email.enabled;
@@ -196,20 +189,21 @@ export const EmailSequencesContextProvider = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
+      openRenameSequenceModal,
+      closeRenameSequenceModal,
       closeTriggerModal,
       openTriggerModal,
-      addEmptyPipeline,
       openSendTestEmailModal,
       closeSendTestEmailModal,
       closeAddUsersModal,
       openAddUsersModal,
       closeEditEmailModal,
       openEditEmailModal,
+      renameSequenceModal,
       removeEmail,
       setUsers,
       toggleEmailEnabled,
       addEmptyEmail,
-      removePipeline,
       saveCurrentEmail,
       currentEmail,
       emailModal,
@@ -225,10 +219,10 @@ export const EmailSequencesContextProvider = ({ children }) => {
       users,
     }),
     [
+      renameSequenceModal,
       removeEmail,
       toggleEmailEnabled,
       addEmptyEmail,
-      removePipeline,
       saveCurrentEmail,
       currentEmail,
       emailModal,
@@ -241,7 +235,6 @@ export const EmailSequencesContextProvider = ({ children }) => {
       addUsersModal,
       currentSequence,
       users,
-      setUsers,
     ],
   );
 
