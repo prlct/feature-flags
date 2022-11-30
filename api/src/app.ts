@@ -14,14 +14,13 @@ import requestLogger from 'koa-logger';
 
 import config from 'config';
 import logger from 'logger';
-// import { socketService } from 'services';
 import routes from 'routes';
-// import ioEmitter from 'io-emitter';
 import { AppKoa } from 'types';
 import db from 'db';
 
 // docker container 'scheduler' is not used in production, import it here.
 import 'scheduler';
+import { loadJobs } from 'resources/scheduled-job/scheduled-job.handler';
 
 const initKoa = () => {
   const app = new AppKoa();
@@ -46,12 +45,9 @@ const initKoa = () => {
 
 const app = initKoa();
 (async () => {
-  db.database.connect();
+  await db.database.connect();
   const server = http.createServer(app.callback());
-  // await Promise.all([
-  //   ioEmitter.initClient(),
-  //   socketService(server),
-  // ]);
+  await loadJobs();
 
   const message = `Api server listening on ${config.port}, in ${config.env} mode and ${process.env.APP_ENV} env`;
   server.listen(config.port, () => {

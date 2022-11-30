@@ -22,6 +22,10 @@ const schema = Joi.object({
   result: Joi.string().empty(null).default(''),
 
   scheduledDate: Joi.date().required(),
+
+  createdOn: Joi.date(),
+  updatedOn: Joi.date(),
+  deletedOn: Joi.date(),
 });
 
 export default schema;

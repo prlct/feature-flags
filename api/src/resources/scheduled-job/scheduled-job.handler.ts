@@ -1,10 +1,12 @@
 import scheduledJobService from './scheduled-job.service';
 import moment from 'moment';
-import schedule from 'node-schedule';
+import schedule, { Job } from 'node-schedule';
 import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
 import logger from 'logger';
 
-let todayScheduledJobs;
+export const todayScheduledJobs = {
+  current: [] as Job[],
+};
 
 const getHandler = (job: ScheduledJob) => {
   switch (job.type) {
@@ -36,7 +38,7 @@ const getHandler = (job: ScheduledJob) => {
   }
 };
 
-const onLoad = async () => {
+export const loadJobs = async () => {
   const today = moment().startOf('day');
   const tomorrow = moment().endOf('day');
 
@@ -45,15 +47,13 @@ const onLoad = async () => {
     status: ScheduledJobStatus.PENDING,
     scheduledDate: {
       $gte: today.toDate(),
-      $lt: tomorrow.toDate(),
+      $lte: tomorrow.toDate(),
     },
   });
 
-  todayScheduledJobs = jobsToday.map((jobInDB) => {
+  todayScheduledJobs.current = jobsToday.map((jobInDB) => {
     return schedule.scheduleJob(jobInDB.scheduledDate, getHandler(jobInDB));
   });
 
-  logger.debug(`Loaded ${todayScheduledJobs.length} scheduled jobs for today`);
+  logger.debug(`Loaded ${todayScheduledJobs.current.length} scheduled jobs for today`);
 };
-
-onLoad();
