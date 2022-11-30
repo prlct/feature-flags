@@ -1,2 +1,2 @@
-import './action.example.handler';
 import './daily-statistics.handler';
+import './scheduled-jobs-loader';

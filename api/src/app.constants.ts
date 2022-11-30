@@ -13,6 +13,7 @@ const DATABASE_DOCUMENTS = {
   SEQUENCES: 'sequences',
   SEQUENCE_EMAILS: 'sequence-emails',
   PIPELINE_USERS: 'pipeline-users',
+  SCHEDULED_JOBS: 'scheduled-jobs',
 };
 
 const COOKIES = {
