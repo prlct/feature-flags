@@ -45,7 +45,7 @@ const initKoa = () => {
 
 const app = initKoa();
 (async () => {
-  await db.database.connect();
+  db.database.connect();
   const server = http.createServer(app.callback());
   await loadJobs();
 
