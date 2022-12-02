@@ -1,19 +1,19 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, Tabs, Text, Title } from '@mantine/core';
-
-import { emailSequenceApi } from 'resources/email-sequence';
 import { useLocalStorage } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
+
 import queryClient from 'query-client';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
-import { useModals } from '@mantine/modals';
+import { emailSequenceApi } from 'resources/email-sequence';
+
+import { EmailSequencesContextProvider, EXAMPLE_PIPELINES } from './email-sequences-context';
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
-import { EmailSequencesContextProvider, EXAMPLE_PIPELINES } from './email-sequences-context';
 import AddUsersModal from './components/add-users-modal';
 import EditEmailModal from './components/edit-email-modal';
 import UsersList from './components/users-list';
-
 import PipelineTab from './components/pipeline-tab';
 import RenameSequenceModal from './components/rename-sequence-modal';
 
@@ -75,11 +75,7 @@ const EmailSequences = () => {
       confirmProps: { color: 'red', variant: 'subtle' },
       cancelProps: { variant: 'subtle' },
       onConfirm: () => {
-        removePipeline(openedPipeline._id, {
-          onSuccess: () => {
-            queryClient.invalidateQueries('pipelines');
-          },
-        });
+        removePipeline(openedPipeline._id);
       },
     });
   }, [modals, removePipeline]);
@@ -110,30 +106,32 @@ const EmailSequences = () => {
       <AddUsersModal />
       <EditEmailModal />
       <RenameSequenceModal />
+      {pipelines?.length && (
       <Tabs value={currentTab} onTabChange={handleTabChange} variant="pills">
         <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
-          {pipelines?.map((pipeline) => (
+          {pipelines.map((pipeline) => (
             <PipelineTab pipeline={pipeline} />
           ))}
           <Tabs.Tab value="add-new" onClick={handleCreatePipeline} className={classes.tabItem}>
             <Text>+ New pipeline</Text>
           </Tabs.Tab>
-          {/* <Tabs.Tab value="users" ml="auto"> */}
-          {/*  <Text>Users</Text> */}
-          {/* </Tabs.Tab> */}
+          <Tabs.Tab value="users" ml="auto">
+            <Text>Users</Text>
+          </Tabs.Tab>
           <Tabs.Tab value="remove-current" onClick={handleRemovePipeline} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
             <Text>Delete pipeline</Text>
           </Tabs.Tab>
         </Tabs.List>
-        {pipelines?.map((pipeline) => (
-          <Tabs.Panel key={pipeline.name} value={pipeline._id} id={pipeline._id}>
-            <Pipeline />
+        {pipelines.map((pipeline) => (
+          <Tabs.Panel key={pipeline._id} value={pipeline._id}>
+            <Pipeline key={`${pipeline._id}_${pipeline.name}`} id={pipeline._id} />
           </Tabs.Panel>
         ))}
         <Tabs.Panel value="users">
           <UsersList />
         </Tabs.Panel>
       </Tabs>
+      )}
     </Container>
   );
 };

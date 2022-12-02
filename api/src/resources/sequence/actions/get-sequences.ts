@@ -22,5 +22,5 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 };
 
 export default (router: AppRouter) => {
-  router.get('/', pipelineAccess, validateMiddleware(schema), handler);
+  router.get('/', validateMiddleware(schema), pipelineAccess, handler);
 };

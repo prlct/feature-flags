@@ -10,25 +10,43 @@ const RenameSequenceModal = () => {
   const {
     renameSequenceModal,
     closeRenameSequenceModal,
-    currentSequence,
   } = useContext(EmailSequencesContext);
-  const [sequenceName, setSequenceName] = useState('');
+  const currentSequence = queryClient.getQueryData('currentSequence');
+  const currentPipeline = queryClient.getQueryData('currentPipeline');
 
-  const { mutate: rename } = emailSequenceApi.useUpdateSequence();
+  const [sequenceName, setSequenceName] = useState(currentSequence?.name || '');
 
-  const renameSequence = useCallback(() => {
+  const { mutate: renameSequence } = emailSequenceApi.useUpdateSequence();
+  const { mutate: createSequence } = emailSequenceApi.useAddSequence();
+
+  const onRenameSequenceSave = useCallback(() => {
     if (!sequenceName) {
       return;
     }
-    rename(
+    if (!currentSequence?._id) {
+      createSequence(
+        {
+          pipelineId: currentPipeline._id,
+          name: sequenceName,
+        },
+        {
+          onSettled: () => {
+            closeRenameSequenceModal();
+          },
+        },
+      );
+      return;
+    }
+    renameSequence(
       { _id: currentSequence._id, name: sequenceName },
       {
-        onSuccess: () => {
-          queryClient.invalidateQueries('sequences');
+        onSettled: () => {
+          closeRenameSequenceModal();
         },
       },
     );
-  }, [currentSequence?._id, rename, sequenceName]);
+  }, [closeRenameSequenceModal, createSequence, currentPipeline?._id, currentSequence?._id,
+    renameSequence, sequenceName]);
 
   return (
     <Modal
@@ -44,7 +62,7 @@ const RenameSequenceModal = () => {
           <Button variant="subtle" onClick={closeRenameSequenceModal}>
             Cancel
           </Button>
-          <Button onClick={renameSequence}>
+          <Button onClick={onRenameSequenceSave}>
             Save
           </Button>
         </Group>

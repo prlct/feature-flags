@@ -33,7 +33,7 @@ const Sequence = (props) => {
         <Card shadow="sm" p="sm" radius="sm" withBorder mt={16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>
             <Group position="apart">
-              <Text size="lg" weight="bold">{sequence.trigger.name}</Text>
+              <Text size="lg" weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
                 <Menu.Target onClick={() => openTriggerModal(sequence)}>
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>
@@ -45,7 +45,7 @@ const Sequence = (props) => {
                 </Menu.Dropdown>
               </Menu>
             </Group>
-            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger.description}</Text>
+            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger?.description}</Text>
           </Stack>
         </Card>
         <Stack spacing={24}>

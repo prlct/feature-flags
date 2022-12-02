@@ -1,8 +1,7 @@
 import { createContext, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
 
-import { emailSequenceApi } from 'resources/email-sequence';
+import queryClient from 'query-client';
 
 export const EXAMPLE_PIPELINES = [{
   _id: 'pipeline1',
@@ -70,17 +69,6 @@ const initialContext = {
 
 export const EmailSequencesContext = createContext(initialContext);
 
-const createEmptySequence = (trigger) => ({
-  name: 'Empty sequence',
-  id: `${Math.random() * 10000}`, // FIXME
-  emails: [],
-  trigger,
-  enabled: false,
-  total: 0,
-  completed: 0,
-  dropped: 0,
-});
-
 const createEmptyEmail = () => ({
   name: 'Email name',
   id: `${Math.random() * 10000}`, // FIXME
@@ -91,26 +79,21 @@ const createEmptyEmail = () => ({
 });
 
 export const EmailSequencesContextProvider = ({ children }) => {
-  const router = useRouter();
-  const [pipelines, setPipelines] = useState(EXAMPLE_PIPELINES);
   const [users, setUsers] = useState(EXAMPLE_USERS);
   const [triggerSelectionModal, setTriggerSelectionModal] = useState(false);
   const [sendTestEmailModal, setSendTestEmailModal] = useState(false);
   const [addUsersModal, setAddUsersModal] = useState(false);
   const [renameSequenceModal, setRenameSequenceModal] = useState(false);
-  const [currentSequence, setCurrentSequence] = useState(null);
   const [emailModal, setEmailModal] = useState(false);
   const [currentEmail, setCurrentEmail] = useState(null);
 
-  const [openedPipeline, setOpenedPipeline] = useState(router.asPath.split('#')?.[1] || pipelines[0]?.name);
-
   const closeTriggerModal = () => {
-    setCurrentSequence(null);
+    queryClient.removeQueries(['currentSequence']);
     setTriggerSelectionModal(false);
   };
 
   const openTriggerModal = (sequence) => {
-    setCurrentSequence(sequence);
+    queryClient.setQueryData(['currentSequence'], sequence);
     setTriggerSelectionModal(true);
   };
 
@@ -119,13 +102,10 @@ export const EmailSequencesContextProvider = ({ children }) => {
   const closeAddUsersModal = () => setAddUsersModal(false);
   const openAddUsersModal = () => setAddUsersModal(true);
 
-  const openRenameSequenceModal = (sequence) => {
-    setCurrentSequence(sequence);
+  const openRenameSequenceModal = () => {
     setRenameSequenceModal(true);
   };
   const closeRenameSequenceModal = () => setRenameSequenceModal(false);
-
-  const { mutate: createSequence } = emailSequenceApi.useAddSequence();
 
   const closeEditEmailModal = () => {
     setEmailModal(false);
@@ -137,55 +117,33 @@ export const EmailSequencesContextProvider = ({ children }) => {
     setCurrentEmail(email);
   };
 
-  const addSequence = useMemo(() => (trigger) => {
-    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+  // const saveCurrentEmail = useMemo(() => () => {
+  //   setPipelines([...pipelines]);
+  // }, [pipelines]);
 
-    const sequence = createEmptySequence(trigger);
-    createSequence(
-      { pipelineId: currentPipeline.id || currentPipeline._id,
-        name: sequence.name,
-        trigger: { ...trigger, key: new Date().toISOString() } },
-      {
-        onSuccess: (data) => {
-          currentPipeline.sequences = [...currentPipeline.sequences, data];
-          setPipelines([...pipelines, currentPipeline]);
-        },
-      },
-    );
-  }, [createSequence, openedPipeline, pipelines]);
+  // const addEmptyEmail = useMemo(() => (sequence) => {
+  //   const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+  //   const currentSequence = currentPipeline.sequences.find((s) => s === sequence);
+  //   const email = createEmptyEmail();
+  //   currentSequence.emails = [...currentSequence.emails, email];
+  //   setPipelines([...pipelines]);
+  //   openEditEmailModal(email);
+  // }, [openedPipeline, pipelines]);
 
-  const setTrigger = useMemo(() => (trigger) => {
-    currentSequence.trigger = trigger;
-    setPipelines([...pipelines]);
-  }, [currentSequence, pipelines]);
+  // const removeEmail = useMemo(() => (emailId) => {
+  //   const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
+  //   const currentSequence = currentPipeline.sequences.find(
+  //     (s) => !!s.emails.find((e) => e.id === emailId),
+  //   );
+  //   currentSequence.emails = currentSequence.emails.filter((e) => e.id !== emailId);
+  //   setPipelines([...pipelines]);
+  // }, [openedPipeline, pipelines]);
 
-  const saveCurrentEmail = useMemo(() => () => {
-    setPipelines([...pipelines]);
-  }, [pipelines]);
-
-  const addEmptyEmail = useMemo(() => (sequence) => {
-    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
-    const currentSequence = currentPipeline.sequences.find((s) => s === sequence);
-    const email = createEmptyEmail();
-    currentSequence.emails = [...currentSequence.emails, email];
-    setPipelines([...pipelines]);
-    openEditEmailModal(email);
-  }, [openedPipeline, pipelines]);
-
-  const removeEmail = useMemo(() => (emailId) => {
-    const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
-    const currentSequence = currentPipeline.sequences.find(
-      (s) => !!s.emails.find((e) => e.id === emailId),
-    );
-    currentSequence.emails = currentSequence.emails.filter((e) => e.id !== emailId);
-    setPipelines([...pipelines]);
-  }, [openedPipeline, pipelines]);
-
-  const toggleEmailEnabled = useMemo(() => (email) => {
-    // eslint-disable-next-line no-param-reassign
-    email.enabled = !email.enabled;
-    setPipelines([...pipelines]);
-  }, [pipelines]);
+  // const toggleEmailEnabled = useMemo(() => (email) => {
+  //   // eslint-disable-next-line no-param-reassign
+  //   email.enabled = !email.enabled;
+  //   setPipelines([...pipelines]);
+  // }, [pipelines]);
 
   const contextValue = useMemo(
     () => ({
@@ -200,40 +158,21 @@ export const EmailSequencesContextProvider = ({ children }) => {
       closeEditEmailModal,
       openEditEmailModal,
       renameSequenceModal,
-      removeEmail,
       setUsers,
-      toggleEmailEnabled,
-      addEmptyEmail,
-      saveCurrentEmail,
       currentEmail,
       emailModal,
-      setTrigger,
-      addSequence,
-      openedPipeline,
-      setOpenedPipeline,
-      pipelines,
       triggerSelectionModal,
       sendTestEmailModal,
       addUsersModal,
-      currentSequence,
       users,
     }),
     [
       renameSequenceModal,
-      removeEmail,
-      toggleEmailEnabled,
-      addEmptyEmail,
-      saveCurrentEmail,
       currentEmail,
       emailModal,
-      setTrigger,
-      addSequence,
-      openedPipeline,
-      pipelines,
       triggerSelectionModal,
       sendTestEmailModal,
       addUsersModal,
-      currentSequence,
       users,
     ],
   );

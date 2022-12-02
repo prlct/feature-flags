@@ -1,15 +1,30 @@
-import { useContext } from 'react';
-
+import { useContext, useEffect, useState } from 'react';
+import { useLocalStorage } from '@mantine/hooks';
 import { Box, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 
-import { EmailSequencesContext } from '../email-sequences-context';
+import { emailSequenceApi } from 'resources/email-sequence';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+import { EmailSequencesContext, EXAMPLE_PIPELINES } from '../email-sequences-context';
 
 const UsersList = () => {
-  const { users, setUsers, pipelines } = useContext(EmailSequencesContext);
+  const { users, setUsers } = useContext(EmailSequencesContext);
+
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
+
+  const { data: fetchedPipelines, isFetching } = emailSequenceApi.useGetPipelines({ env });
+
+  const [pipelines, setPipelines] = useState(null);
 
   const getUserPipeline = (user) => {
-    const pipeline = pipelines.find((p) => p.id === user.pipeline);
+    if (!pipelines) {
+      return;
+    }
+    const pipeline = pipelines.find((p) => p._id === user.pipeline);
     const seq = pipeline?.sequences.find((s) => s.id === user.sequence);
     if (!seq) return;
     return `${pipeline.name} / ${seq.name}`;
@@ -30,6 +45,17 @@ const UsersList = () => {
       </td>
     </tr>
   ));
+
+  useEffect(() => {
+    if (fetchedPipelines?.results.length) {
+      setPipelines(fetchedPipelines.results);
+      return;
+    }
+
+    if (!isFetching) {
+      setPipelines(EXAMPLE_PIPELINES);
+    }
+  }, [fetchedPipelines, env, isFetching]);
 
   return (
     <Box>

@@ -16,14 +16,11 @@ export function useAddPipeline() {
   };
 
   return useMutation(createEmptyPipeline, {
-    onMutate: async (item) => {
+    onMutate: async () => {
       await queryClient.cancelQueries([resource]);
 
       const emailSequences = queryClient.getQueryData([resource]);
       const previousEmailSequences = cloneDeep(emailSequences);
-      console.log(emailSequences);
-      console.log(item);
-      // emailSequences.pipelines.push(item);
 
       queryClient.setQueryData([resource], emailSequences);
 
@@ -37,7 +34,12 @@ export function useAddSequence() {
   const applicationId = currentAdmin.applicationIds[0];
   const createSequence = ({ pipelineId, name, trigger }) => apiService.post(`/applications/${applicationId}/sequences`, { pipelineId, name, trigger });
 
-  return useMutation(createSequence);
+  return useMutation(createSequence, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('sequences');
+      queryClient.removeQueries('currentSequence');
+    },
+  });
 }
 
 export function useGetPipelines({ env }) {
@@ -45,13 +47,29 @@ export function useGetPipelines({ env }) {
   const applicationId = currentAdmin.applicationIds[0];
   const getPipelines = () => apiService.get('/pipelines', { applicationId, env });
 
-  return useQuery(['pipelines', { applicationId, env }], getPipelines);
+  return useQuery(['pipelines', { applicationId, env }], getPipelines, { onSuccess: () => {
+    queryClient.invalidateQueries('sequences');
+  } });
 }
 
 export function useRemovePipeline() {
   const removePipeline = (_id) => apiService.delete(`/pipelines/${_id}`);
 
-  return useMutation(removePipeline);
+  return useMutation(removePipeline, { onSuccess: () => {
+    queryClient.invalidateQueries('pipelines');
+    queryClient.invalidateQueries('sequences');
+  },
+  });
+}
+
+export function useRemoveSequence() {
+  const removeSequence = (_id) => apiService.delete(`/sequences/${_id}`);
+
+  return useMutation(removeSequence, { onSuccess: () => {
+    queryClient.removeQueries('currentSequence');
+    queryClient.invalidateQueries('sequences');
+  },
+  });
 }
 
 export function useUpdatePipeline() {
@@ -61,15 +79,18 @@ export function useUpdatePipeline() {
 }
 
 export function useUpdateSequence() {
-  const updateSequences = ({ _id, name }) => apiService.put(`/sequences/${_id}`, { name });
+  const updateSequences = ({ _id, name, trigger }) => apiService.put(`/sequences/${_id}`, { name, trigger });
 
-  return useMutation(updateSequences);
+  return useMutation(updateSequences, { onSuccess: () => {
+    queryClient.invalidateQueries('pipeline');
+    queryClient.invalidateQueries('sequences');
+  },
+  });
 }
 
 export function useGetSequences() {
   const currentPipeline = queryClient.getQueryData(['currentPipeline']);
-  console.log(currentPipeline);
   const getSequences = () => apiService.get('/sequences', { pipelineId: currentPipeline._id });
 
-  return useQuery(['pipelines', { pipelineId: currentPipeline?._id }], getSequences);
+  return useQuery(['sequences', { pipelineId: currentPipeline?._id }], getSequences);
 }

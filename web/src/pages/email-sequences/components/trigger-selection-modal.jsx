@@ -1,6 +1,10 @@
 import { UnstyledButton, Stack, Group, Modal, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { IconCopy } from '@tabler/icons';
+
+import queryClient from 'query-client';
+
+import { emailSequenceApi } from 'resources/email-sequence';
 import { EmailSequencesContext } from '../email-sequences-context';
 
 const createTrigger = (name) => ({
@@ -25,10 +29,13 @@ const TriggerSelectionModal = () => {
   const {
     triggerSelectionModal,
     closeTriggerModal,
-    setTrigger,
-    currentSequence,
-    addSequence,
   } = useContext(EmailSequencesContext);
+
+  const currentSequence = queryClient.getQueryData('currentSequence');
+  const currentPipeline = queryClient.getQueryData('currentPipeline');
+
+  const { mutate: createSequence } = emailSequenceApi.useAddSequence();
+  const { mutate: updateSequence } = emailSequenceApi.useUpdateSequence();
 
   const [triggerName, setTriggerName] = useState(currentSequence?.trigger?.name || '');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
@@ -53,19 +60,29 @@ const TriggerSelectionModal = () => {
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
+  const addSequence = useMemo(() => (trigger) => {
+    createSequence(
+      {
+        pipelineId: currentPipeline._id,
+        name: 'New Sequence',
+        trigger: { ...trigger, key: new Date().toString() } },
+    );
+  }, [createSequence, currentPipeline?._id]);
+
+  const updateTrigger = useCallback((trigger) => {
+    updateSequence({
+      _id: currentSequence._id,
+      trigger: { ...trigger, key: new Date().toString() },
+    });
+  }, [currentSequence?._id, updateSequence]);
+
   const onSave = () => {
-    if (!currentSequence) {
+    if (!currentSequence._id) {
       const trigger = createTrigger(triggerName);
       addSequence(trigger);
     } else {
-      setTrigger(
-        {
-          ...currentSequence.trigger,
-          name: triggerName,
-          description: triggerDescription,
-          value: selectedEvent,
-        },
-      );
+      const trigger = createTrigger(triggerName);
+      updateTrigger(trigger);
     }
     closeTriggerModal();
   };

@@ -1,5 +1,4 @@
-import { useContext, useMemo } from 'react';
-import PropTypes from 'prop-types';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
 
 import { emailSequenceApi } from 'resources/email-sequence';
@@ -10,10 +9,13 @@ import { EmailSequencesContext } from '../email-sequences-context';
 import { useStyles } from './styles';
 
 const Pipeline = () => {
-  const { data: sequences = [] } = emailSequenceApi.useGetSequences();
-
+  const [sequences, setSequences] = useState([]);
   const padSeqTo = 2;
-  const paddedSequencesNumber = sequences.length || padSeqTo <= 0 ? 0 : padSeqTo - sequences.length || 0;
+  const paddedSequencesNumber = sequences.length || padSeqTo <= 0
+    ? 0
+    : padSeqTo - sequences.length || 0;
+
+  const { data: fetchedSequences } = emailSequenceApi.useGetSequences();
 
   const { classes } = useStyles();
 
@@ -22,6 +24,12 @@ const Pipeline = () => {
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
     .map(() => ({ id: Math.random() * 10000 }))), [paddedSequencesNumber]);
+
+  useEffect(() => {
+    if (fetchedSequences) {
+      setSequences(fetchedSequences || []);
+    }
+  }, [fetchedSequences]);
 
   return (
     <ScrollArea style={{ height: 'calc(100vh - 200px)' }}>
