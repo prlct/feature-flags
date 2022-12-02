@@ -32,7 +32,7 @@ const EmailSequences = () => {
   });
 
   const { mutate: createPipeline } = emailSequenceApi.useAddPipeline();
-  const { data: fetchedPipelines, isFetching } = emailSequenceApi.useGetPipelines({ env });
+  const { data: fetchedPipelines } = emailSequenceApi.useGetPipelines({ env });
   const { mutate: removePipeline } = emailSequenceApi.useRemovePipeline();
 
   const { classes } = useStyles();
@@ -87,11 +87,9 @@ const EmailSequences = () => {
       return;
     }
 
-    if (!isFetching) {
-      setPipelines(EXAMPLE_PIPELINES);
-      setCurrentTab(EXAMPLE_PIPELINES[0].id);
-    }
-  }, [fetchedPipelines, env, isFetching]);
+    setPipelines(EXAMPLE_PIPELINES);
+    setCurrentTab(EXAMPLE_PIPELINES[0].id);
+  }, [fetchedPipelines, env]);
 
   useEffect(() => {
     if (pipelines) {

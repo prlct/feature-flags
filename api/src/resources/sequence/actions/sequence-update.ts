@@ -39,7 +39,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     if (trigger) {
       seq.trigger = trigger;
     }
-    if (enabled) {
+    if (typeof enabled !== 'undefined') {
       seq.enabled = enabled;
     }
 

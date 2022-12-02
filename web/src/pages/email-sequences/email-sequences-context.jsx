@@ -69,15 +69,6 @@ const initialContext = {
 
 export const EmailSequencesContext = createContext(initialContext);
 
-const createEmptyEmail = () => ({
-  name: 'Email name',
-  id: `${Math.random() * 10000}`, // FIXME
-  delay: 1,
-  enabled: false,
-  sent: 0,
-  unsubscribed: 0,
-});
-
 export const EmailSequencesContextProvider = ({ children }) => {
   const [users, setUsers] = useState(EXAMPLE_USERS);
   const [triggerSelectionModal, setTriggerSelectionModal] = useState(false);
@@ -116,34 +107,6 @@ export const EmailSequencesContextProvider = ({ children }) => {
     setEmailModal(true);
     setCurrentEmail(email);
   };
-
-  // const saveCurrentEmail = useMemo(() => () => {
-  //   setPipelines([...pipelines]);
-  // }, [pipelines]);
-
-  // const addEmptyEmail = useMemo(() => (sequence) => {
-  //   const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
-  //   const currentSequence = currentPipeline.sequences.find((s) => s === sequence);
-  //   const email = createEmptyEmail();
-  //   currentSequence.emails = [...currentSequence.emails, email];
-  //   setPipelines([...pipelines]);
-  //   openEditEmailModal(email);
-  // }, [openedPipeline, pipelines]);
-
-  // const removeEmail = useMemo(() => (emailId) => {
-  //   const currentPipeline = pipelines.find((p) => p.name === openedPipeline);
-  //   const currentSequence = currentPipeline.sequences.find(
-  //     (s) => !!s.emails.find((e) => e.id === emailId),
-  //   );
-  //   currentSequence.emails = currentSequence.emails.filter((e) => e.id !== emailId);
-  //   setPipelines([...pipelines]);
-  // }, [openedPipeline, pipelines]);
-
-  // const toggleEmailEnabled = useMemo(() => (email) => {
-  //   // eslint-disable-next-line no-param-reassign
-  //   email.enabled = !email.enabled;
-  //   setPipelines([...pipelines]);
-  // }, [pipelines]);
 
   const contextValue = useMemo(
     () => ({
