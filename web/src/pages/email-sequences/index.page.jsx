@@ -1,5 +1,8 @@
 import { Container, Tabs, Text } from '@mantine/core';
 
+import { useState } from 'react';
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+import { useLocalStorage } from '@mantine/hooks';
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
@@ -8,13 +11,9 @@ import EditEmailModal from './components/edit-email-modal';
 import UsersList from './components/users-list';
 
 import { useStyles } from './styles';
-import { useState } from 'react';
-import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
-import { useLocalStorage } from '@mantine/hooks';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from '../../helpers/constants';
 
 const EmailSequences = () => {
-
   const [openedPipeline, setOpenedPipeline] = useState(null);
 
   const [env] = useLocalStorage({
@@ -23,13 +22,16 @@ const EmailSequences = () => {
     getInitialValueInEffect: false,
   });
 
-  const { data, refetch, isRefetching, isLoading  } = emailSequencesApi.useGetPipelines();
-  console.log(data);
-  const pipelines = [];
+  const {
+    data,
+    refetch,
+    isRefetching,
+    isLoading,
+  } = emailSequencesApi.useGetPipelines(env);
+  const pipelines = data?.results || [];
   const defaultTab = null;
 
   const { classes } = useStyles();
-
 
   const handleTabChange = (newTabName) => {
     if (['add-new', 'remove-current'].includes(newTabName)) {
@@ -38,7 +40,7 @@ const EmailSequences = () => {
     setOpenedPipeline(newTabName);
   };
 
-  const handleAddPipeline = emailSequencesApi.useAddPipeline(env);
+  const handleAddPipeline = emailSequencesApi.useAddPipeline(env).mutate;
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
@@ -72,6 +74,5 @@ const EmailSequences = () => {
     </Container>
   );
 };
-
 
 export default EmailSequences;

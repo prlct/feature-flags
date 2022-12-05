@@ -6,7 +6,6 @@ import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconSend,
 const ICON_SIZE = 16;
 
 const SequenceMenu = ({ sequence }) => {
-
   const isEdit = !!sequence?.name;
 
   const addOrEditIcon = isEdit ? <IconEdit size={ICON_SIZE} /> : <IconPlus size={ICON_SIZE} />;
@@ -22,10 +21,10 @@ const SequenceMenu = ({ sequence }) => {
         <UnstyledButton p={0} variant="subtle"><IconDots color="gray" /></UnstyledButton>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item icon={addOrEditIcon} onClick={addUsersHandler}>
+        <Menu.Item icon={addOrEditIcon}>
           Add users
         </Menu.Item>
-        <Menu.Item icon={addOrEditIcon} onClick={addTriggerHandler}>
+        <Menu.Item icon={addOrEditIcon}>
           {`${addOrEditText} trigger`}
         </Menu.Item>
         <Menu.Divider />
@@ -34,7 +33,6 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Divider />
         <Menu.Item
           icon={<IconSend size={16} />}
-          onClick={openSendTestEmailModal}
         >
           Send a test sequence
         </Menu.Item>
