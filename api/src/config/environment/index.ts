@@ -21,6 +21,10 @@ const base = {
     clientId: process.env.GITHUB_CLIENT_ID || '',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
   },
+  gmail: {
+    clientId: process.env.GMAIL_CLIENT_ID || '',
+    clientSecret: process.env.GMAIL_CLIENT_SECRET || '',
+  },
   subscriptions: {
     starter: process.env.STARTER_SUBSCRIPTION_ID || '',
     pro: process.env.PRO_SUBSCRIPTION_ID || '',

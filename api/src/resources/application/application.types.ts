@@ -16,6 +16,11 @@ export type Application = {
   privateApiKey: string;
   featureIds: string[];
   trackEnabled: boolean;
+  gmailCredentials?: {
+    email: string,
+    accessToken: string,
+    refreshToken: string,
+  },
   envs: {
     [Env.DEVELOPMENT]: EnvData,
     [Env.STAGING]: EnvData,

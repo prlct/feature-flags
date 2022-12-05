@@ -3,8 +3,6 @@ import Joi from 'joi';
 import { ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
 
 const scheduledEmailData = Joi.object({
-  pipelineId: Joi.string().required(),
-  sequenceId: Joi.string().required(),
   emailId: Joi.string().required(),
   targetEmail: Joi.string().email().required(),
   firstName: Joi.string(),

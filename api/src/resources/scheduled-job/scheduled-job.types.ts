@@ -1,13 +1,24 @@
+export type ScheduledEmailOptions = {
+  emailId: string,
+  targetEmail: string,
+  firstName?: string,
+  lastName?: string,
+};
+
 export type ScheduledJob = {
   _id: string,
 
   applicationId: string,
   type: string,
-  data: object,
+  data: ScheduledEmailOptions,
   status: ScheduledJobStatus,
   result: string,
 
   scheduledDate: Date,
+
+  createdOn: Date;
+  updatedOn: Date;
+  deletedOn?: Date | null;
 };
 
 export enum ScheduledJobType {
