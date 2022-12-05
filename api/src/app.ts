@@ -47,7 +47,7 @@ const app = initKoa();
 (async () => {
   db.database.connect();
   const server = http.createServer(app.callback());
-  await loadJobs();
+  loadJobs();
 
   const message = `Api server listening on ${config.port}, in ${config.env} mode and ${process.env.APP_ENV} env`;
   server.listen(config.port, () => {
