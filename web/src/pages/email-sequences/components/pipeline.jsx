@@ -2,12 +2,17 @@ import { useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
 
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
 
 import { useStyles } from './styles';
 
-const Pipeline = ({ sequences }) => {
+const Pipeline = ({ id }) => {
+  const { data } = emailSequencesApi.useGetSequences(id);
+  const sequences = data?.results || [];
+
   const padSeqTo = 2;
   const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
 
@@ -44,7 +49,7 @@ const Pipeline = ({ sequences }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => openTriggerModal(null)}
+            onClick={() => null}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: 304 }}
@@ -58,11 +63,7 @@ const Pipeline = ({ sequences }) => {
 };
 
 Pipeline.propTypes = {
-  sequences: PropTypes.arrayOf(PropTypes.shape({})),
-};
-
-Pipeline.defaultProps = {
-  sequences: [],
+  id: PropTypes.string.isRequired,
 };
 
 export default Pipeline;

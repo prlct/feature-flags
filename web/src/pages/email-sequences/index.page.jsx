@@ -1,27 +1,25 @@
-import { Container, Tabs, Text } from '@mantine/core';
-
 import { useState } from 'react';
-import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
+import { Container, Tabs, Text } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
+
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
 import AddUsersModal from './components/add-users-modal';
 import EditEmailModal from './components/edit-email-modal';
-import UsersList from './components/users-list';
 
 import { useStyles } from './styles';
-import { ENV, LOCAL_STORAGE_ENV_KEY } from '../../helpers/constants';
 
 const EmailSequences = () => {
-  const [openedPipeline, setOpenedPipeline] = useState(null);
-
   const [env] = useLocalStorage({
     key: LOCAL_STORAGE_ENV_KEY,
     defaultValue: ENV.DEVELOPMENT,
     getInitialValueInEffect: false,
   });
-
   const {
     data,
     refetch,
@@ -29,7 +27,9 @@ const EmailSequences = () => {
     isLoading,
   } = emailSequencesApi.useGetPipelines(env);
   const pipelines = data?.results || [];
-  const defaultTab = null;
+  const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0] || null);
+
+  const defaultTab = pipelines?.[0] || null;
 
   const { classes } = useStyles();
 
@@ -51,7 +51,7 @@ const EmailSequences = () => {
       <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange} variant="pills">
         <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
           {pipelines.map((pipeline) => (
-            <Tabs.Tab key={pipeline.name} value={pipeline.name} className={classes.tabItem}>
+            <Tabs.Tab key={pipeline._id} value={pipeline._id} className={classes.tabItem}>
               <Text>{pipeline.name}</Text>
             </Tabs.Tab>
           ))}
@@ -63,13 +63,10 @@ const EmailSequences = () => {
           </Tabs.Tab>
         </Tabs.List>
         {pipelines.map((pipeline) => (
-          <Tabs.Panel key={pipeline.name} value={pipeline.name}>
-            <Pipeline sequences={pipeline.sequences} />
+          <Tabs.Panel key={pipeline._id} value={pipeline._id}>
+            <Pipeline id={pipeline._id} />
           </Tabs.Panel>
         ))}
-        <Tabs.Panel value="users">
-          <UsersList />
-        </Tabs.Panel>
       </Tabs>
     </Container>
   );

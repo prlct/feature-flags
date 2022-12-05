@@ -4,14 +4,14 @@ import queryClient from 'query-client';
 import { apiService } from 'services';
 
 const pipelinesResource = '/pipelines';
-const emailSequencesResource = '/email-sequences';
+const sequencesResource = '/sequences';
 
 export const useGetPipelines = (env) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
-  const getFeaturesList = async () => apiService.get('/pipelines', { env, applicationId });
+  const getPipelines = async () => apiService.get('/pipelines', { env, applicationId });
 
-  return useQuery([pipelinesResource], getFeaturesList);
+  return useQuery([pipelinesResource], getPipelines);
 };
 
 export function useAddPipeline(env) {
@@ -31,4 +31,10 @@ export function useAddPipeline(env) {
       queryClient.invalidateQueries([pipelinesResource]);
     },
   });
+}
+
+export function useGetSequences(pipelineId) {
+  const getSequences = async () => apiService.get(sequencesResource, { pipelineId });
+
+  return useQuery([sequencesResource], getSequences);
 }
