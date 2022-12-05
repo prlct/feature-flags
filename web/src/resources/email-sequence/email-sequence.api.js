@@ -1,14 +1,25 @@
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import cloneDeep from 'lodash/cloneDeep';
 import queryClient from 'query-client';
+import { apiService } from 'services';
 
 const resource = '/email-sequences';
 
-export function useAddPipeline() {
-  const createEmptyPipeline = (index) => {
-    const name = `Pipeline ${index}`;
-    return { name, sequences: [] };
-  };
+export const useGetPipelines = (env) => {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+  const getFeaturesList = () => apiService.get('/pipelines', { env, applicationId });
+
+  return useQuery(['pipelines'], getFeaturesList);
+};
+
+export function useAddPipeline(env) {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+  const createEmptyPipeline = (index) => apiService.post(
+    `/applications/${applicationId}/pipelines`,
+    { name: `Pipeline ${index}`, env, applicationId },
+  );
 
   return useMutation(createEmptyPipeline, {
     onMutate: async (item) => {

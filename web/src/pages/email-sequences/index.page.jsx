@@ -1,34 +1,35 @@
-import { useContext } from 'react';
 import { Container, Tabs, Text } from '@mantine/core';
 
 import Pipeline from './components/pipeline';
 import SendTestEmailModal from './components/send-test-email-modal';
 import TriggerSelectionModal from './components/trigger-selection-modal';
-import { EmailSequencesContext, EmailSequencesContextProvider } from './email-sequences-context';
 import AddUsersModal from './components/add-users-modal';
 import EditEmailModal from './components/edit-email-modal';
 import UsersList from './components/users-list';
 
 import { useStyles } from './styles';
+import { useState } from 'react';
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+import { useLocalStorage } from '@mantine/hooks';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from '../../helpers/constants';
 
 const EmailSequences = () => {
-  const {
-    pipelines,
-    openedPipeline,
-    setOpenedPipeline,
-    addEmptyPipeline,
-    removePipeline,
-  } = useContext(EmailSequencesContext);
 
-  const defaultTab = pipelines[0]?.name;
+  const [openedPipeline, setOpenedPipeline] = useState(null);
+
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
+
+  const { data, refetch, isRefetching, isLoading  } = emailSequencesApi.useGetPipelines();
+  console.log(data);
+  const pipelines = [];
+  const defaultTab = null;
 
   const { classes } = useStyles();
 
-  const handleCreatePipeline = () => {
-    const newPipelineName = `Pipeline ${(pipelines.length + 1)}`;
-    addEmptyPipeline();
-    setOpenedPipeline(newPipelineName);
-  };
 
   const handleTabChange = (newTabName) => {
     if (['add-new', 'remove-current'].includes(newTabName)) {
@@ -36,6 +37,8 @@ const EmailSequences = () => {
     }
     setOpenedPipeline(newTabName);
   };
+
+  const handleAddPipeline = emailSequencesApi.useAddPipeline(env);
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
@@ -50,13 +53,10 @@ const EmailSequences = () => {
               <Text>{pipeline.name}</Text>
             </Tabs.Tab>
           ))}
-          <Tabs.Tab value="add-new" onClick={handleCreatePipeline} className={classes.tabItem}>
+          <Tabs.Tab value="add-new" onClick={handleAddPipeline} className={classes.tabItem}>
             <Text>+ New pipeline</Text>
           </Tabs.Tab>
-          {/* <Tabs.Tab value="users" ml="auto"> */}
-          {/*  <Text>Users</Text> */}
-          {/* </Tabs.Tab> */}
-          <Tabs.Tab value="remove-current" onClick={removePipeline} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
+          <Tabs.Tab value="remove-current" onClick={undefined} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
             <Text>Delete pipeline</Text>
           </Tabs.Tab>
         </Tabs.List>
@@ -73,10 +73,5 @@ const EmailSequences = () => {
   );
 };
 
-const WithProvider = () => (
-  <EmailSequencesContextProvider>
-    <EmailSequences />
-  </EmailSequencesContextProvider>
-);
 
-export default WithProvider;
+export default EmailSequences;

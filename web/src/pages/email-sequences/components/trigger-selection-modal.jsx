@@ -1,14 +1,6 @@
 import { UnstyledButton, Stack, Group, Modal, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
-import { EmailSequencesContext } from '../email-sequences-context';
-
-const createTrigger = (name) => ({
-  id: `${Math.random() * 10000}`,
-  name,
-  description: '',
-  applicationId: '1',
-});
 
 const DEFAULT_EVENTS = [
   {
@@ -22,58 +14,19 @@ const DEFAULT_EVENTS = [
 ];
 
 const TriggerSelectionModal = () => {
-  const {
-    triggerSelectionModal,
-    closeTriggerModal,
-    setTrigger,
-    currentSequence,
-    addSequence,
-  } = useContext(EmailSequencesContext);
-
-  const [triggerName, setTriggerName] = useState(currentSequence?.trigger?.name || '');
+  const [triggerName, setTriggerName] = useState('');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
-  const currentEvent = currentSequence?.trigger?.value || null;
-
-  const [selectedEvent, setSelectedEvent] = useState(currentEvent || events[0].value);
+  const [selectedEvent, setSelectedEvent] = useState(events[0].value);
 
   const [webhooksShown, setWebhooksShown] = useState(false);
-  const [triggerDescription, setTriggerDescription] = useState(currentSequence?.trigger?.description || '');
-
-  useEffect(() => {
-    if (currentSequence?.trigger) {
-      setTriggerName(currentSequence.trigger.name);
-      setTriggerDescription(currentSequence.trigger.description);
-    } else {
-      setTriggerDescription('');
-      setTriggerName('');
-    }
-  }, [currentSequence]);
+  const [triggerDescription, setTriggerDescription] = useState('');
 
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
-  const onSave = () => {
-    if (!currentSequence) {
-      const trigger = createTrigger(triggerName);
-      addSequence(trigger);
-    } else {
-      setTrigger(
-        {
-          ...currentSequence.trigger,
-          name: triggerName,
-          description: triggerDescription,
-          value: selectedEvent,
-        },
-      );
-    }
-    closeTriggerModal();
-  };
-
   return (
     <Modal
-      opened={triggerSelectionModal}
-      onClose={closeTriggerModal}
       title="Choose trigger"
       withCloseButton
       centered
@@ -128,10 +81,10 @@ const TriggerSelectionModal = () => {
           </Stack>
         )}
         <Group position="apart">
-          <Button variant="subtle" onClick={closeTriggerModal}>
+          <Button variant="subtle">
             Cancel
           </Button>
-          <Button onClick={onSave}>
+          <Button>
             Save
           </Button>
         </Group>

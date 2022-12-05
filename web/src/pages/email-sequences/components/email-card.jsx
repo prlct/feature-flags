@@ -4,7 +4,6 @@ import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
 import CardSettingsButton from './card-settings-button';
-import { EmailSequencesContext } from '../email-sequences-context';
 import DayBadge from './day-badge';
 
 const UNSUBSCRIBE_SHOW_THRESHOLD = 10;

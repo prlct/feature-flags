@@ -5,7 +5,6 @@ import { IconEdit } from '@tabler/icons';
 import EmailCard from './email-card';
 import SequenceMenu from './sequence-menu';
 import SequenceProgressBar from './sequence-progress-bar';
-import { EmailSequencesContext } from '../email-sequences-context';
 
 import { useStyles } from './styles';
 
@@ -14,11 +13,6 @@ const Sequence = (props) => {
 
   const { classes } = useStyles();
 
-  const { openTriggerModal, addEmptyEmail } = useContext(EmailSequencesContext);
-
-  const addEmail = () => {
-    addEmptyEmail(sequence);
-  };
 
   return (
     <Paper withBorder className={classes.pipeline}>

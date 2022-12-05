@@ -2,18 +2,11 @@ import PropTypes from 'prop-types';
 
 import { Menu, UnstyledButton } from '@mantine/core';
 import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconSend, IconTrash } from '@tabler/icons';
-import { useContext } from 'react';
-
-import { EmailSequencesContext } from '../email-sequences-context';
 
 const ICON_SIZE = 16;
 
 const SequenceMenu = ({ sequence }) => {
-  const {
-    openTriggerModal,
-    openSendTestEmailModal,
-    openAddUsersModal,
-  } = useContext(EmailSequencesContext);
+
   const isEdit = !!sequence?.name;
 
   const addOrEditIcon = isEdit ? <IconEdit size={ICON_SIZE} /> : <IconPlus size={ICON_SIZE} />;
@@ -22,14 +15,6 @@ const SequenceMenu = ({ sequence }) => {
   const startStopIcon = sequence?.enabled
     ? <IconPlayerStop size={ICON_SIZE} />
     : <IconPlayerPlay size={ICON_SIZE} />;
-
-  const addTriggerHandler = () => {
-    openTriggerModal(sequence);
-  };
-
-  const addUsersHandler = () => {
-    openAddUsersModal();
-  };
 
   return (
     <Menu position="bottom" transition="pop" withinPortal disabled={!isEdit}>

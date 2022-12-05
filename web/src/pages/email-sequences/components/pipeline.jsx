@@ -4,7 +4,6 @@ import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mant
 
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
-import { EmailSequencesContext } from '../email-sequences-context';
 
 import { useStyles } from './styles';
 
@@ -13,8 +12,6 @@ const Pipeline = ({ sequences }) => {
   const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
 
   const { classes } = useStyles();
-
-  const { openTriggerModal } = useContext(EmailSequencesContext);
 
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
