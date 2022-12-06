@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import * as qs from 'qs';
 
 const PROD_API_URL = 'https://api.growthflags.com';
 
@@ -123,5 +122,4 @@ export default new ApiClient({
   baseURL: API_URL,
   withCredentials: true,
   responseType: 'json',
-  paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'brackets' }),
 });
