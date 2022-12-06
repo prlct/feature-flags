@@ -23,7 +23,7 @@ const Pipeline = ({ id }) => {
 
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
-    .map(() => ({ _id: Math.random() * 10000 }))), [paddedSequencesNumber]);
+    .map(() => ({ _id: `${Math.random() * 10000}` }))), [paddedSequencesNumber]);
 
   return (
     <ScrollArea>

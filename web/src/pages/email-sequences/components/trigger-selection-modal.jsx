@@ -25,6 +25,10 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
+  const handleTriggerSave = () => {
+    ???
+  };
+
   return (
     <>
       <Select
@@ -79,7 +83,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
           <Button variant="subtle" onClick={() => context.closeModal(id)}>
             Cancel
           </Button>
-          <Button>
+          <Button onClick={handleTriggerSave}>
             Save
           </Button>
         </Group>

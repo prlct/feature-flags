@@ -77,6 +77,16 @@ export function useAddSequence(pipelineId) {
   });
 }
 
+export function useUpdateSequence() {
+  const updateSequences = ({ _id, name }) => apiService.put(`${sequencesResource}/${_id}`, { name });
+
+  return useMutation(updateSequences, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
 export function useGetSequenceEmails(sequenceId) {
   const getEmails = async () => apiService.get(sequenceEmailResource, { sequenceId });
 
@@ -99,6 +109,26 @@ export function useEmailCreate() {
   const updateEmail = async (data) => apiService.post(`/applications/${applicationId}${sequenceEmailResource}`, data);
 
   return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailToggle(emailId) {
+  const updateEmail = async () => apiService.put(`${sequenceEmailResource}/${emailId}/toggle`);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailRemove(emailId) {
+  const removeEmail = async () => apiService.delete(`${sequenceEmailResource}/${emailId}`);
+
+  return useMutation(removeEmail, {
     onSuccess: (item) => {
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },

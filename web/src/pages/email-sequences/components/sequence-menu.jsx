@@ -31,6 +31,9 @@ const SequenceMenu = ({ sequence }) => {
         >
           {`${addOrEditText} trigger`}
         </Menu.Item>
+        <Menu.Item icon={addOrEditIcon} onClick={() => openContextModal({ modal: 'renameSequence', innerProps: { _id: sequence?._id, name: sequence?.name } })}>
+          Rename
+        </Menu.Item>
         <Menu.Divider />
         <Menu.Item icon={startStopIcon}>{`${startOrStopText} sequence`}</Menu.Item>
         <Menu.Item icon={<IconTrash size={16} color="red" />}>Delete sequence</Menu.Item>
@@ -47,6 +50,7 @@ const SequenceMenu = ({ sequence }) => {
 
 SequenceMenu.propTypes = {
   sequence: PropTypes.shape({
+    _id: PropTypes.string,
     name: PropTypes.string,
     enabled: PropTypes.bool,
   }),

@@ -16,6 +16,7 @@ import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 
 import TriggerSelectionModal from '../email-sequences/components/trigger-selection-modal';
 import EditEmailModal from '../email-sequences/components/edit-email-modal';
+import RenameSequenceModal from '../email-sequences/components/rename-sequence-modal';
 
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
@@ -27,6 +28,7 @@ const App = ({ Component, pageProps }) => {
   const modals = useMemo(() => ({
     triggerSelection: TriggerSelectionModal,
     sequenceEmail: EditEmailModal,
+    renameSequence: RenameSequenceModal,
   }), []);
 
   return (

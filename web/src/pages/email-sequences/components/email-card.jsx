@@ -3,6 +3,9 @@ import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
 import { openContextModal } from '@mantine/modals';
+
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
 import CardSettingsButton from './card-settings-button';
 import DayBadge from './day-badge';
 
@@ -23,6 +26,9 @@ const EmailCard = (props) => {
 
   const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
+  const handleEmailToggle = emailSequencesApi.useEmailToggle(_id).mutate;
+  const handleEmailRemove = emailSequencesApi.useEmailRemove(_id).mutate;
+
   return (
     <Stack style={{ position: 'relative' }}>
       <DayBadge days={delayDays} />
@@ -37,7 +43,7 @@ const EmailCard = (props) => {
               <Menu.Dropdown>
                 <Menu.Item
                   icon={<IconPlayerPlay size={16} />}
-                  onClick={() => null}
+                  onClick={handleEmailToggle}
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
@@ -51,7 +57,7 @@ const EmailCard = (props) => {
                 >
                   Edit
                 </Menu.Item>
-                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => null}>
+                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={handleEmailRemove}>
                   Remove
                 </Menu.Item>
               </Menu.Dropdown>

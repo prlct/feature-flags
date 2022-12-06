@@ -20,7 +20,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { name, enabled } = ctx.validatedData;
 
   ctx.body = await sequenceService.updateOne({ _id: sequenceId }, (seq) => {
-    return { ...seq, name, enabled };
+    return { ...seq, name, enabled: enabled ?? seq.enabled };
   });
 };
 
