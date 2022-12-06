@@ -1,4 +1,4 @@
-import { UnstyledButton, Stack, Group, Modal, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
+import { UnstyledButton, Stack, Group, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
 import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
 
@@ -13,7 +13,7 @@ const DEFAULT_EVENTS = [
   },
 ];
 
-const TriggerSelectionModal = () => {
+const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const [triggerName, setTriggerName] = useState('');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
@@ -26,12 +26,7 @@ const TriggerSelectionModal = () => {
   const stopURL = `${selectedEvent}/stop`;
 
   return (
-    <Modal
-      title="Choose trigger"
-      withCloseButton
-      centered
-    >
-
+    <>
       <Select
         label="Select an event"
         data={events}
@@ -81,7 +76,7 @@ const TriggerSelectionModal = () => {
           </Stack>
         )}
         <Group position="apart">
-          <Button variant="subtle">
+          <Button variant="subtle" onClick={() => context.closeModal(id)}>
             Cancel
           </Button>
           <Button>
@@ -89,7 +84,7 @@ const TriggerSelectionModal = () => {
           </Button>
         </Group>
       </Stack>
-    </Modal>
+    </>
   );
 };
 

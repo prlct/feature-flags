@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import PropTypes from 'prop-types';
@@ -13,48 +14,58 @@ import shipTheme from 'theme/ship-theme';
 import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
 import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 
+import TriggerSelectionModal from '../email-sequences/components/trigger-selection-modal';
+import EditEmailModal from '../email-sequences/components/edit-email-modal';
+
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
 import Hotjar from './Hotjar';
 import GoogleTag from './GoogleTag';
 import './emailEditor.css';
 
-const App = ({ Component, pageProps }) => (
-  <>
-    <Head>
-      <title>Growthflags</title>
-    </Head>
-    <CrispChat />
-    <Hotjar />
-    <GoogleTag />
-    <QueryClientProvider client={queryClient}>
-      <MantineProvider
-        theme={shipTheme}
-        defaultProps={{
-          Button: { size: 'md' },
-          TextInput: { size: 'md' },
-          PasswordInput: { size: 'md' },
-          Select: { size: 'md' },
-        }}
-        withGlobalStyles
-        withNormalizeCSS
-      >
-        <ModalsProvider>
-          <NotificationsProvider autoClose={5000} limit={2}>
-            <GrowthFlagsContextProvider>
-              <AmplitudeContextProvider>
-                <PageConfig>
-                  <Component {...pageProps} />
-                </PageConfig>
-              </AmplitudeContextProvider>
-            </GrowthFlagsContextProvider>
-          </NotificationsProvider>
-        </ModalsProvider>
-        <ReactQueryDevtools position="bottom-right" />
-      </MantineProvider>
-    </QueryClientProvider>
-  </>
-);
+const App = ({ Component, pageProps }) => {
+  const modals = useMemo(() => ({
+    triggerSelection: TriggerSelectionModal,
+    sequenceEmail: EditEmailModal,
+  }), []);
+
+  return (
+    <>
+      <Head>
+        <title>Growthflags</title>
+      </Head>
+      <CrispChat />
+      <Hotjar />
+      <GoogleTag />
+      <QueryClientProvider client={queryClient}>
+        <MantineProvider
+          theme={shipTheme}
+          defaultProps={{
+            Button: { size: 'md' },
+            TextInput: { size: 'md' },
+            PasswordInput: { size: 'md' },
+            Select: { size: 'md' },
+          }}
+          withGlobalStyles
+          withNormalizeCSS
+        >
+          <ModalsProvider modals={modals}>
+            <NotificationsProvider autoClose={5000} limit={2}>
+              <GrowthFlagsContextProvider>
+                <AmplitudeContextProvider>
+                  <PageConfig>
+                    <Component {...pageProps} />
+                  </PageConfig>
+                </AmplitudeContextProvider>
+              </GrowthFlagsContextProvider>
+            </NotificationsProvider>
+          </ModalsProvider>
+          <ReactQueryDevtools position="bottom-right" />
+        </MantineProvider>
+      </QueryClientProvider>
+    </>
+  );
+};
 
 App.propTypes = {
   Component: PropTypes.elementType.isRequired,

@@ -1,6 +1,7 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
+import { openContextModal } from '@mantine/modals';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
@@ -37,10 +38,18 @@ const Pipeline = ({ id }) => {
               </Group>
               <Space h="sm" />
               <Stack spacing="xs">
-                <Button variant="light" onClick={() => null} className={classes.addButton}>
+                <Button
+                  className={classes.addButton}
+                  variant="light"
+                  onClick={() => openContextModal({ modal: 'triggerSelection', title: 'Add trigger', innerProps: {} })}
+                >
                   + Add trigger
                 </Button>
-                <Button variant="light" className={classes.addButton}>
+                <Button
+                  className={classes.addButton}
+                  variant="light"
+                  onClick={() => openContextModal({ modal: 'sequenceEmail', title: 'Create email', innerProps: {} })}
+                >
                   + Add email
                 </Button>
               </Stack>

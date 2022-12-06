@@ -45,10 +45,6 @@ const EmailSequences = () => {
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
-      <SendTestEmailModal />
-      <TriggerSelectionModal />
-      <AddUsersModal />
-      <EditEmailModal />
       <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange} variant="pills">
         <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
           {pipelines.map((pipeline) => (
