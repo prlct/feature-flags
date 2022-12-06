@@ -4,11 +4,12 @@ import { apiService } from 'services';
 
 const pipelinesResource = '/pipelines';
 const sequencesResource = '/sequences';
+const sequenceEmailResource = '/sequence-emails';
 
 export const useGetPipelines = (env) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
-  const getPipelines = async () => apiService.get('/pipelines', { env, applicationId });
+  const getPipelines = async () => apiService.get(pipelinesResource, { env, applicationId });
 
   return useQuery([pipelinesResource], getPipelines);
 };
@@ -77,7 +78,27 @@ export function useAddSequence(pipelineId) {
 }
 
 export function useGetSequenceEmails(sequenceId) {
-  const getEmails = async () => apiService.get('/sequence-emails', { sequenceId });
+  const getEmails = async () => apiService.get(sequenceEmailResource, { sequenceId });
 
-  return useQuery([`sequence-emails-${sequenceId}`], getEmails);
+  return useQuery([`${sequenceEmailResource}-${sequenceId}`], getEmails);
+}
+
+export function useEmailUpdate(emailId) {
+  const updateEmail = async (data) => apiService.put(`${sequenceEmailResource}/${emailId}`, data);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailCreate() {
+  const updateEmail = async (data) => apiService.post(`${sequenceEmailResource}`, data);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
 }

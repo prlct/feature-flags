@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
+import { openContextModal } from '@mantine/modals';
 import CardSettingsButton from './card-settings-button';
 import DayBadge from './day-badge';
 
@@ -40,7 +41,14 @@ const EmailCard = (props) => {
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
-                <Menu.Item icon={<IconEdit size={16} />} onClick={() => null}>
+                <Menu.Item
+                  icon={<IconEdit size={16} />}
+                  onClick={() => openContextModal({
+                    modal: 'sequenceEmail',
+                    innerProps: { email },
+                    size: 800,
+                  })}
+                >
                   Edit
                 </Menu.Item>
                 <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => null}>

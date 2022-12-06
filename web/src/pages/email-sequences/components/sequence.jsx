@@ -54,7 +54,7 @@ const Sequence = (props) => {
             <Button
               className={classes.addButton}
               variant="light"
-              onClick={() => openContextModal({ modal: 'sequenceEmail', innerProps: { sequence } })}
+              onClick={() => openContextModal({ modal: 'sequenceEmail', size: 800, innerProps: { } })}
             >
               + Add email
             </Button>
