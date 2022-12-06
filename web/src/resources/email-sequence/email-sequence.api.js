@@ -94,7 +94,9 @@ export function useEmailUpdate(emailId) {
 }
 
 export function useEmailCreate() {
-  const updateEmail = async (data) => apiService.post(`${sequenceEmailResource}`, data);
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+  const updateEmail = async (data) => apiService.post(`/applications/${applicationId}${sequenceEmailResource}`, data);
 
   return useMutation(updateEmail, {
     onSuccess: (item) => {

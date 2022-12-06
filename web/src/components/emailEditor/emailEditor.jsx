@@ -35,6 +35,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
           <InputBase
             required
             value={subject}
+            onChange={(e) => setSubject(e.target.value)}
             className={classes.subjectInput}
             placeholder="Subject"
             variant="outlined"

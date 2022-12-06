@@ -5,9 +5,9 @@ import EmailEditor from 'components/emailEditor';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
 const EditEmailModal = ({ context, id, innerProps }) => {
-  const { email } = innerProps;
+  const { email, sequenceId } = innerProps;
   const [emailName, setEmailName] = useState(email?.name || '');
-  const [delay, setDelay] = useState(email?.delayDays || 1);
+  const [delayDays, setDelayDays] = useState(email?.delayDays || 1);
 
   const [subject, setSubject] = useState(email?.subject || '');
   const [body, setBody] = useState(email?.body || '');
@@ -18,11 +18,11 @@ const EditEmailModal = ({ context, id, innerProps }) => {
   const handleEmailCreate = emailSequencesApi.useEmailCreate().mutate;
 
   const onSave = () => {
-    const data = { ...email, delay, name: emailName, subject, body };
+    const data = { ...email, delayDays, name: emailName, subject, body, sequenceId };
     if (isEdit) {
       handleEmailUpdate(data);
     } else {
-      return handleEmailCreate(data);
+      handleEmailCreate(data);
     }
 
     context.closeModal(id);
@@ -30,12 +30,12 @@ const EditEmailModal = ({ context, id, innerProps }) => {
 
   return (
     <Stack>
-      <NumberInput value={delay} onChange={setDelay} label="Delay days" min={0} />
+      <NumberInput value={delayDays} onChange={setDelayDays} label="Delay days" min={0} />
       <TextInput label="Email name" value={emailName} onChange={(e) => setEmailName(e.target.value)} />
       <EmailEditor subject={subject} body={body} setBody={setBody} setSubject={setSubject} />
       <Group position="apart" mt={16}>
         <Button variant="subtle" onClick={() => context.closeModal(id)}>Cancel</Button>
-        <Button onClick={() => onSave()}>Save</Button>
+        <Button onClick={onSave}>Save</Button>
       </Group>
     </Stack>
   );
