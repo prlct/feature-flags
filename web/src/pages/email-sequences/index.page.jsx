@@ -41,6 +41,7 @@ const EmailSequences = () => {
   };
 
   const handleAddPipeline = emailSequencesApi.useAddPipeline(env).mutate;
+  const handleRemovePipeline = emailSequencesApi.useRemovePipeline().mutate;
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
@@ -58,7 +59,7 @@ const EmailSequences = () => {
           <Tabs.Tab value="add-new" onClick={handleAddPipeline} className={classes.tabItem}>
             <Text>+ New pipeline</Text>
           </Tabs.Tab>
-          <Tabs.Tab value="remove-current" onClick={undefined} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
+          <Tabs.Tab value="remove-current" onClick={() => handleRemovePipeline(openedPipeline)} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
             <Text>Delete pipeline</Text>
           </Tabs.Tab>
         </Tabs.List>

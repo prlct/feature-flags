@@ -33,6 +33,18 @@ export function useAddPipeline(env) {
   });
 }
 
+export function useRemovePipeline() {
+  const removePipeline = async (id) => apiService.delete(
+    `${pipelinesResource}/${id}`,
+  );
+
+  return useMutation(removePipeline, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([pipelinesResource]);
+    },
+  });
+}
+
 export function useGetSequences(pipelineId) {
   const getSequences = async () => apiService.get(sequencesResource, { pipelineId });
 

@@ -20,24 +20,24 @@ const Pipeline = ({ id }) => {
 
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
-    .map(() => ({ id: Math.random() * 10000 }))), [paddedSequencesNumber]);
+    .map(() => ({ _id: Math.random() * 10000 }))), [paddedSequencesNumber]);
 
   return (
     <ScrollArea>
       <Group align="stretch" noWrap>
         {sequences.map((sequence) => (
-          <Sequence key={sequence.id} sequence={sequence} />
+          <Sequence key={sequence._id} sequence={sequence} />
         ))}
         {emptySequences.map((seq) => (
           <Paper key={seq.id} withBorder className={classes.pipeline}>
             <Stack spacing={0}>
               <Group position="apart">
                 <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">New sequence</Text>
-                <SequenceMenu id={seq.id} sequence={seq} />
+                <SequenceMenu id={seq._id} sequence={seq} />
               </Group>
               <Space h="sm" />
               <Stack spacing="xs">
-                <Button variant="light" onClick={() => openTriggerModal(seq)} className={classes.addButton}>
+                <Button variant="light" onClick={() => null} className={classes.addButton}>
                   + Add trigger
                 </Button>
                 <Button variant="light" className={classes.addButton}>
