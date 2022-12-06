@@ -12,7 +12,9 @@ import { useStyles } from './styles';
 
 const Pipeline = ({ id }) => {
   const { data } = emailSequencesApi.useGetSequences(id);
-  const sequences = data?.results || [];
+  const handleAddSequence = emailSequencesApi.useAddSequence(id).mutate;
+
+  const sequences = data || [];
 
   const padSeqTo = 2;
   const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
@@ -30,7 +32,7 @@ const Pipeline = ({ id }) => {
           <Sequence key={sequence._id} sequence={sequence} />
         ))}
         {emptySequences.map((seq) => (
-          <Paper key={seq.id} withBorder className={classes.pipeline}>
+          <Paper key={seq._id} withBorder className={classes.pipeline}>
             <Stack spacing={0}>
               <Group position="apart">
                 <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">New sequence</Text>
@@ -58,7 +60,7 @@ const Pipeline = ({ id }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => null}
+            onClick={() => handleAddSequence('New sequence')}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: 304 }}

@@ -3,15 +3,19 @@ import { Group, Stack, Card, Text, Paper, Center, Menu, Button, ActionIcon } fro
 import { IconEdit } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
 
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
 import EmailCard from './email-card';
 import SequenceMenu from './sequence-menu';
 import SequenceProgressBar from './sequence-progress-bar';
-
 import { useStyles } from './styles';
 
 const Sequence = (props) => {
   const { sequence } = props;
 
+  const { data } = emailSequencesApi.useGetSequenceEmails(sequence?._id);
+
+  const emails = data?.results || [];
   const { classes } = useStyles();
 
   return (
@@ -24,10 +28,11 @@ const Sequence = (props) => {
           <SequenceMenu sequence={sequence} />
         </Group>
         <SequenceProgressBar total={sequence.total} dropped={sequence.dropped} />
+        {sequence.trigger && (
         <Card shadow="sm" p="sm" radius="sm" withBorder mt={16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>
             <Group position="apart">
-              <Text size="lg" weight="bold">{sequence.trigger.name}</Text>
+              <Text size="lg" weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
                 <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', innerProps: { sequence } })}>
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>
@@ -39,11 +44,12 @@ const Sequence = (props) => {
                 </Menu.Dropdown>
               </Menu>
             </Group>
-            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger.description}</Text>
+            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger?.description}</Text>
           </Stack>
         </Card>
+        )}
         <Stack spacing={24}>
-          {sequence.emails.map((email) => <EmailCard key={email.name} email={email} />)}
+          {emails.map((email) => <EmailCard key={email.name} email={email} />)}
           <Center>
             <Button
               className={classes.addButton}
@@ -61,7 +67,7 @@ const Sequence = (props) => {
 
 Sequence.propTypes = {
   sequence: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string,
     completed: PropTypes.number,
     total: PropTypes.number,

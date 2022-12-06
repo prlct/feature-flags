@@ -7,12 +7,9 @@ import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api'
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import Pipeline from './components/pipeline';
-import SendTestEmailModal from './components/send-test-email-modal';
-import TriggerSelectionModal from './components/trigger-selection-modal';
-import AddUsersModal from './components/add-users-modal';
-import EditEmailModal from './components/edit-email-modal';
 
 import { useStyles } from './styles';
+import PipelineTab from './components/pipeline-tab';
 
 const EmailSequences = () => {
   const [env] = useLocalStorage({
@@ -45,17 +42,26 @@ const EmailSequences = () => {
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
-      <Tabs defaultValue={defaultTab} value={openedPipeline} onTabChange={handleTabChange} variant="pills">
+      <Tabs
+        defaultValue={defaultTab}
+        value={openedPipeline}
+        onTabChange={handleTabChange}
+        variant="pills"
+        keepMounted={false}
+      >
         <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
           {pipelines.map((pipeline) => (
-            <Tabs.Tab key={pipeline._id} value={pipeline._id} className={classes.tabItem}>
-              <Text>{pipeline.name}</Text>
-            </Tabs.Tab>
+            <PipelineTab key={pipeline._id} pipeline={pipeline} />
           ))}
           <Tabs.Tab value="add-new" onClick={handleAddPipeline} className={classes.tabItem}>
             <Text>+ New pipeline</Text>
           </Tabs.Tab>
-          <Tabs.Tab value="remove-current" onClick={() => handleRemovePipeline(openedPipeline)} className={classes.tabItem} style={{ position: 'absolute', right: 0 }}>
+          <Tabs.Tab
+            value="remove-current"
+            onClick={() => handleRemovePipeline(openedPipeline)}
+            className={classes.tabItem}
+            style={{ position: 'absolute', right: 0 }}
+          >
             <Text>Delete pipeline</Text>
           </Tabs.Tab>
         </Tabs.List>

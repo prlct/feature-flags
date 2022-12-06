@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 
 import { Menu, UnstyledButton } from '@mantine/core';
 import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconSend, IconTrash } from '@tabler/icons';
+import { openContextModal } from '@mantine/modals';
 
 const ICON_SIZE = 16;
 
@@ -24,7 +25,10 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Item icon={addOrEditIcon}>
           Add users
         </Menu.Item>
-        <Menu.Item icon={addOrEditIcon}>
+        <Menu.Item
+          icon={addOrEditIcon}
+          onClick={() => openContextModal({ modal: 'triggerSelection', innerProps: { sequence } })}
+        >
           {`${addOrEditText} trigger`}
         </Menu.Item>
         <Menu.Divider />

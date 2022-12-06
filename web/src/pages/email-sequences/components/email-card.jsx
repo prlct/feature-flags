@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
@@ -15,11 +14,9 @@ const EmailCard = (props) => {
     enabled,
     sent,
     unsubscribed,
-    delay,
-    id,
+    delayDays,
+    _id,
   } = email;
-
-  const { openEditEmailModal, toggleEmailEnabled, removeEmail } = useContext(EmailSequencesContext);
 
   const textColor = enabled ? 'gray' : 'dimmed';
 
@@ -27,7 +24,7 @@ const EmailCard = (props) => {
 
   return (
     <Stack style={{ position: 'relative' }}>
-      <DayBadge days={delay} />
+      <DayBadge days={delayDays} />
       <Card shadow="sm" withBorder sx={{ position: 'relative', color: textColor, borderRadius: 12 }}>
         <Stack spacing={0}>
           <Group position="apart">
@@ -39,14 +36,14 @@ const EmailCard = (props) => {
               <Menu.Dropdown>
                 <Menu.Item
                   icon={<IconPlayerPlay size={16} />}
-                  onClick={() => toggleEmailEnabled(email)}
+                  onClick={() => null}
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
-                <Menu.Item icon={<IconEdit size={16} />} onClick={() => openEditEmailModal(email)}>
+                <Menu.Item icon={<IconEdit size={16} />} onClick={() => null}>
                   Edit
                 </Menu.Item>
-                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => removeEmail(id)}>
+                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => null}>
                   Remove
                 </Menu.Item>
               </Menu.Dropdown>
@@ -85,8 +82,8 @@ const EmailCard = (props) => {
 
 EmailCard.propTypes = {
   email: PropTypes.shape({
-    id: PropTypes.string,
-    delay: PropTypes.number,
+    _id: PropTypes.string,
+    delayDays: PropTypes.number,
     name: PropTypes.string,
     enabled: PropTypes.bool,
     sent: PropTypes.number,
