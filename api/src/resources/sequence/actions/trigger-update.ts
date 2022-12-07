@@ -28,7 +28,7 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { sequenceId } = ctx.params;
   const trigger = ctx.validatedData;
-  console.log(ctx.validatedData);
+
   ctx.body = await sequenceService.updateOne({ _id: sequenceId }, (seq) => {
     return { ...seq, trigger: { ...seq.trigger, ...trigger } };
   });
