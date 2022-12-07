@@ -27,7 +27,7 @@ const SequenceMenu = ({ sequence }) => {
         </Menu.Item>
         <Menu.Item
           icon={addOrEditIcon}
-          onClick={() => openContextModal({ modal: 'triggerSelection', innerProps: { sequence } })}
+          onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}
         >
           {`${addOrEditText} trigger`}
         </Menu.Item>
@@ -40,6 +40,7 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Divider />
         <Menu.Item
           icon={<IconSend size={16} />}
+          onClick={() => openContextModal({ modal: 'addUsers', innerProps: { sequence } })}
         >
           Send a test sequence
         </Menu.Item>

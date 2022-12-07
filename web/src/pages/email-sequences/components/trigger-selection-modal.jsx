@@ -1,4 +1,16 @@
-import { UnstyledButton, Stack, Group, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
+import {
+  UnstyledButton,
+  Stack,
+  Group,
+  Select,
+  TextInput,
+  CopyButton,
+  Button,
+  Switch,
+  Text,
+  Checkbox,
+  NumberInput,
+} from '@mantine/core';
 import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
 import { useUpdateSequenceTrigger } from '../../../resources/email-sequence/email-sequence.api';
@@ -16,15 +28,15 @@ const DEFAULT_EVENTS = [
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence } = innerProps;
-  const [triggerName, setTriggerName] = useState('');
+  const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
   const [selectedEvent, setSelectedEvent] = useState(events[0].value);
 
   const [webhooksShown, setWebhooksShown] = useState(false);
-  const [triggerDescription, setTriggerDescription] = useState('');
-  const [allowRepeat, setAllowRepeat] = useState(false);
-  const [repeatDelay, setRepeatDelay] = useState(0);
+  const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
+  const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
+  const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
@@ -32,10 +44,18 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const updateSequenceTrigger = useUpdateSequenceTrigger(sequence._id).mutate;
 
   const handleTriggerSave = () => {
-    const data = { allowRepeat, repeatDelay, name: triggerName, eventKey: selectedEvent };
+    const data = {
+      allowRepeat,
+      repeatDelay,
+      name: triggerName,
+      eventKey: selectedEvent,
+      description: triggerDescription,
+    };
     if (sequence._id) {
       updateSequenceTrigger(data);
     }
+
+    context.closeModal(id);
   };
 
   return (
@@ -61,7 +81,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
         {webhooksShown && (
-          <Stack>
+          <Group>
             <Text>
               Authorized POST requests with firstName,
               lastName, email parameters can trigger sequence start/stop
@@ -86,7 +106,17 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
                 )}
               </CopyButton>
             </Group>
-          </Stack>
+          </Group>
+        )}
+        <Checkbox checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow users to repeat workflow" pt={16} />
+        {allowRepeat && (
+          <NumberInput
+            name="repeat delay"
+            label="days to repeat workflow"
+            value={repeatDelay}
+            onChange={setRepeatDelay}
+            min={0}
+          />
         )}
         <Group position="apart">
           <Button variant="subtle" onClick={() => context.closeModal(id)}>

@@ -12,6 +12,7 @@ const schema = Joi.object({
   eventKey: Joi.string(),
   allowRepeat: Joi.bool().default(false),
   repeatDelay: Joi.number().integer().min(0),
+  description: Joi.string(),
 });
 
 
@@ -21,6 +22,7 @@ type ValidatedData = {
   eventName?: string,
   allowRepeat: boolean,
   repeatDelay: number,
+  description: string,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {

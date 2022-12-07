@@ -1,8 +1,11 @@
 import { Box, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 
+import { useGetUsers } from 'resources/email-sequence/email-sequence.api';
+
 const UsersList = () => {
-  const users = [];
+  const { data } = useGetUsers();
+  const users = data?.results || [];
   const rows = users.map((user) => (
     <tr key={user.id}>
       <td>{user.email}</td>

@@ -17,6 +17,7 @@ import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 import TriggerSelectionModal from '../email-sequences/components/trigger-selection-modal';
 import EditEmailModal from '../email-sequences/components/edit-email-modal';
 import RenameSequenceModal from '../email-sequences/components/rename-sequence-modal';
+import AddUsersModal from '../email-sequences/components/add-users-modal';
 
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
@@ -29,6 +30,7 @@ const App = ({ Component, pageProps }) => {
     triggerSelection: TriggerSelectionModal,
     sequenceEmail: EditEmailModal,
     renameSequence: RenameSequenceModal,
+    addUsers: AddUsersModal,
   }), []);
 
   return (

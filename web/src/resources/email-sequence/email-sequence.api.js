@@ -5,6 +5,7 @@ import { apiService } from 'services';
 const pipelinesResource = '/pipelines';
 const sequencesResource = '/sequences';
 const sequenceEmailResource = '/sequence-emails';
+const pipelineUsersResource = '/pipeline-users';
 
 export const useGetPipelines = (env) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
@@ -143,4 +144,13 @@ export function useEmailRemove(emailId) {
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },
   });
+}
+
+export function useGetUsers() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const getUsers = () => apiService.get(`${pipelineUsersResource}`, { applicationId });
+
+  return useQuery([pipelineUsersResource], getUsers);
 }

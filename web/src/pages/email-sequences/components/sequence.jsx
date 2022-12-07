@@ -34,7 +34,7 @@ const Sequence = (props) => {
             <Group position="apart">
               <Text size="lg" weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
-                <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', innerProps: { sequence } })}>
+                <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}>
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
