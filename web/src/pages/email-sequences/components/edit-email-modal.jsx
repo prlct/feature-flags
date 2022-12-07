@@ -1,43 +1,43 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { Button, Group, Modal, NumberInput, Stack, TextInput } from '@mantine/core';
+import { Button, Group, NumberInput, Stack, TextInput } from '@mantine/core';
 import EmailEditor from 'components/emailEditor';
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
-import { EmailSequencesContext } from '../email-sequences-context';
+const EditEmailModal = ({ context, id, innerProps }) => {
+  const { email, sequenceId } = innerProps;
+  const [emailName, setEmailName] = useState(email?.name || '');
+  const [delayDays, setDelayDays] = useState(email?.delayDays || 1);
 
-const EditEmailModal = () => {
-  const {
-    emailModal,
-    closeEditEmailModal,
-    currentEmail,
-    saveCurrentEmail,
-  } = useContext(EmailSequencesContext);
-  const [emailName, setEmailName] = useState(currentEmail?.name || '');
-  const [delay, setDelay] = useState(1);
+  const [subject, setSubject] = useState(email?.subject || '');
+  const [body, setBody] = useState(email?.body || '');
 
-  useEffect(() => {
-    setEmailName(currentEmail?.name);
-  }, [currentEmail]);
+  const isEdit = !!email;
 
-  const saveEmail = () => {
-    currentEmail.name = emailName;
-    currentEmail.delay = delay;
-    saveCurrentEmail();
-    closeEditEmailModal();
+  const handleEmailUpdate = emailSequencesApi.useEmailUpdate(email?._id).mutate;
+  const handleEmailCreate = emailSequencesApi.useEmailCreate().mutate;
+
+  const onSave = () => {
+    const data = { ...email, delayDays, name: emailName, subject, body, sequenceId };
+    if (isEdit) {
+      handleEmailUpdate(data);
+    } else {
+      handleEmailCreate(data);
+    }
+
+    context.closeModal(id);
   };
 
   return (
-    <Modal opened={emailModal} onClose={closeEditEmailModal} size={800} title="Edit email" padding="xl">
-      <Stack>
-        <NumberInput value={delay} onChange={setDelay} label="Delay days" />
-        <TextInput label="Email name" value={emailName} onChange={(e) => setEmailName(e.target.value)} />
-        <EmailEditor />
-        <Group position="apart" mt={16}>
-          <Button variant="subtle" onClick={closeEditEmailModal}>Cancel</Button>
-          <Button color="blue" onClick={saveEmail}>Save</Button>
-        </Group>
-      </Stack>
-    </Modal>
+    <Stack>
+      <NumberInput value={delayDays} onChange={setDelayDays} label="Delay days" min={0} />
+      <TextInput label="Email name" value={emailName} onChange={(e) => setEmailName(e.target.value)} />
+      <EmailEditor subject={subject} body={body} setBody={setBody} setSubject={setSubject} />
+      <Group position="apart" mt={16}>
+        <Button variant="subtle" onClick={() => context.closeModal(id)}>Cancel</Button>
+        <Button onClick={onSave}>Save</Button>
+      </Group>
+    </Stack>
   );
 };
 

@@ -1,31 +1,21 @@
-import { Stack, TextInput, Modal, Text, Group, Button } from '@mantine/core';
-import { useContext } from 'react';
-import { EmailSequencesContext } from '../email-sequences-context';
+import { Stack, TextInput, Text, Group, Button } from '@mantine/core';
 
-const AddUsersModal = () => {
-  const { addUsersModal, closeAddUsersModal } = useContext(EmailSequencesContext);
+const AddUsersModal = ({ context, id, innerProps }) => {
+  const handleAddUser = () => null;
 
   return (
-    <Modal
-      opened={addUsersModal}
-      onClose={closeAddUsersModal}
-      title="Send test email"
-      withCloseButton={false}
-      centered
-    >
-      <Stack>
-        <Text size="lg" weight="bold">Add users</Text>
-        <TextInput label="email" placeholder="some@email" />
-        <Group position="apart">
-          <Button variant="subtle" onClick={closeAddUsersModal}>
-            Cancel
-          </Button>
-          <Button onClick={() => null}>
-            Save
-          </Button>
-        </Group>
-      </Stack>
-    </Modal>
+    <Stack>
+      <Text size="lg" weight="bold">Add users</Text>
+      <TextInput label="email" placeholder="some@email" type="email" />
+      <Group position="apart">
+        <Button variant="subtle" onClick={() => context.closeModal(id)}>
+          Cancel
+        </Button>
+        <Button onClick={handleAddUser}>
+          Save
+        </Button>
+      </Group>
+    </Stack>
   );
 };
 

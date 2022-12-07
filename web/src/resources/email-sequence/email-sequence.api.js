@@ -1,27 +1,156 @@
-import { useMutation } from 'react-query';
-import cloneDeep from 'lodash/cloneDeep';
+import { useMutation, useQuery } from 'react-query';
 import queryClient from 'query-client';
+import { apiService } from 'services';
 
-const resource = '/email-sequences';
+const pipelinesResource = '/pipelines';
+const sequencesResource = '/sequences';
+const sequenceEmailResource = '/sequence-emails';
+const pipelineUsersResource = '/pipeline-users';
 
-export function useAddPipeline() {
-  const createEmptyPipeline = (index) => {
-    const name = `Pipeline ${index}`;
-    return { name, sequences: [] };
-  };
+export const useGetPipelines = (env) => {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+  const getPipelines = async () => apiService.get(pipelinesResource, { env, applicationId });
+
+  return useQuery([pipelinesResource], getPipelines);
+};
+
+export function useAddPipeline(env) {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const data = queryClient.getQueryData([pipelinesResource]);
+  const currentPipelines = data?.results || [];
+
+  const createEmptyPipeline = async () => apiService.post(
+    `/applications/${applicationId}/pipelines`,
+    { name: `Pipeline ${currentPipelines.length + 1}`, env, applicationId },
+  );
 
   return useMutation(createEmptyPipeline, {
-    onMutate: async (item) => {
-      await queryClient.cancelQueries([resource]);
-
-      const emailSequences = queryClient.getQueryData([resource]);
-      const previousEmailSequences = cloneDeep(emailSequences);
-
-      emailSequences.pipelines.push(item);
-
-      queryClient.setQueryData([resource], emailSequences);
-
-      return { previousEmailSequences };
+    onSuccess: () => {
+      queryClient.invalidateQueries([pipelinesResource]);
     },
   });
+}
+
+export function useRemovePipeline() {
+  const removePipeline = async (id) => apiService.delete(
+    `${pipelinesResource}/${id}`,
+  );
+
+  return useMutation(removePipeline, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([pipelinesResource]);
+    },
+  });
+}
+
+export function useUpdatePipeline() {
+  const updatePipeline = ({ _id, name }) => apiService.put(`/pipelines/${_id}`, { name });
+
+  return useMutation(updatePipeline, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([pipelinesResource]);
+    },
+  });
+}
+
+export function useGetSequences(pipelineId) {
+  const getSequences = async () => apiService.get(sequencesResource, { pipelineId });
+
+  return useQuery([sequencesResource], getSequences);
+}
+
+export function useAddSequence(pipelineId) {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const addSequence = async ({ name, trigger = null }) => apiService.post(
+    `/applications/${applicationId}/sequences`,
+    { name, pipelineId, trigger },
+  );
+
+  return useMutation(addSequence, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
+export function useUpdateSequence() {
+  const updateSequences = ({ _id, name }) => apiService.put(`${sequencesResource}/${_id}`, { name });
+
+  return useMutation(updateSequences, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
+export function useUpdateSequenceTrigger(id) {
+  const updateTrigger = (data) => apiService.put(`${sequencesResource}/${id}/trigger`, data);
+
+  return useMutation(updateTrigger, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
+export function useGetSequenceEmails(sequenceId) {
+  const getEmails = async () => apiService.get(sequenceEmailResource, { sequenceId });
+
+  return useQuery([`${sequenceEmailResource}-${sequenceId}`], getEmails);
+}
+
+export function useEmailUpdate(emailId) {
+  const updateEmail = async (data) => apiService.put(`${sequenceEmailResource}/${emailId}`, data);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailCreate() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+  const updateEmail = async (data) => apiService.post(`/applications/${applicationId}${sequenceEmailResource}`, data);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailToggle(emailId) {
+  const updateEmail = async () => apiService.put(`${sequenceEmailResource}/${emailId}/toggle`);
+
+  return useMutation(updateEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useEmailRemove(emailId) {
+  const removeEmail = async () => apiService.delete(`${sequenceEmailResource}/${emailId}`);
+
+  return useMutation(removeEmail, {
+    onSuccess: (item) => {
+      queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
+    },
+  });
+}
+
+export function useGetUsers() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const getUsers = () => apiService.get(`${pipelineUsersResource}`, { applicationId });
+
+  return useQuery([pipelineUsersResource], getUsers);
 }

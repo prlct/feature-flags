@@ -1,10 +1,12 @@
-import { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
+import { openContextModal } from '@mantine/modals';
+
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
 import CardSettingsButton from './card-settings-button';
-import { EmailSequencesContext } from '../email-sequences-context';
 import DayBadge from './day-badge';
 
 const UNSUBSCRIBE_SHOW_THRESHOLD = 10;
@@ -16,19 +18,20 @@ const EmailCard = (props) => {
     enabled,
     sent,
     unsubscribed,
-    delay,
-    id,
+    delayDays,
+    _id,
   } = email;
-
-  const { openEditEmailModal, toggleEmailEnabled, removeEmail } = useContext(EmailSequencesContext);
 
   const textColor = enabled ? 'gray' : 'dimmed';
 
   const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
+  const handleEmailToggle = emailSequencesApi.useEmailToggle(_id).mutate;
+  const handleEmailRemove = emailSequencesApi.useEmailRemove(_id).mutate;
+
   return (
     <Stack style={{ position: 'relative' }}>
-      <DayBadge days={delay} />
+      <DayBadge days={delayDays} />
       <Card shadow="sm" withBorder sx={{ position: 'relative', color: textColor, borderRadius: 12 }}>
         <Stack spacing={0}>
           <Group position="apart">
@@ -40,14 +43,21 @@ const EmailCard = (props) => {
               <Menu.Dropdown>
                 <Menu.Item
                   icon={<IconPlayerPlay size={16} />}
-                  onClick={() => toggleEmailEnabled(email)}
+                  onClick={handleEmailToggle}
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
-                <Menu.Item icon={<IconEdit size={16} />} onClick={() => openEditEmailModal(email)}>
+                <Menu.Item
+                  icon={<IconEdit size={16} />}
+                  onClick={() => openContextModal({
+                    modal: 'sequenceEmail',
+                    innerProps: { email },
+                    size: 800,
+                  })}
+                >
                   Edit
                 </Menu.Item>
-                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={() => removeEmail(id)}>
+                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={handleEmailRemove}>
                   Remove
                 </Menu.Item>
               </Menu.Dropdown>
@@ -86,8 +96,8 @@ const EmailCard = (props) => {
 
 EmailCard.propTypes = {
   email: PropTypes.shape({
-    id: PropTypes.string,
-    delay: PropTypes.number,
+    _id: PropTypes.string,
+    delayDays: PropTypes.number,
     name: PropTypes.string,
     enabled: PropTypes.bool,
     sent: PropTypes.number,

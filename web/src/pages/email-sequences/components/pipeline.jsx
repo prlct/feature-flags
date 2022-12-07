@@ -1,44 +1,57 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
+import { openContextModal } from '@mantine/modals';
+
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
-import { EmailSequencesContext } from '../email-sequences-context';
 
 import { useStyles } from './styles';
 
-const Pipeline = ({ sequences }) => {
+const Pipeline = ({ id }) => {
+  const { data } = emailSequencesApi.useGetSequences(id);
+  const handleAddSequence = emailSequencesApi.useAddSequence(id).mutate;
+
+  const sequences = data || [];
+
   const padSeqTo = 2;
   const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
 
   const { classes } = useStyles();
 
-  const { openTriggerModal } = useContext(EmailSequencesContext);
-
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
-    .map(() => ({ id: Math.random() * 10000 }))), [paddedSequencesNumber]);
+    .map(() => ({ _id: `${Math.random() * 10000}` }))), [paddedSequencesNumber]);
 
   return (
     <ScrollArea>
       <Group align="stretch" noWrap>
         {sequences.map((sequence) => (
-          <Sequence key={sequence.id} sequence={sequence} />
+          <Sequence key={sequence._id} sequence={sequence} />
         ))}
         {emptySequences.map((seq) => (
-          <Paper key={seq.id} withBorder className={classes.pipeline}>
+          <Paper key={seq._id} withBorder className={classes.pipeline}>
             <Stack spacing={0}>
               <Group position="apart">
                 <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">New sequence</Text>
-                <SequenceMenu id={seq.id} sequence={seq} />
+                <SequenceMenu id={seq._id} sequence={seq} />
               </Group>
               <Space h="sm" />
               <Stack spacing="xs">
-                <Button variant="light" onClick={() => openTriggerModal(seq)} className={classes.addButton}>
+                <Button
+                  className={classes.addButton}
+                  variant="light"
+                  onClick={() => openContextModal({ modal: 'triggerSelection', title: 'Add trigger', innerProps: { pipelineId: id } })}
+                >
                   + Add trigger
                 </Button>
-                <Button variant="light" className={classes.addButton}>
+                <Button
+                  className={classes.addButton}
+                  variant="light"
+                  onClick={() => openContextModal({ modal: 'sequenceEmail', title: 'Create email', innerProps: {} })}
+                >
                   + Add email
                 </Button>
               </Stack>
@@ -47,7 +60,7 @@ const Pipeline = ({ sequences }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => openTriggerModal(null)}
+            onClick={() => handleAddSequence({ name: 'New sequence' })}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: 304 }}
@@ -61,11 +74,7 @@ const Pipeline = ({ sequences }) => {
 };
 
 Pipeline.propTypes = {
-  sequences: PropTypes.arrayOf(PropTypes.shape({})),
-};
-
-Pipeline.defaultProps = {
-  sequences: [],
+  id: PropTypes.string.isRequired,
 };
 
 export default Pipeline;

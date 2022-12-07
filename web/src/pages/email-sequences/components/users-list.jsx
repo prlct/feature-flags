@@ -1,28 +1,20 @@
-import { useContext } from 'react';
-
 import { Box, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 
-import { EmailSequencesContext } from '../email-sequences-context';
+import { useGetUsers } from 'resources/email-sequence/email-sequence.api';
 
 const UsersList = () => {
-  const { users, setUsers, pipelines } = useContext(EmailSequencesContext);
-
-  const getUserPipeline = (user) => {
-    const pipeline = pipelines.find((p) => p.id === user.pipeline);
-    const seq = pipeline.sequences.find((s) => s.id === user.sequence);
-    return `${pipeline.name} / ${seq.name}`;
-  };
-
+  const { data } = useGetUsers();
+  const users = data?.results || [];
   const rows = users.map((user) => (
     <tr key={user.id}>
       <td>{user.email}</td>
       <td>{user.firstName}</td>
       <td>{user.lastName}</td>
-      <td>{getUserPipeline(user)}</td>
+      <td>{(user.pipelineId)}</td>
       <td>
         <UnstyledButton
-          onClick={() => setUsers((prev) => prev.filter((u) => u.email !== user.email))}
+          onClick={() => null}
         >
           <IconTrash color="red" />
         </UnstyledButton>

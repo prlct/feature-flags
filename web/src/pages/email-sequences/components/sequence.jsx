@@ -1,24 +1,22 @@
 import PropTypes from 'prop-types';
 import { Group, Stack, Card, Text, Paper, Center, Menu, Button, ActionIcon } from '@mantine/core';
-import { useContext } from 'react';
 import { IconEdit } from '@tabler/icons';
+import { openContextModal } from '@mantine/modals';
+
+import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+
 import EmailCard from './email-card';
 import SequenceMenu from './sequence-menu';
 import SequenceProgressBar from './sequence-progress-bar';
-import { EmailSequencesContext } from '../email-sequences-context';
-
 import { useStyles } from './styles';
 
 const Sequence = (props) => {
   const { sequence } = props;
 
+  const { data } = emailSequencesApi.useGetSequenceEmails(sequence?._id);
+
+  const emails = data?.results || [];
   const { classes } = useStyles();
-
-  const { openTriggerModal, addEmptyEmail } = useContext(EmailSequencesContext);
-
-  const addEmail = () => {
-    addEmptyEmail(sequence);
-  };
 
   return (
     <Paper withBorder className={classes.pipeline}>
@@ -30,12 +28,13 @@ const Sequence = (props) => {
           <SequenceMenu sequence={sequence} />
         </Group>
         <SequenceProgressBar total={sequence.total} dropped={sequence.dropped} />
+        {sequence.trigger && (
         <Card shadow="sm" p="sm" radius="sm" withBorder mt={16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>
             <Group position="apart">
-              <Text size="lg" weight="bold">{sequence.trigger.name}</Text>
+              <Text size="lg" weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
-                <Menu.Target onClick={() => openTriggerModal(sequence)}>
+                <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}>
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -45,13 +44,18 @@ const Sequence = (props) => {
                 </Menu.Dropdown>
               </Menu>
             </Group>
-            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger.description}</Text>
+            <Text size={14} color="#797C80" style={{ lineHeight: '17px' }}>{sequence.trigger?.description}</Text>
           </Stack>
         </Card>
+        )}
         <Stack spacing={24}>
-          {sequence.emails.map((email) => <EmailCard key={email.name} email={email} />)}
+          {emails.map((email) => <EmailCard key={email.name} email={email} />)}
           <Center>
-            <Button variant="light" onClick={addEmail} className={classes.addButton}>
+            <Button
+              className={classes.addButton}
+              variant="light"
+              onClick={() => openContextModal({ modal: 'sequenceEmail', size: 800, innerProps: { sequenceId: sequence?._id } })}
+            >
               + Add email
             </Button>
           </Center>
@@ -63,7 +67,7 @@ const Sequence = (props) => {
 
 Sequence.propTypes = {
   sequence: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    _id: PropTypes.string.isRequired,
     name: PropTypes.string,
     completed: PropTypes.number,
     total: PropTypes.number,
