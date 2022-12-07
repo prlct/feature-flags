@@ -1,84 +1,64 @@
-import { UnstyledButton, Stack, Group, Modal, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
-import { useContext, useEffect, useState } from 'react';
+import {
+  UnstyledButton,
+  Stack,
+  Group,
+  Select,
+  TextInput,
+  CopyButton,
+  Button,
+  Switch,
+  Text,
+  Checkbox,
+  NumberInput,
+} from '@mantine/core';
+import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
-import { EmailSequencesContext } from '../email-sequences-context';
-
-const createTrigger = (name) => ({
-  id: `${Math.random() * 10000}`,
-  name,
-  description: '',
-  applicationId: '1',
-});
+import { useAddSequence, useUpdateSequenceTrigger } from 'resources/email-sequence/email-sequence.api';
 
 const DEFAULT_EVENTS = [
   {
     label: 'User sign up',
     value: 'user-sign-up',
   },
-  {
-    label: 'User creates feature flag',
-    value: 'user-creates-feature-flag',
-  },
 ];
 
-const TriggerSelectionModal = () => {
-  const {
-    triggerSelectionModal,
-    closeTriggerModal,
-    setTrigger,
-    currentSequence,
-    addSequence,
-  } = useContext(EmailSequencesContext);
-
-  const [triggerName, setTriggerName] = useState(currentSequence?.trigger?.name || '');
+const TriggerSelectionModal = ({ context, id, innerProps }) => {
+  const { sequence, pipelineId } = innerProps;
+  const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
-  const currentEvent = currentSequence?.trigger?.value || null;
-
-  const [selectedEvent, setSelectedEvent] = useState(currentEvent || events[0].value);
+  const [selectedEvent, setSelectedEvent] = useState(events[0].value);
 
   const [webhooksShown, setWebhooksShown] = useState(false);
-  const [triggerDescription, setTriggerDescription] = useState(currentSequence?.trigger?.description || '');
-
-  useEffect(() => {
-    if (currentSequence?.trigger) {
-      setTriggerName(currentSequence.trigger.name);
-      setTriggerDescription(currentSequence.trigger.description);
-    } else {
-      setTriggerDescription('');
-      setTriggerName('');
-    }
-  }, [currentSequence]);
+  const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
+  const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
+  const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
-  const onSave = () => {
-    if (!currentSequence) {
-      const trigger = createTrigger(triggerName);
-      addSequence(trigger);
+  const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
+  const createSequence = useAddSequence(pipelineId).mutate;
+
+  const handleTriggerSave = () => {
+    const data = {
+      allowRepeat,
+      repeatDelay,
+      name: triggerName,
+      eventKey: selectedEvent,
+      description: triggerDescription,
+    };
+    if (sequence?._id) {
+      updateSequenceTrigger(data);
     } else {
-      setTrigger(
-        {
-          ...currentSequence.trigger,
-          name: triggerName,
-          description: triggerDescription,
-          value: selectedEvent,
-        },
-      );
+      createSequence({ name: 'new sequence', trigger: data });
     }
-    closeTriggerModal();
+
+    context.closeModal(id);
   };
 
   return (
-    <Modal
-      opened={triggerSelectionModal}
-      onClose={closeTriggerModal}
-      title="Choose trigger"
-      withCloseButton
-      centered
-    >
-
+    <>
       <Select
         label="Select an event"
         data={events}
@@ -100,7 +80,7 @@ const TriggerSelectionModal = () => {
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
         {webhooksShown && (
-          <Stack>
+          <Group>
             <Text>
               Authorized POST requests with firstName,
               lastName, email parameters can trigger sequence start/stop
@@ -125,18 +105,28 @@ const TriggerSelectionModal = () => {
                 )}
               </CopyButton>
             </Group>
-          </Stack>
+          </Group>
+        )}
+        <Checkbox checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow users to repeat workflow" pt={16} />
+        {allowRepeat && (
+          <NumberInput
+            name="repeat delay"
+            label="days to repeat workflow"
+            value={repeatDelay}
+            onChange={setRepeatDelay}
+            min={0}
+          />
         )}
         <Group position="apart">
-          <Button variant="subtle" onClick={closeTriggerModal}>
+          <Button variant="subtle" onClick={() => context.closeModal(id)}>
             Cancel
           </Button>
-          <Button onClick={onSave}>
+          <Button onClick={handleTriggerSave}>
             Save
           </Button>
         </Group>
       </Stack>
-    </Modal>
+    </>
   );
 };
 

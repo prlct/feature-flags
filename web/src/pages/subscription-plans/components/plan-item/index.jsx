@@ -148,7 +148,6 @@ const PlanItem = (props) => {
 
         {!isCurrentSubscription && (
           <Button
-            sx={(theme) => ({ backgroundColor: theme.colors.blue[6] })}
             fullWidth
             onClick={onClick}
           >

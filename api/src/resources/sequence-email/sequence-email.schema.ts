@@ -10,6 +10,7 @@ const schema = Joi.object({
   enabled: Joi.bool().required(),
   subject: Joi.string(),
   body: Joi.string(),
+  sent: Joi.number().default(0),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

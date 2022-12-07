@@ -17,7 +17,7 @@ const formats = [
   'indent', 'align',
 ];
 
-const EmailEditor = () => {
+const EmailEditor = ({ subject, body, setSubject, setBody }) => {
   const { classes } = useStyles();
 
   const editorId = React.useMemo(() => `q${nanoid()}`, []);
@@ -34,7 +34,8 @@ const EmailEditor = () => {
         <div className={classes.subjectInputWrap}>
           <InputBase
             required
-              // value={subject}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
             className={classes.subjectInput}
             placeholder="Subject"
             variant="outlined"
@@ -45,8 +46,8 @@ const EmailEditor = () => {
       <div className={classes.quillWrap}>
         <ReactQuill
           theme="snow"
-            // value={value}
-            // onChange={setValue}
+          value={body}
+          onChange={setBody}
           placeholder="Body"
           formats={formats}
           modules={modules}
