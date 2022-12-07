@@ -87,6 +87,16 @@ export function useUpdateSequence() {
   });
 }
 
+export function useUpdateSequenceTrigger(id) {
+  const updateTrigger = (data) => apiService.put(`${sequencesResource}/${id}/trigger`, data);
+
+  return useMutation(updateTrigger, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
 export function useGetSequenceEmails(sequenceId) {
   const getEmails = async () => apiService.get(sequenceEmailResource, { sequenceId });
 

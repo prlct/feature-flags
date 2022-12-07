@@ -1,6 +1,7 @@
 import { UnstyledButton, Stack, Group, Select, TextInput, CopyButton, Button, Switch, Text } from '@mantine/core';
 import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
+import { useUpdateSequenceTrigger } from '../../../resources/email-sequence/email-sequence.api';
 
 const DEFAULT_EVENTS = [
   {
@@ -14,6 +15,7 @@ const DEFAULT_EVENTS = [
 ];
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
+  const { sequence } = innerProps;
   const [triggerName, setTriggerName] = useState('');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
@@ -21,12 +23,19 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState('');
+  const [allowRepeat, setAllowRepeat] = useState(false);
+  const [repeatDelay, setRepeatDelay] = useState(0);
 
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
+  const updateSequenceTrigger = useUpdateSequenceTrigger(sequence._id).mutate;
+
   const handleTriggerSave = () => {
-    ???
+    const data = { allowRepeat, repeatDelay, name: triggerName, eventKey: selectedEvent };
+    if (sequence._id) {
+      updateSequenceTrigger(data);
+    }
   };
 
   return (
