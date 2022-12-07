@@ -18,6 +18,7 @@ import TriggerSelectionModal from '../email-sequences/components/trigger-selecti
 import EditEmailModal from '../email-sequences/components/edit-email-modal';
 import RenameSequenceModal from '../email-sequences/components/rename-sequence-modal';
 import AddUsersModal from '../email-sequences/components/add-users-modal';
+import SendTestEmailModal from '../email-sequences/components/send-test-email-modal';
 
 import PageConfig from './PageConfig';
 import CrispChat from './CrispChat';
@@ -31,6 +32,7 @@ const App = ({ Component, pageProps }) => {
     sequenceEmail: EditEmailModal,
     renameSequence: RenameSequenceModal,
     addUsers: AddUsersModal,
+    sendTestEmail: SendTestEmailModal,
   }), []);
 
   return (

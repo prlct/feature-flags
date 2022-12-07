@@ -22,7 +22,7 @@ const SequenceMenu = ({ sequence }) => {
         <UnstyledButton p={0} variant="subtle"><IconDots color="gray" /></UnstyledButton>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item icon={addOrEditIcon}>
+        <Menu.Item icon={addOrEditIcon} onClick={() => openContextModal({ modal: 'addUsers', innerProps: { sequence } })}>
           Add users
         </Menu.Item>
         <Menu.Item
@@ -40,7 +40,7 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Divider />
         <Menu.Item
           icon={<IconSend size={16} />}
-          onClick={() => openContextModal({ modal: 'addUsers', innerProps: { sequence } })}
+          onClick={() => openContextModal({ modal: 'sendTestEmail', innerProps: { sequence } })}
         >
           Send a test sequence
         </Menu.Item>
