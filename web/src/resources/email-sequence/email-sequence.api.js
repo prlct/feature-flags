@@ -66,9 +66,9 @@ export function useAddSequence(pipelineId) {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
 
-  const addSequence = async (name) => apiService.post(
+  const addSequence = async ({ name, trigger = null }) => apiService.post(
     `/applications/${applicationId}/sequences`,
-    { name, pipelineId },
+    { name, pipelineId, trigger },
   );
 
   return useMutation(addSequence, {

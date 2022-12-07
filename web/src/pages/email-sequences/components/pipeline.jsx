@@ -43,7 +43,7 @@ const Pipeline = ({ id }) => {
                 <Button
                   className={classes.addButton}
                   variant="light"
-                  onClick={() => openContextModal({ modal: 'triggerSelection', title: 'Add trigger', innerProps: {} })}
+                  onClick={() => openContextModal({ modal: 'triggerSelection', title: 'Add trigger', innerProps: { pipelineId: id } })}
                 >
                   + Add trigger
                 </Button>
@@ -60,7 +60,7 @@ const Pipeline = ({ id }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => handleAddSequence('New sequence')}
+            onClick={() => handleAddSequence({ name: 'New sequence' })}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: 304 }}

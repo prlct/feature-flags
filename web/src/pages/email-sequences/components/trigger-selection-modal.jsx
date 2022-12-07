@@ -13,21 +13,17 @@ import {
 } from '@mantine/core';
 import { useState } from 'react';
 import { IconCopy } from '@tabler/icons';
-import { useUpdateSequenceTrigger } from '../../../resources/email-sequence/email-sequence.api';
+import { useAddSequence, useUpdateSequenceTrigger } from 'resources/email-sequence/email-sequence.api';
 
 const DEFAULT_EVENTS = [
   {
     label: 'User sign up',
     value: 'user-sign-up',
   },
-  {
-    label: 'User creates feature flag',
-    value: 'user-creates-feature-flag',
-  },
 ];
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
-  const { sequence } = innerProps;
+  const { sequence, pipelineId } = innerProps;
   const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const [events, setEvents] = useState(DEFAULT_EVENTS);
 
@@ -41,7 +37,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const startURL = `${selectedEvent}/start`;
   const stopURL = `${selectedEvent}/stop`;
 
-  const updateSequenceTrigger = useUpdateSequenceTrigger(sequence._id).mutate;
+  const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
+  const createSequence = useAddSequence(pipelineId).mutate;
 
   const handleTriggerSave = () => {
     const data = {
@@ -51,8 +48,10 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       eventKey: selectedEvent,
       description: triggerDescription,
     };
-    if (sequence._id) {
+    if (sequence?._id) {
       updateSequenceTrigger(data);
+    } else {
+      createSequence({ name: 'new sequence', trigger: data });
     }
 
     context.closeModal(id);
