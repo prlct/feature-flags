@@ -10,6 +10,14 @@ const AddUsersModal = ({ context, id, innerProps }) => {
   const handleAddUser = useAddUsers(sequenceId).mutate;
   const [email, setEmail] = useState('');
 
+  const addUser = ({ email, sequenceId }) => {
+    handleAddUser({ email, sequenceId }, {
+      onSuccess: () => {
+        context.closeModal(id);
+      },
+    });
+  };
+
   return (
     <Stack>
       <Text size="lg" weight="bold">Add users</Text>
@@ -24,7 +32,7 @@ const AddUsersModal = ({ context, id, innerProps }) => {
         <Button variant="subtle" onClick={() => context.closeModal(id)}>
           Cancel
         </Button>
-        <Button onClick={() => handleAddUser({ email, sequenceId })}>
+        <Button onClick={() => addUser({ email, sequenceId })}>
           Save
         </Button>
       </Group>

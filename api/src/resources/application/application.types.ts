@@ -21,6 +21,10 @@ export type Application = {
     accessToken: string,
     refreshToken: string,
   },
+  events?: {
+    label: string,
+    value: string,
+  }[],
   envs: {
     [Env.DEVELOPMENT]: EnvData,
     [Env.STAGING]: EnvData,

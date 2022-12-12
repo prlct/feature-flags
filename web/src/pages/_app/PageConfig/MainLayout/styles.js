@@ -41,4 +41,7 @@ export const useStyles = createStyles(({ colors }) => ({
     fontWeight: 700,
     color: colors.gray[9],
   },
+  pipelineActiveTab: {
+    backgroundColor: colors.gray[0],
+  },
 }));

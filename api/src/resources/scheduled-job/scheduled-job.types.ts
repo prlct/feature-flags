@@ -12,7 +12,7 @@ export type ScheduledJob = {
   type: string,
   data: ScheduledEmailOptions,
   status: ScheduledJobStatus,
-  result: string,
+  result?: string,
 
   scheduledDate: Date,
 

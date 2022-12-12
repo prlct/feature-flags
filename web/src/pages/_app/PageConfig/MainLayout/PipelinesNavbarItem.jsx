@@ -27,7 +27,7 @@ const PipelinesNavbarItem = () => {
       variant="filled"
       styles={{
         item: { backgroundColor: 'transparent !important' },
-        control: { padding: 0 },
+        control: { padding: 0, color: '#424242' },
       }}
     >
       <Accordion.Item value="pipelines">
@@ -59,10 +59,12 @@ const PipelinesNavbarItem = () => {
                 href={item.route}
                 underline={false}
                 type="router"
+                pl={8}
                 style={{ width: '100%' }}
               >
                 <Group
                   direction="row"
+                  p={8}
                   className={[
                     classes.tabItem,
                     item.route === router.route && classes.pipelineActiveTab,

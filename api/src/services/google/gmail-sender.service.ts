@@ -18,7 +18,7 @@ const encodeEmail = (str: string) => Buffer.from(str)
   .replace(/\//g, '_');
 
 const encodeEmailString = (mailOptions: MailOptions) => {
-  return ['Content-Type: text/plain; charset="UTF-8"\n',
+  return ['Content-Type: text/html; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
     'Content-Transfer-Encoding: 7bit\n',
     'to: ', mailOptions.to, '\n',

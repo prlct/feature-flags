@@ -35,6 +35,8 @@ const getHandler = (job: ScheduledJob) => {
             { ...builtEmail, to: job.data.targetEmail, from: app.gmailCredentials.email },
           );
 
+          await sequenceEmailService.atomic.updateOne({ _id: job.data.emailId }, {  $inc: { sent: 1 } });
+
           await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
             return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
           });

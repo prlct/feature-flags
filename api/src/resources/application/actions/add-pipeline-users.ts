@@ -1,11 +1,14 @@
 import { AppKoaContext, AppRouter } from 'types';
 import Joi from 'joi';
-import sequenceService from 'resources/sequence/sequence.service';
 import { validateMiddleware } from 'middlewares';
 
+import sequenceService from 'resources/sequence/sequence.service';
+import pipelineService from 'resources/pipeline/pipeline.service';
+import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
+
 import applicationAuth from '../middlewares/application-auth.middleware';
-import pipelineService from '../../pipeline/pipeline.service';
-import pipelineUserService from '../../pipeline-user/pipeline-user.service';
 
 const schema = Joi.object({
   sequenceId: Joi.string().required(),
@@ -45,6 +48,10 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     ctx.throw(400, 'User already in an active pipeline');
   }
 
+  const { results: [firstEmail] } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false } });
+
+  await scheduledJobService.addEmailSend(firstEmail, email);
+
   const createdUser = await pipelineUserService.insertOne({
     email,
     applicationId,
@@ -57,8 +64,6 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       name: sequence.name,
     },
   });
-
-  // todo: create scheduled job to send first/provided email
 
   ctx.body = createdUser;
 };
