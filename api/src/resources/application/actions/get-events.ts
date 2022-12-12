@@ -7,7 +7,7 @@ async function handler(ctx: AppKoaContext) {
   const { applicationId, env } = ctx.params;
 
   const events = await applicationService.findOne({ _id: applicationId }, { projection: { events: 1 } });
-  console.log(events);
+
   ctx.body = events;
 }
 
