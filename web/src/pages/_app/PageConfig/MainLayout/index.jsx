@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import router from 'next/router';
-import { AppShell, Container, Group, Navbar, Text, ActionIcon } from '@mantine/core';
+import { AppShell, Container, Group, Navbar, Text, ActionIcon, Accordion } from '@mantine/core';
 import { IconFlag, IconFilter, IconApiApp, IconUsers } from '@tabler/icons';
 
 import { PriceIcon } from 'public/icons';
@@ -14,6 +14,7 @@ import { LogoDarkImage } from 'public/images';
 import Header from './Header';
 
 import { useStyles } from './styles';
+import PipelinesNavbarItem from './PipelinesNavbarItem';
 
 const ASIDE_WIDTH = 255;
 
@@ -28,6 +29,7 @@ const navbarTabs = [{
   label: routes.navbarTabs.ACTIVATION_PIPELINES,
   path: routes.route.emailSequences,
   icon: <IconFilter />,
+  component: PipelinesNavbarItem,
 },
 {
   label: routes.navbarTabs.API_KEYS,
@@ -79,6 +81,10 @@ const MainLayout = ({ children }) => {
               const isTabActive = configurations.find(
                 (item) => item.route === router.route && item.navbarTab === tab.label,
               );
+
+              if (tab.component) {
+                return <tab.component />;
+              }
 
               return (
                 <Link

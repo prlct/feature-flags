@@ -6,12 +6,13 @@ import { useGetUsers } from 'resources/email-sequence/email-sequence.api';
 const UsersList = () => {
   const { data } = useGetUsers();
   const users = data?.results || [];
-  const rows = users.map((user) => (
+
+  const rows = users.length > 0 ? users.map((user) => (
     <tr key={user.id}>
       <td>{user.email}</td>
       <td>{user.firstName}</td>
       <td>{user.lastName}</td>
-      <td>{(user.pipelineId)}</td>
+      <td>{`${user.pipeline.name} / ${user.sequence.name}`}</td>
       <td>
         <UnstyledButton
           onClick={() => null}
@@ -20,7 +21,7 @@ const UsersList = () => {
         </UnstyledButton>
       </td>
     </tr>
-  ));
+  )) : <Text mt={16}>No users found</Text>;
 
   return (
     <Box>

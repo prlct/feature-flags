@@ -25,6 +25,7 @@ export const route = {
   admins: '/admins',
   featureFlag: '/feature-flags/[id]',
   emailSequences: '/email-sequences',
+  pipelineUsers: '/pipeline-users',
   apiKey: '/api-key',
   members: '/members',
   subscriptionPlans: '/subscription-plans',
@@ -115,6 +116,11 @@ export const configuration = {
     scope: scope.PRIVATE,
     layout: layout.MAIN,
     navbarTab: navbarTabs.ACTIVATION_PIPELINES,
+  },
+  pipelineUsers: {
+    route: route.pipelineUsers,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
   },
   apiKey: {
     route: route.apiKey,
