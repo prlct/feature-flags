@@ -48,9 +48,9 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     ctx.throw(400, 'User already in an active pipeline');
   }
 
-  const { results: [firstEmail] } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false } });
+  const { results } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false } });
 
-  await scheduledJobService.addEmailSend(firstEmail, email);
+  await scheduledJobService.addEmailsSend(results, email);
 
   const createdUser = await pipelineUserService.insertOne({
     email,
