@@ -24,4 +24,22 @@ const addEmailSend = async (sequenceEmail: SequenceEmail, email: string) => {
   await service.insertOne(job);
 };
 
-export default Object.assign({ addEmailSend }, service);
+const addEmailsSend = async (sequenceEmails: SequenceEmail[], email: string) => {
+
+  const jobs = sequenceEmails.map((sequenceEmail) => (
+    {
+      applicationId: sequenceEmail.applicationId,
+      type: ScheduledJobType.EMAIL_SEQUENCE_SEND,
+      data: {
+        emailId: sequenceEmail._id,
+        targetEmail: email,
+      },
+      status: ScheduledJobStatus.PENDING,
+      scheduledDate: moment().add(sequenceEmail.delayDays, 'days').toDate(),
+    }
+  ));
+
+  await service.insertMany(jobs);
+};
+
+export default Object.assign({ addEmailSend, addEmailsSend }, service);

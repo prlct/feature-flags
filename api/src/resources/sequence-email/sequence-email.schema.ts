@@ -5,7 +5,7 @@ const schema = Joi.object({
 
   applicationId: Joi.string().required(),
   sequenceId: Joi.string().required(),
-  delayDays: Joi.number().positive().integer(),
+  delayDays: Joi.number().integer(),
   name: Joi.string().required(),
   enabled: Joi.bool().required(),
   subject: Joi.string(),
