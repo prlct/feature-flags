@@ -4,7 +4,7 @@ import applicationAuth from '../middlewares/application-auth.middleware';
 import applicationService from '../application.service';
 
 async function handler(ctx: AppKoaContext) {
-  const { applicationId, env } = ctx.params;
+  const { applicationId } = ctx.params;
 
   const events = await applicationService.findOne({ _id: applicationId }, { projection: { events: 1 } });
 

@@ -1,4 +1,4 @@
-import { Accordion, ActionIcon, Group, Text } from '@mantine/core';
+import { Accordion, ActionIcon, Divider, Group, Text } from '@mantine/core';
 
 import { Link } from 'components';
 import * as routes from 'routes';
@@ -45,13 +45,14 @@ const PipelinesNavbarItem = () => {
             </ActionIcon>
           )}
         >
-          Activation pipelines
+          <Text size="sm">Activation&nbsp;pipelines</Text>
         </Accordion.Control>
         <Accordion.Panel>
           <Group
             pl={16}
             direction="column"
             position="left"
+            spacing={0}
           >
             {items.map((item) => (
               <Link
@@ -59,21 +60,17 @@ const PipelinesNavbarItem = () => {
                 href={item.route}
                 underline={false}
                 type="router"
-                pl={8}
+                pl={4}
                 style={{ width: '100%' }}
               >
-                <Group
-                  direction="row"
-                  p={8}
-                  className={[
-                    classes.tabItem,
-                    item.route === router.route && classes.pipelineActiveTab,
-                  ]}
-                >
-                  <Text className={[
-                    classes.label,
-                    item.route === router.route && classes.activeLabel,
-                  ]}
+                <Group style={{ height: '32px' }}>
+                  <Divider orientation="vertical" size="xs" />
+                  <Text
+                    size="sm"
+                    className={[
+                      classes.label,
+                      item.route === router.route && classes.activeLabel,
+                    ]}
                   >
                     {item.name}
                   </Text>

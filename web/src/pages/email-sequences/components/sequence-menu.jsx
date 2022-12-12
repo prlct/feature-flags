@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 
 import { Menu, UnstyledButton } from '@mantine/core';
-import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconSend, IconTrash } from '@tabler/icons';
+import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconTrash } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
-import { useRemoveSequence } from '../../../resources/email-sequence/email-sequence.api';
+import { useRemoveSequence } from 'resources/email-sequence/email-sequence.api';
 
 const ICON_SIZE = 16;
 
@@ -50,12 +50,6 @@ const SequenceMenu = ({ sequence }) => {
         )}
 
         <Menu.Divider />
-        <Menu.Item
-          icon={<IconSend size={16} />}
-          onClick={() => openContextModal({ modal: 'sendTestEmail', innerProps: { sequence } })}
-        >
-          Send a test sequence
-        </Menu.Item>
       </Menu.Dropdown>
     </Menu>
   );

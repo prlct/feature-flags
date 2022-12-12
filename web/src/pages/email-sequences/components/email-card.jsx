@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { IconEdit, IconPlayerPlay, IconTrash } from '@tabler/icons';
+import { IconEdit, IconPlayerPlay, IconPlayerStop, IconSend, IconTrash } from '@tabler/icons';
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
 import { openContextModal } from '@mantine/modals';
@@ -42,7 +42,7 @@ const EmailCard = (props) => {
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item
-                  icon={<IconPlayerPlay size={16} />}
+                  icon={enabled ? <IconPlayerStop size={16} /> : <IconPlayerPlay size={16} />}
                   onClick={handleEmailToggle}
                 >
                   {enabled ? 'Disable' : 'Enable'}
@@ -59,6 +59,12 @@ const EmailCard = (props) => {
                 </Menu.Item>
                 <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={handleEmailRemove}>
                   Remove
+                </Menu.Item>
+                <Menu.Item
+                  icon={<IconSend size={16} />}
+                  onClick={() => openContextModal({ modal: 'sendTestEmail', innerProps: { email } })}
+                >
+                  Send a test email
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>

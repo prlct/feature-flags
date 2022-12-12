@@ -1,7 +1,7 @@
 import { TextInput, Button, Group } from '@mantine/core';
 
 const SendTestEmailModal = ({ context, id, innerProps }) => {
-  const { sequence } = innerProps;
+  const { email } = innerProps;
 
   return (
     <>
