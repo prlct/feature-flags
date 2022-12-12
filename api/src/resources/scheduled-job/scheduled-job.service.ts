@@ -26,7 +26,7 @@ const addEmailSend = async (sequenceEmail: SequenceEmail, email: string) => {
 
 const addEmailsSend = async (sequenceEmails: SequenceEmail[], email: string) => {
 
-  const jobs = sequenceEmails.map((sequenceEmail) => (
+  const jobs = sequenceEmails.map((sequenceEmail, index) => (
     {
       applicationId: sequenceEmail.applicationId,
       type: ScheduledJobType.EMAIL_SEQUENCE_SEND,
@@ -35,7 +35,7 @@ const addEmailsSend = async (sequenceEmails: SequenceEmail[], email: string) => 
         targetEmail: email,
       },
       status: ScheduledJobStatus.PENDING,
-      scheduledDate: moment().add(sequenceEmail.delayDays, 'days').toDate(),
+      scheduledDate: moment().add(Math.max(10, 10 * index), 'seconds').add(sequenceEmail.delayDays, 'days').toDate(),
     }
   ));
 
