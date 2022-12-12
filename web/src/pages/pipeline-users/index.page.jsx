@@ -1,21 +1,23 @@
 import { Box, Table, Text, UnstyledButton } from '@mantine/core';
 import { IconTrash } from '@tabler/icons';
 
-import { useGetUsers } from 'resources/email-sequence/email-sequence.api';
+import { useGetUsers, useRemoveUser } from 'resources/email-sequence/email-sequence.api';
 
 const UsersList = () => {
   const { data } = useGetUsers();
   const users = data?.results || [];
 
+  const removeUserHandler = useRemoveUser().mutate;
+
   const rows = users.length > 0 ? users.map((user) => (
-    <tr key={user.id}>
+    <tr key={user._id}>
       <td>{user.email}</td>
       <td>{user.firstName}</td>
       <td>{user.lastName}</td>
       <td>{`${user.pipeline.name} / ${user.sequence.name}`}</td>
       <td>
         <UnstyledButton
-          onClick={() => null}
+          onClick={() => removeUserHandler(user._id)}
         >
           <IconTrash color="red" />
         </UnstyledButton>

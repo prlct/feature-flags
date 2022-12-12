@@ -154,3 +154,35 @@ export function useGetUsers() {
 
   return useQuery([pipelineUsersResource], getUsers);
 }
+
+export function useAddUsers() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const addUsers = ({ email, sequenceId }) => apiService.post(
+    `/applications/${applicationId}/pipeline-users`,
+    { email, sequenceId },
+  );
+
+  return useMutation(addUsers, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
+export function useRemoveUser() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const removeUser = (userId) => apiService.delete(
+    `${pipelineUsersResource}/${userId}`,
+    { applicationId },
+  );
+
+  return useMutation(removeUser, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([pipelineUsersResource]);
+    },
+  });
+}

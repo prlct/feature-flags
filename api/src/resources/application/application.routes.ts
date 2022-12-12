@@ -6,6 +6,7 @@ import getFeatures from './actions/get-features';
 import createPipeline from './actions/create-pipeline';
 import createSequence from './actions/create-sequence';
 import createSequenceEmail from './actions/create-sequence-email';
+import addPipelineUsers from './actions/add-pipeline-users';
 
 const privateRoutes = routeUtil.getRoutes([
   createFeature,
@@ -14,6 +15,7 @@ const privateRoutes = routeUtil.getRoutes([
   createSequenceEmail,
   getApplication,
   getFeatures,
+  addPipelineUsers,
 ]);
 
 export default {
