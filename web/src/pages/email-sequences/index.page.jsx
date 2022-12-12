@@ -24,7 +24,7 @@ const EmailSequences = () => {
     isLoading,
   } = emailSequencesApi.useGetPipelines(env);
   const pipelines = data?.results || [];
-  const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0] || null);
+  const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || null);
 
   const defaultTab = pipelines?.[0] || null;
 

@@ -186,3 +186,37 @@ export function useRemoveUser() {
     },
   });
 }
+
+export function useGetApplicationEvents() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const getEvents = () => apiService.get(`/applications/${applicationId}/events`);
+
+  return useQuery(['pipeline-events'], getEvents);
+}
+
+export function useAddApplicationEvent() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const addEvent = (event) => apiService.post(`/applications/${applicationId}/events`, event);
+
+  return useMutation(addEvent, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pipeline-events']);
+    },
+  });
+}
+
+export function useRemoveSequence() {
+  const removeSequence = async (id) => apiService.delete(
+    `${sequencesResource}/${id}`,
+  );
+
+  return useMutation(removeSequence, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}

@@ -10,24 +10,25 @@ import {
   Text,
   Checkbox,
   NumberInput,
+  Box,
 } from '@mantine/core';
 import { useState } from 'react';
-import { IconCopy } from '@tabler/icons';
-import { useAddSequence, useUpdateSequenceTrigger } from 'resources/email-sequence/email-sequence.api';
+import { IconCopy, IconPlus } from '@tabler/icons';
+import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
 
-const DEFAULT_EVENTS = [
-  {
-    label: 'User sign up',
-    value: 'user-sign-up',
-  },
-];
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
   const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
-  const [events, setEvents] = useState(DEFAULT_EVENTS);
+  const { data: fetchedEvents } = useGetApplicationEvents();
+  const createApplicationEvent = useAddApplicationEvent().mutate;
 
-  const [selectedEvent, setSelectedEvent] = useState(events[0].value);
+  const events = fetchedEvents?.events || [];
+
+  const [selectedEvent, setSelectedEvent] = useState(sequence?.trigger?.eventKey || events?.[0]?.value);
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [creatingEventName, setCreatingEventName] = useState('');
+  const [creatingEventKey, setCreatingEventKey] = useState('');
 
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
@@ -57,23 +58,35 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     context.closeModal(id);
   };
 
+  const saveEvent = () => {
+    createApplicationEvent({ label: creatingEventName, value: creatingEventKey });
+    setCreatingEvent(false);
+  };
+
   return (
     <>
       <Select
         label="Select an event"
         data={events}
         placeholder="Select event"
-        creatable
-        searchable
         value={selectedEvent}
-        getCreateLabel={(query) => `+ Create ${query}`}
-        onCreate={(query) => {
-          const item = { value: query, label: query };
-          setEvents((current) => [...current, item]);
-          return item;
-        }}
         onChange={setSelectedEvent}
       />
+      <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
+        <Group spacing={0}>
+          <IconPlus color="#734ab7" />
+          <Text color="primary">Add new event</Text>
+        </Group>
+      </UnstyledButton>
+      {creatingEvent && (
+        <Stack spacing={0} m="0 16px 16px 16px">
+          <TextInput label="Event name" value={creatingEventName} onChange={(e) => setCreatingEventName(e.target.value)} />
+          <TextInput label="Event key" value={creatingEventKey} onChange={(e) => setCreatingEventKey(e.target.value)} />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button mt={4} onClick={saveEvent} styles={{ maxWidth: '80px' }}>Save</Button>
+          </Box>
+        </Stack>
+      )}
 
       <TextInput label="Trigger name" value={triggerName} onChange={(e) => setTriggerName(e.target.value)} />
       <TextInput label="Trigger description" value={triggerDescription} onChange={(e) => setTriggerDescription(e.target.value)} />

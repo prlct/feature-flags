@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Menu, UnstyledButton } from '@mantine/core';
 import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconSend, IconTrash } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
+import { useRemoveSequence } from '../../../resources/email-sequence/email-sequence.api';
 
 const ICON_SIZE = 16;
 
@@ -15,6 +16,8 @@ const SequenceMenu = ({ sequence }) => {
   const startStopIcon = sequence?.enabled
     ? <IconPlayerStop size={ICON_SIZE} />
     : <IconPlayerPlay size={ICON_SIZE} />;
+
+  const removeSequenceHandler = useRemoveSequence().mutate;
 
   return (
     <Menu position="bottom" transition="pop" withinPortal disabled={!isEdit}>
@@ -36,7 +39,16 @@ const SequenceMenu = ({ sequence }) => {
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item icon={startStopIcon}>{`${startOrStopText} sequence`}</Menu.Item>
-        <Menu.Item icon={<IconTrash size={16} color="red" />}>Delete sequence</Menu.Item>
+
+        {sequence?._id && (
+        <Menu.Item
+          icon={<IconTrash size={16} color="red" />}
+          onClick={() => removeSequenceHandler(sequence?._id)}
+        >
+          Delete sequence
+        </Menu.Item>
+        )}
+
         <Menu.Divider />
         <Menu.Item
           icon={<IconSend size={16} />}

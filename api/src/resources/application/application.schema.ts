@@ -24,6 +24,10 @@ const schema = Joi.object({
     accessToken: Joi.string().allow(''),
     refreshToken: Joi.string().allow(''),
   }).allow(null),
+  events: Joi.array().items({
+    label: Joi.string().required(),
+    value: Joi.string().required(),
+  }).allow(null),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
