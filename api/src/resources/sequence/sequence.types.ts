@@ -1,5 +1,5 @@
 export type Sequence = {
-  id: string,
+  _id: string,
   name: string,
   applicationId: string,
   pipelineId: string,

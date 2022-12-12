@@ -1,17 +1,30 @@
+import { useState } from 'react';
 import { Stack, TextInput, Text, Group, Button } from '@mantine/core';
 
+import { useAddUsers } from 'resources/email-sequence/email-sequence.api';
+
 const AddUsersModal = ({ context, id, innerProps }) => {
-  const handleAddUser = () => null;
+  const { sequence } = innerProps;
+
+  const sequenceId = sequence._id;
+  const handleAddUser = useAddUsers(sequenceId).mutate;
+  const [email, setEmail] = useState('');
 
   return (
     <Stack>
       <Text size="lg" weight="bold">Add users</Text>
-      <TextInput label="email" placeholder="some@email" type="email" />
+      <TextInput
+        label="email"
+        placeholder="some@email.com"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.currentTarget.value)}
+      />
       <Group position="apart">
         <Button variant="subtle" onClick={() => context.closeModal(id)}>
           Cancel
         </Button>
-        <Button onClick={handleAddUser}>
+        <Button onClick={() => handleAddUser({ email, sequenceId })}>
           Save
         </Button>
       </Group>

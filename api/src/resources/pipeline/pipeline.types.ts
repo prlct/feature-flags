@@ -1,5 +1,5 @@
 export type Pipeline = {
-  id: string,
+  _id: string,
   name: string,
   applicationId: string,
   env: string,

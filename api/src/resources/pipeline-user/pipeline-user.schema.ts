@@ -7,8 +7,16 @@ const schema = Joi.object({
   firstName: Joi.string().trim(),
   lastName: Joi.string().trim(),
   email: Joi.string().email().required(),
-  pipeline: Joi.string(),
-  sequence: Joi.string(),
+  pipeline: Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+  }).default(null),
+  sequence: Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+    lastEmailId: Joi.string(),
+    pendingEmailId: Joi.string(),
+  }).default(null),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
