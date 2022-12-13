@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Container, Tabs, Text } from '@mantine/core';
+import { Container, LoadingOverlay, Tabs, Text } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
@@ -19,9 +19,8 @@ const EmailSequences = () => {
   });
   const {
     data,
-    refetch,
-    isRefetching,
     isLoading,
+    isFetching,
   } = emailSequencesApi.useGetPipelines(env);
   const pipelines = data?.results || [];
   const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || null);
@@ -37,11 +36,21 @@ const EmailSequences = () => {
     setOpenedPipeline(newTabName);
   };
 
-  const handleAddPipeline = emailSequencesApi.useAddPipeline(env).mutate;
-  const handleRemovePipeline = emailSequencesApi.useRemovePipeline().mutate;
+  const {
+    mutate: handleAddPipeline,
+    isLoading: isCreateInProgress,
+  } = emailSequencesApi.useAddPipeline(env);
+
+  const {
+    isLoading: isRemoveInProgress,
+    mutate: handleRemovePipeline,
+  } = emailSequencesApi.useRemovePipeline();
+
+  const isLoaderVisible = isCreateInProgress || isRemoveInProgress || isLoading || isFetching;
 
   return (
     <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
+      <LoadingOverlay visible={isLoaderVisible} overlayBlur={2} />
       <Tabs
         defaultValue={defaultTab}
         value={openedPipeline}

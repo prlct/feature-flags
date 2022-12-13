@@ -15,7 +15,7 @@ const schema = Joi.object({
     allowRepeat: Joi.bool().default(false),
     repeatDelay: Joi.number().min(0).integer(),
     description: Joi.string().empty(null).default('').allow(''),
-  }),
+  }).allow(null),
   pipelineId: Joi.string().required(),
 });
 
