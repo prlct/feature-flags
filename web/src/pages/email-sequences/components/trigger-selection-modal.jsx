@@ -15,19 +15,28 @@ import {
   Box,
 } from '@mantine/core';
 import { IconCopy, IconPlus } from '@tabler/icons';
+import { showNotification } from '@mantine/notifications';
 
+import config from 'config';
 import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
   const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const { data: fetchedEvents } = useGetApplicationEvents();
-  const createApplicationEvent = useAddApplicationEvent().mutate;
+  const {
+    mutate: createApplicationEvent,
+    isLoading,
+    error: eventCreationError,
+  } = useAddApplicationEvent();
 
   const events = fetchedEvents?.events || [];
 
   const [selectedEvent, setSelectedEvent] = useState(
     sequence?.trigger?.eventKey || events?.[0]?.value,
+  );
+  const [selectedStopEvent, setSelectedStopEvent] = useState(
+    sequence?.trigger?.eventStopKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
   );
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
@@ -38,8 +47,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
   const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
-  const startURL = `${selectedEvent}/start`;
-  const stopURL = `${selectedEvent}/stop`;
+  const startURL = `${config.apiUrl}/sequences/webhook/start/${selectedEvent}`;
+  const stopURL = `${config.apiUrl}/sequences/webhook/stop/${selectedEvent}`;
 
   const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
   const createSequence = useAddSequence(pipelineId).mutate;
@@ -50,6 +59,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       repeatDelay,
       name: triggerName,
       eventKey: selectedEvent,
+      stopEventKey: selectedStopEvent,
       description: triggerDescription,
     };
     if (sequence?._id) {
@@ -64,20 +74,36 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const saveEvent = () => {
     createApplicationEvent({ label: creatingEventName, value: creatingEventKey }, {
       onSuccess: () => {
-
+        setCreatingEvent(false);
+        showNotification({
+          title: 'Trigger event created',
+          message: 'Trigger event created',
+          color: 'green',
+        });
       },
     });
-    setCreatingEvent(false);
+  };
+
+  const handleEventNameChange = (name) => {
+    setCreatingEventName(name);
+    setCreatingEventKey(name.toLowerCase().replaceAll(' ', '-'));
   };
 
   return (
     <>
       <Select
-        label="Select an event"
+        label="Select an event to start the sequence"
         data={events}
         placeholder="Select event"
         value={selectedEvent}
         onChange={setSelectedEvent}
+      />
+      <Select
+        label="Select an event to stop the sequence"
+        data={events.filter((e) => e.value !== selectedEvent)}
+        placeholder="Select event"
+        value={selectedStopEvent}
+        onChange={setSelectedStopEvent}
       />
       <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
         <Group spacing={0}>
@@ -87,10 +113,20 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       </UnstyledButton>
       {creatingEvent && (
         <Stack spacing={0} m="0 16px 16px 16px">
-          <TextInput label="Event name" value={creatingEventName} onChange={(e) => setCreatingEventName(e.target.value)} />
-          <TextInput label="Event key" value={creatingEventKey} onChange={(e) => setCreatingEventKey(e.target.value)} />
+          <TextInput
+            label="Event name"
+            value={creatingEventName}
+            onChange={(e) => handleEventNameChange(e.target.value)}
+            error={eventCreationError?.data?.errors?.label}
+          />
+          <TextInput
+            label="Event key"
+            value={creatingEventKey}
+            onChange={(e) => setCreatingEventKey(e.target.value)}
+            error={eventCreationError?.data?.errors?.value}
+          />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button mt={4} onClick={saveEvent} styles={{ maxWidth: '80px' }}>Save</Button>
+            <Button mt={4} onClick={saveEvent} styles={{ maxWidth: '80px' }} disabled={isLoading}>Save</Button>
           </Box>
         </Stack>
       )}
@@ -100,7 +136,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
         {webhooksShown && (
-          <Group>
+          <Stack>
             <Text>
               Authorized POST requests with firstName,
               lastName, email parameters can trigger sequence start/stop
@@ -125,7 +161,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
                 )}
               </CopyButton>
             </Group>
-          </Group>
+          </Stack>
         )}
         <Checkbox checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow users to repeat workflow" pt={16} />
         {allowRepeat && (
@@ -165,6 +201,7 @@ TriggerSelectionModal.propTypes = {
         allowRepeat: PropTypes.string,
         repeatDelay: PropTypes.number,
         eventKey: PropTypes.string,
+        eventStopKey: PropTypes.string,
       }),
     }),
   }).isRequired,

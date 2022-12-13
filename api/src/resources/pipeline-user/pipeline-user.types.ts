@@ -11,8 +11,8 @@ export type PipelineUser = {
   sequence?: {
     _id: string,
     name: string,
-    lastEmailId?: string,
-    pendingEmailId?: string,
+    lastEmailId?: string | null,
+    pendingEmailId?: string | null,
   },
 
   createdOn?: Date;

@@ -1,5 +1,6 @@
 export type ScheduledEmailOptions = {
   emailId: string,
+  pipelineId: string,
   targetEmail: string,
   firstName?: string,
   lastName?: string,
