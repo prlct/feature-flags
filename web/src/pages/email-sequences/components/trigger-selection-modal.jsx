@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   UnstyledButton,
   Stack,
@@ -12,10 +14,9 @@ import {
   NumberInput,
   Box,
 } from '@mantine/core';
-import { useState } from 'react';
 import { IconCopy, IconPlus } from '@tabler/icons';
-import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
 
+import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
@@ -59,7 +60,11 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   };
 
   const saveEvent = () => {
-    createApplicationEvent({ label: creatingEventName, value: creatingEventKey });
+    createApplicationEvent({ label: creatingEventName, value: creatingEventKey }, {
+      onSuccess: () => {
+
+      }
+    });
     setCreatingEvent(false);
   };
 
@@ -141,6 +146,13 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       </Stack>
     </>
   );
+};
+
+TriggerSelectionModal.propTypes = {
+  context: PropTypes.shape({
+    closeModal: PropTypes.func.isRequired,
+  }).isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default TriggerSelectionModal;

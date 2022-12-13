@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from 'react-query';
 import queryClient from 'query-client';
 import { apiService } from 'services';
+import { showNotification } from '@mantine/notifications';
 
 const pipelinesResource = '/pipelines';
 const sequencesResource = '/sequences';
@@ -29,6 +30,11 @@ export function useAddPipeline(env) {
 
   return useMutation(createEmptyPipeline, {
     onSuccess: () => {
+      showNotification({
+        title: 'Pipeline added',
+        message: 'New pipeline added',
+        color: 'green',
+      });
       queryClient.invalidateQueries([pipelinesResource]);
     },
   });
@@ -41,6 +47,11 @@ export function useRemovePipeline() {
 
   return useMutation(removePipeline, {
     onSuccess: () => {
+      showNotification({
+        title: 'Pipeline removed',
+        message: 'Pipeline removed',
+        color: 'green',
+      });
       queryClient.invalidateQueries([pipelinesResource]);
     },
   });
@@ -51,6 +62,11 @@ export function useUpdatePipeline() {
 
   return useMutation(updatePipeline, {
     onSuccess: () => {
+      showNotification({
+        title: 'Pipeline updated',
+        message: 'Pipeline updated',
+        color: 'green',
+      });
       queryClient.invalidateQueries([pipelinesResource]);
     },
   });
@@ -73,6 +89,11 @@ export function useAddSequence(pipelineId) {
 
   return useMutation(addSequence, {
     onSuccess: () => {
+      showNotification({
+        title: 'Sequence created',
+        message: 'New sequence created',
+        color: 'green',
+      });
       queryClient.invalidateQueries([sequencesResource]);
     },
   });
@@ -82,6 +103,23 @@ export function useUpdateSequence() {
   const updateSequences = ({ _id, name }) => apiService.put(`${sequencesResource}/${_id}`, { name });
 
   return useMutation(updateSequences, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Sequence updated',
+        message: 'Sequence successfully updated',
+        color: 'green',
+      });
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
+export function useRemoveSequence() {
+  const removeSequence = async (id) => apiService.delete(
+    `${sequencesResource}/${id}`,
+  );
+
+  return useMutation(removeSequence, {
     onSuccess: () => {
       queryClient.invalidateQueries([sequencesResource]);
     },
@@ -93,6 +131,11 @@ export function useUpdateSequenceTrigger(id) {
 
   return useMutation(updateTrigger, {
     onSuccess: () => {
+      showNotification({
+        title: 'Sequence trigger updated',
+        message: 'Sequence trigger successfully updated',
+        color: 'green',
+      });
       queryClient.invalidateQueries([sequencesResource]);
     },
   });
@@ -109,6 +152,11 @@ export function useEmailUpdate(emailId) {
 
   return useMutation(updateEmail, {
     onSuccess: (item) => {
+      showNotification({
+        title: 'Sequence email updated',
+        message: 'Sequence email updated',
+        color: 'green',
+      });
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },
   });
@@ -121,6 +169,11 @@ export function useEmailCreate() {
 
   return useMutation(updateEmail, {
     onSuccess: (item) => {
+      showNotification({
+        title: 'Sequence email created',
+        message: 'Sequence email created',
+        color: 'green',
+      });
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },
   });
@@ -141,6 +194,11 @@ export function useEmailRemove(emailId) {
 
   return useMutation(removeEmail, {
     onSuccess: (item) => {
+      showNotification({
+        title: 'Sequence email removed',
+        message: 'Sequence email removed',
+        color: 'green',
+      });
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },
   });
@@ -166,6 +224,11 @@ export function useAddUsers() {
 
   return useMutation(addUsers, {
     onSuccess: () => {
+      showNotification({
+        title: 'Added users to sequence',
+        message: 'Added users to sequence',
+        color: 'green',
+      });
       queryClient.invalidateQueries([sequencesResource]);
     },
   });
@@ -182,6 +245,11 @@ export function useRemoveUser() {
 
   return useMutation(removeUser, {
     onSuccess: () => {
+      showNotification({
+        title: 'Removed user from sequence',
+        message: 'Removed user from sequence',
+        color: 'green',
+      });
       queryClient.invalidateQueries([pipelineUsersResource]);
     },
   });
@@ -204,19 +272,12 @@ export function useAddApplicationEvent() {
 
   return useMutation(addEvent, {
     onSuccess: () => {
+      showNotification({
+        title: 'Created new event',
+        message: 'Created new event',
+        color: 'green',
+      });
       queryClient.invalidateQueries(['pipeline-events']);
-    },
-  });
-}
-
-export function useRemoveSequence() {
-  const removeSequence = async (id) => apiService.delete(
-    `${sequencesResource}/${id}`,
-  );
-
-  return useMutation(removeSequence, {
-    onSuccess: () => {
-      queryClient.invalidateQueries([sequencesResource]);
     },
   });
 }

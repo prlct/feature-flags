@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Group, Stack, Card, Text, Paper, Center, Menu, Button, ActionIcon } from '@mantine/core';
+import { Group, Stack, Card, Text, Paper, Center, Menu, Button, ActionIcon, LoadingOverlay } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
 
@@ -13,13 +13,18 @@ import { useStyles } from './styles';
 const Sequence = (props) => {
   const { sequence } = props;
 
-  const { data } = emailSequencesApi.useGetSequenceEmails(sequence?._id);
+  const { data,
+    isRefetching,
+    isLoading,
+    isFetching,
+  } = emailSequencesApi.useGetSequenceEmails(sequence?._id);
 
   const emails = data?.results || [];
   const { classes } = useStyles();
 
   return (
     <Paper withBorder className={classes.pipeline}>
+      <LoadingOverlay visible={isRefetching || isLoading || isFetching} />
       <Stack>
         <Group position="apart">
           <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">

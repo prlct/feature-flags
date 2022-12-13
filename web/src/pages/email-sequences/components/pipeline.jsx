@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea } from '@mantine/core';
+import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea, LoadingOverlay } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
@@ -11,7 +11,12 @@ import SequenceMenu from './sequence-menu';
 import { useStyles } from './styles';
 
 const Pipeline = ({ id }) => {
-  const { data } = emailSequencesApi.useGetSequences(id);
+  const {
+    data,
+    isRefetching,
+    isLoading,
+    isFetching,
+  } = emailSequencesApi.useGetSequences(id);
   const handleAddSequence = emailSequencesApi.useAddSequence(id).mutate;
 
   const sequences = data || [];
@@ -27,6 +32,7 @@ const Pipeline = ({ id }) => {
 
   return (
     <ScrollArea>
+      <LoadingOverlay visible={isLoading || isRefetching || isFetching} />
       <Group align="stretch" noWrap>
         {sequences.map((sequence) => (
           <Sequence key={sequence._id} sequence={sequence} />
@@ -43,7 +49,11 @@ const Pipeline = ({ id }) => {
                 <Button
                   className={classes.addButton}
                   variant="light"
-                  onClick={() => openContextModal({ modal: 'triggerSelection', title: 'Add trigger', innerProps: { pipelineId: id } })}
+                  onClick={() => openContextModal({
+                    modal: 'triggerSelection',
+                    title: 'Add trigger',
+                    innerProps: { pipelineId: id },
+                  })}
                 >
                   + Add trigger
                 </Button>
