@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import router from 'next/router';
-import { AppShell, Container, Group, Navbar, Text, ActionIcon, Accordion } from '@mantine/core';
+import { AppShell, Container, Group, Navbar, Text, ActionIcon } from '@mantine/core';
 import { IconFlag, IconFilter, IconApiApp, IconUsers } from '@tabler/icons';
 
 import { PriceIcon } from 'public/icons';

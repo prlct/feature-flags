@@ -32,7 +32,7 @@ const getHandler = (job: ScheduledJob) => {
           const builtEmail = await buildEmail(email);
           await sendEmail(
             job.applicationId,
-            { ...builtEmail, to: job.data.targetEmail, from: app.gmailCredentials.email },
+            { ...builtEmail, to: job.data.targetEmail },
           );
 
           await sequenceEmailService.atomic.updateOne({ _id: job.data.emailId }, {  $inc: { sent: 1 } });

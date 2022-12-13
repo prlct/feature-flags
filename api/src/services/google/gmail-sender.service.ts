@@ -6,7 +6,6 @@ import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
 
 
 type MailOptions = {
-  from: string,
   to: string,
   subject: string,
   text: string,
@@ -17,12 +16,12 @@ const encodeEmail = (str: string) => Buffer.from(str)
   .replace(/\+/g, '-')
   .replace(/\//g, '_');
 
-const encodeEmailString = (mailOptions: MailOptions) => {
+const encodeEmailString = (mailOptions: MailOptions, from: string) => {
   return ['Content-Type: text/html; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
     'Content-Transfer-Encoding: 7bit\n',
     'to: ', mailOptions.to, '\n',
-    'from: ', mailOptions.from, '\n',
+    'from: ', from, '\n',
     'subject: ', mailOptions.subject, '\n\n',
     mailOptions.text,
   ].join('');
@@ -54,7 +53,9 @@ export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
 
     const gmail = google.gmail('v1');
 
-    const str = encodeEmailString(mailOptions);
+    const from = app.gmailCredentials.email;
+
+    const str = encodeEmailString(mailOptions, from);
     const encodedMail = encodeEmail(str);
 
     await gmail.users.messages.send({

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Stack, TextInput, Group, Button } from '@mantine/core';
+import PropTypes from 'prop-types';
 
+import { Stack, TextInput, Group, Button } from '@mantine/core';
 import * as emailSequenceApi from 'resources/email-sequence/email-sequence.api';
 
 const RenameSequenceModal = ({ context, id, innerProps }) => {
@@ -26,6 +27,17 @@ const RenameSequenceModal = ({ context, id, innerProps }) => {
       </Group>
     </Stack>
   );
+};
+
+RenameSequenceModal.propTypes = {
+  context: PropTypes.shape({
+    closeModal: PropTypes.func.isRequired,
+  }).isRequired,
+  id: PropTypes.string.isRequired,
+  innerProps: PropTypes.shape({
+    name: PropTypes.string,
+    _id: PropTypes.string,
+  }).isRequired,
 };
 
 export default RenameSequenceModal;

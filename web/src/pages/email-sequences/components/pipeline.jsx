@@ -17,7 +17,10 @@ const Pipeline = ({ id }) => {
     isLoading,
     isFetching,
   } = emailSequencesApi.useGetSequences(id);
-  const handleAddSequence = emailSequencesApi.useAddSequence(id).mutate;
+  const {
+    mutate: handleAddSequence,
+    isLoading: isSequenceCreateInProgress,
+  } = emailSequencesApi.useAddSequence(id);
 
   const sequences = data || [];
 
@@ -30,9 +33,11 @@ const Pipeline = ({ id }) => {
     .fill(null)
     .map(() => ({ _id: `${Math.random() * 10000}` }))), [paddedSequencesNumber]);
 
+  const loaderVisible = isLoading || isRefetching || isFetching || isSequenceCreateInProgress;
+
   return (
     <ScrollArea>
-      <LoadingOverlay visible={isLoading || isRefetching || isFetching} />
+      <LoadingOverlay visible={loaderVisible} />
       <Group align="stretch" noWrap>
         {sequences.map((sequence) => (
           <Sequence key={sequence._id} sequence={sequence} />

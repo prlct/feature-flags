@@ -26,7 +26,9 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const events = fetchedEvents?.events || [];
 
-  const [selectedEvent, setSelectedEvent] = useState(sequence?.trigger?.eventKey || events?.[0]?.value);
+  const [selectedEvent, setSelectedEvent] = useState(
+    sequence?.trigger?.eventKey || events?.[0]?.value,
+  );
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
   const [creatingEventKey, setCreatingEventKey] = useState('');
@@ -63,7 +65,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     createApplicationEvent({ label: creatingEventName, value: creatingEventKey }, {
       onSuccess: () => {
 
-      }
+      },
     });
     setCreatingEvent(false);
   };
@@ -153,6 +155,19 @@ TriggerSelectionModal.propTypes = {
     closeModal: PropTypes.func.isRequired,
   }).isRequired,
   id: PropTypes.string.isRequired,
+  innerProps: PropTypes.shape({
+    pipelineId: PropTypes.string,
+    sequence: PropTypes.shape({
+      _id: PropTypes.string,
+      trigger: PropTypes.shape({
+        name: PropTypes.string,
+        description: PropTypes.string,
+        allowRepeat: PropTypes.string,
+        repeatDelay: PropTypes.number,
+        eventKey: PropTypes.string,
+      }),
+    }),
+  }).isRequired,
 };
 
 export default TriggerSelectionModal;

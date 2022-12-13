@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Stack, TextInput, Text, Group, Button } from '@mantine/core';
 
 import { useAddUsers } from 'resources/email-sequence/email-sequence.api';
+import PropTypes from 'prop-types';
 
 const AddUsersModal = ({ context, id, innerProps }) => {
   const { sequence } = innerProps;
@@ -38,6 +39,18 @@ const AddUsersModal = ({ context, id, innerProps }) => {
       </Group>
     </Stack>
   );
+};
+
+AddUsersModal.propTypes = {
+  context: PropTypes.shape({
+    closeModal: PropTypes.func.isRequired,
+  }).isRequired,
+  id: PropTypes.string.isRequired,
+  innerProps: PropTypes.shape({
+    sequence: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
 };
 
 export default AddUsersModal;
