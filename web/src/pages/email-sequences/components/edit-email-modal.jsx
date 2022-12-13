@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { Button, Group, NumberInput, Stack, TextInput } from '@mantine/core';
 import EmailEditor from 'components/emailEditor';
@@ -39,6 +40,17 @@ const EditEmailModal = ({ context, id, innerProps }) => {
       </Group>
     </Stack>
   );
+};
+
+EditEmailModal.propTypes = {
+  context: PropTypes.shape({
+    closeModal: PropTypes.func.isRequired,
+  }).isRequired,
+  id: PropTypes.string.isRequired,
+  innerProps: PropTypes.shape({
+    email: PropTypes.string,
+    sequenceId: PropTypes.string,
+  }).isRequired,
 };
 
 export default EditEmailModal;

@@ -281,3 +281,17 @@ export function useAddApplicationEvent() {
     },
   });
 }
+
+export function useSendTestEmail(id) {
+  const sendEmail = (email) => apiService.post(`${sequenceEmailResource}/${id}/send-test-email`, { email });
+
+  return useMutation(sendEmail, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Test email was sent.',
+        message: 'Test email was sent.',
+        color: 'green',
+      });
+    },
+  });
+}

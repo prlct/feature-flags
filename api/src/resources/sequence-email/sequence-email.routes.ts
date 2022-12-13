@@ -3,6 +3,7 @@ import update from './actions/update-sequence-email';
 import getSequenceEmails from './actions/get-sequence-emails';
 import removeSequenceEmail from './actions/remove-sequence-email';
 import toggleEmailEnabled from './actions/toggle-email-enabled';
+import sendTestEmail from './actions/send-test-email';
 
 
 const privateRoutes = routeUtil.getRoutes([
@@ -10,6 +11,7 @@ const privateRoutes = routeUtil.getRoutes([
   getSequenceEmails,
   removeSequenceEmail,
   toggleEmailEnabled,
+  sendTestEmail,
 ]);
 
 export default {

@@ -1,9 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import clsx from 'clsx';
+
 import { InputBase } from '@mantine/core';
 import dynamic from 'next/dynamic';
+
 import { useStyles } from './emailEditor.styles';
 import 'react-quill/dist/quill.snow.css';
 
@@ -75,6 +78,13 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       </div>
     </div>
   );
+};
+
+EmailEditor.propTypes = {
+  subject: PropTypes.string.isRequired,
+  setSubject: PropTypes.func.isRequired,
+  body: PropTypes.string.isRequired,
+  setBody: PropTypes.func.isRequired,
 };
 
 export default EmailEditor;
