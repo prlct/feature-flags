@@ -42,13 +42,18 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
-  const existingUser = await pipelineUserService.findOne({ email, applicationId, deletedOn: { $exists: false } });
+  const existingUser = await pipelineUserService.findOne({
+    email,
+    applicationId,
+    'pipeline._id': pipeline._id,
+    deletedOn: { $exists: false },
+  });
 
   if (existingUser) {
     ctx.throw(400, 'User already in an active pipeline');
   }
 
-  const { results } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false } });
+  const { results } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false }, enabled: true });
 
   await scheduledJobService.addEmailsSend(results, email);
 
@@ -62,6 +67,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     sequence: {
       _id: sequence._id,
       name: sequence.name,
+      lastEmailId: null,
+      pendingEmailId: results?.[0]?._id,
     },
   });
 

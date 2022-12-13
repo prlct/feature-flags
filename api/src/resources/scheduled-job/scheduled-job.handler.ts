@@ -10,6 +10,7 @@ import sequenceEmailService from 'resources/sequence-email/sequence-email.servic
 import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
 import applicationService from 'resources/application/application.service';
 import { DATABASE_DOCUMENTS } from 'app.constants';
+import pipelineUserService from '../pipeline-user/pipeline-user.service';
 
 export const todayScheduledJobs = {
   current: [] as Job[],
@@ -21,22 +22,41 @@ const getHandler = (job: ScheduledJob) => {
 
       return async () => {
         try {
-          const email = await sequenceEmailService.findOne({ _id: job.data.emailId });
-          const app = await applicationService.findOne({ _id: job.applicationId });
-          if (!app?.gmailCredentials) {
-            throw new Error('Application not found or no gmail credentials provided');
-          }
+          const email = await sequenceEmailService.findOne({ _id: job.data.emailId, deletedOn: { $exists: false } });
+
           if (!email) {
             throw new Error('Sequence email not found');
           }
+
+          const sequence = await sequenceEmailService.findOne({
+            _id: email.sequenceId,
+            enabled: true,
+            deletedOn: { $exists: false },
+          });
+
+          if (!sequence) {
+            throw new Error('Sequence not found or was removed');
+          }
+
+          const app = await applicationService.findOne({ _id: job.applicationId });
+
+          if (!app?.gmailCredentials) {
+            throw new Error('Application not found or no gmail credentials provided');
+          }
+
           const builtEmail = await buildEmail(email);
           await sendEmail(
             job.applicationId,
             { ...builtEmail, to: job.data.targetEmail },
           );
 
-          await sequenceEmailService.atomic.updateOne({ _id: job.data.emailId }, {  $inc: { sent: 1 } });
+          await pipelineUserService.atomic.updateOne({ 'pipeline._id': job.data.pipelineId }, {
+            $set: {
+              'sequence.lastEmailId': job.data.emailId,
+            },
+          });
 
+          await sequenceEmailService.atomic.updateOne({ _id: job.data.emailId }, {  $inc: { sent: 1 } });
           await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
             return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
           });

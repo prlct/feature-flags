@@ -14,8 +14,8 @@ const schema = Joi.object({
   sequence: Joi.object({
     _id: Joi.string().required(),
     name: Joi.string().required(),
-    lastEmailId: Joi.string(),
-    pendingEmailId: Joi.string(),
+    lastEmailId: Joi.string().allow(null),
+    pendingEmailId: Joi.string().allow(null),
   }).default(null),
 
   createdOn: Joi.date(),
