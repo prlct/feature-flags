@@ -8,7 +8,7 @@ import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api'
 const EditEmailModal = ({ context, id, innerProps }) => {
   const { email, sequenceId } = innerProps;
   const [emailName, setEmailName] = useState(email?.name || '');
-  const [delayDays, setDelayDays] = useState(email?.delayDays || 1);
+  const [delayDays, setDelayDays] = useState(email?.delayDays ?? 1);
 
   const [subject, setSubject] = useState(email?.subject || '');
   const [body, setBody] = useState(email?.body || '');
@@ -48,7 +48,13 @@ EditEmailModal.propTypes = {
   }).isRequired,
   id: PropTypes.string.isRequired,
   innerProps: PropTypes.shape({
-    email: PropTypes.string,
+    email: PropTypes.shape({
+      _id: PropTypes.string,
+      name: PropTypes.string,
+      delayDays: PropTypes.number,
+      body: PropTypes.string,
+      subject: PropTypes.string,
+    }),
     sequenceId: PropTypes.string,
   }).isRequired,
 };

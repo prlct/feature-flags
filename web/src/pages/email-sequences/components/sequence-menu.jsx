@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { LoadingOverlay, Menu, UnstyledButton } from '@mantine/core';
 import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconTrash } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
-import { useRemoveSequence } from 'resources/email-sequence/email-sequence.api';
+import { useRemoveSequence, useToggleSequenceEnabled } from 'resources/email-sequence/email-sequence.api';
 
 const ICON_SIZE = 16;
 
@@ -18,10 +18,14 @@ const SequenceMenu = ({ sequence }) => {
     : <IconPlayerPlay size={ICON_SIZE} />;
 
   const { mutate: removeSequenceHandler, isLoading } = useRemoveSequence();
+  const {
+    mutate: toggleSequenceEnabled,
+    isLoading: toggleSequenceLoading,
+  } = useToggleSequenceEnabled();
 
   return (
     <>
-      <LoadingOverlay visible={isLoading} />
+      <LoadingOverlay visible={isLoading || toggleSequenceLoading} />
       <Menu position="bottom" transition="pop" withinPortal disabled={!isEdit}>
         <Menu.Target>
           <UnstyledButton p={0} variant="subtle"><IconDots color="gray" /></UnstyledButton>
@@ -40,7 +44,12 @@ const SequenceMenu = ({ sequence }) => {
             Rename
           </Menu.Item>
           <Menu.Divider />
-          <Menu.Item icon={startStopIcon}>{`${startOrStopText} sequence`}</Menu.Item>
+          <Menu.Item
+            icon={startStopIcon}
+            onClick={() => toggleSequenceEnabled(sequence?._id)}
+          >
+            {`${startOrStopText} sequence`}
+          </Menu.Item>
 
           {sequence?._id && (
           <Menu.Item

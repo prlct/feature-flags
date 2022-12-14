@@ -126,6 +126,16 @@ export function useRemoveSequence() {
   });
 }
 
+export function useToggleSequenceEnabled() {
+  const toggleSequence = async (id) => apiService.put(`${sequencesResource}/${id}/toggle-enabled`);
+
+  return useMutation(toggleSequence, {
+    onSuccess: () => {
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+  });
+}
+
 export function useUpdateSequenceTrigger(id) {
   const updateTrigger = (data) => apiService.put(`${sequencesResource}/${id}/trigger`, data);
 

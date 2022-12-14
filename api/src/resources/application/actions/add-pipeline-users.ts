@@ -55,7 +55,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const { results } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false }, enabled: true });
 
-  await scheduledJobService.addEmailsSend(results, email);
+  await scheduledJobService.addEmailSend(results[0], email);
 
   const createdUser = await pipelineUserService.insertOne({
     email,
