@@ -39,13 +39,25 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     deletedOn: { $exists: false },
   });
 
-  const { results: sequenceEmails } = await sequenceEmailService.find({ sequenceId: sequence._id });
+  const { results: sequenceEmails } = await sequenceEmailService.find({
+    sequenceId: sequence._id,
+    enabled: true,
+    deletedOn: { $exists: false },
+  });
+
+  if (sequenceEmails.length < 1) {
+    ctx.throw(400, 'No enabled emails found for the sequence');
+    return;
+  }
+
   const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
 
   if (!pipeline) {
     ctx.throw(400, 'Pipeline not found');
     return;
   }
+
+  const [firstEmail] = sequenceEmails;
 
   if (!pipelineUser) {
     pipelineUser = await pipelineUserService.insertOne({
@@ -61,11 +73,11 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
         _id: sequence._id,
         name: sequence.name,
         lastEmailId: null,
-        pendingEmailId: sequenceEmails?.[0]?._id,
+        pendingEmailId: firstEmail._id,
       },
     });
 
-    await scheduledJobService.addEmailSend(sequenceEmails[0], email);
+    await scheduledJobService.addEmailSend(firstEmail, email);
 
   }
 

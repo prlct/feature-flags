@@ -11,6 +11,7 @@ import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-
 import applicationService from 'resources/application/application.service';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 import pipelineUserService from '../pipeline-user/pipeline-user.service';
+import sequenceService from '../sequence/sequence.service';
 
 export const todayScheduledJobs = {
   current: [] as Job[],
@@ -22,13 +23,17 @@ const getHandler = (job: ScheduledJob) => {
 
       return async () => {
         try {
-          const email = await sequenceEmailService.findOne({ _id: job.data.emailId, deletedOn: { $exists: false } });
+          const email = await sequenceEmailService.findOne({
+            _id: job.data.emailId,
+            enabled: true,
+            deletedOn: { $exists: false },
+          });
 
           if (!email) {
-            throw new Error('Sequence email not found');
+            throw new Error(`Sequence email not found or was disabled: ${job.data.emailId}`);
           }
 
-          const sequence = await sequenceEmailService.findOne({
+          const sequence = await sequenceService.findOne({
             _id: email.sequenceId,
             enabled: true,
             deletedOn: { $exists: false },
@@ -49,6 +54,20 @@ const getHandler = (job: ScheduledJob) => {
             job.applicationId,
             { ...builtEmail, to: job.data.targetEmail },
           );
+
+          const { results: emails } = await sequenceEmailService.find({
+            sequenceId: email.sequenceId,
+            enabled: true,
+            deletedOn: { $exists: false },
+          });
+
+          const nextEmail = emails.find((m) => moment(m.createdOn).isAfter(moment(email.createdOn)));
+
+          if (nextEmail) {
+            await scheduledJobService.addEmailSend(nextEmail, job.data.targetEmail);
+          } else {
+            // todo: next sequence?
+          }
 
           await pipelineUserService.atomic.updateOne({ 'pipeline._id': job.data.pipelineId }, {
             $set: {
@@ -93,9 +112,13 @@ export const loadJobs = async () => {
     },
   });
 
-  todayScheduledJobs.current = jobsToday.map((jobInDB) => {
-    return schedule.scheduleJob(jobInDB.scheduledDate, getHandler(jobInDB));
-  });
+  todayScheduledJobs.current = jobsToday.reduce((acc, jobInDB) => {
+    if (moment(jobInDB.scheduledDate).isBefore(new Date())) {
+      getHandler(jobInDB)();
+      return acc;
+    }
+    return [...acc, schedule.scheduleJob(jobInDB.scheduledDate, getHandler(jobInDB))];
+  }, [] as Job[]);
 
   logger.debug(`Loaded ${todayScheduledJobs.current.length} scheduled jobs for today`);
 };
@@ -103,7 +126,12 @@ export const loadJobs = async () => {
 eventBus.on(
   `${DATABASE_DOCUMENTS.SCHEDULED_JOBS}.created`,
   async (data: InMemoryEvent<ScheduledJob>) => {
-    const scheduledJob = schedule.scheduleJob(data.doc.scheduledDate, getHandler(data.doc));
-    todayScheduledJobs.current.push(scheduledJob);
+    if (moment(data.doc.scheduledDate).isSame(new Date(), 'day')) {
+      if (moment(data.doc.scheduledDate).isBefore(new Date())) {
+        getHandler(data.doc)();
+      }
+      const scheduledJob = schedule.scheduleJob(data.doc.scheduledDate, getHandler(data.doc));
+      todayScheduledJobs.current.push(scheduledJob);
+    }
   },
 );
