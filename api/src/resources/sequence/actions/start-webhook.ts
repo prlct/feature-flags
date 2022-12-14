@@ -2,12 +2,14 @@ import Joi from 'joi';
 
 import sequenceService from '../sequence.service';
 import { AppKoaContext, AppRouter } from 'types';
-import { validateMiddleware } from 'middlewares';
-import sequenceAccess from '../middlewares/sequence-access';
-import sequenceEmailService from '../../sequence-email/sequence-email.service';
-import pipelineUserService from '../../pipeline-user/pipeline-user.service';
-import pipelineService from '../../pipeline/pipeline.service';
-import scheduledJobService from '../../scheduled-job/scheduled-job.service';
+import { extractTokenFromHeader, validateMiddleware } from 'middlewares';
+
+import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import pipelineService from 'resources/pipeline/pipeline.service';
+import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
+import publicTokenAuthMiddleware from 'resources/application/middlewares/public-token-auth.middleware';
+import { extractTokenFromQuery } from 'resources/application';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
@@ -26,15 +28,20 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { eventKey } = ctx.params;
   const { email, firstName, lastName } = ctx.validatedData;
+  const { _id: applicationId } = ctx.state.application;
 
-  const sequence = await sequenceService.findOne({ 'trigger.eventKey': eventKey, deletedOn: { $exists: false } });
+  const sequence = await sequenceService.findOne({
+    applicationId,
+    'trigger.eventKey': eventKey,
+    deletedOn: { $exists: false },
+  });
 
   if (!sequence) {
     ctx.throw(400, 'Sequence not found');
     return;
   }
 
-  let pipelineUser = await pipelineUserService.findOne({
+  const pipelineUser = await pipelineUserService.findOne({
     'pipeline._id': sequence.pipelineId,
     deletedOn: { $exists: false },
   });
@@ -60,7 +67,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const [firstEmail] = sequenceEmails;
 
   if (!pipelineUser) {
-    pipelineUser = await pipelineUserService.insertOne({
+    await pipelineUserService.insertOne({
       firstName,
       lastName,
       email,
@@ -85,5 +92,12 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 };
 
 export default (router: AppRouter) => {
-  router.put('/webhook/start/:eventKey', sequenceAccess, validateMiddleware(schema), handler);
+  router.post(
+    '/webhook/start/:eventKey',
+    extractTokenFromHeader,
+    extractTokenFromQuery,
+    publicTokenAuthMiddleware,
+    validateMiddleware(schema),
+    handler,
+  );
 };

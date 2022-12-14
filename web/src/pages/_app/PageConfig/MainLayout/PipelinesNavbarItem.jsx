@@ -37,9 +37,7 @@ const PipelinesNavbarItem = () => {
               radius="md"
               variant="transparent"
               size={40}
-              className={[
-                classes.tabIcon,
-              ]}
+              className={classes.tabIcon}
             >
               <IconFilter />
             </ActionIcon>

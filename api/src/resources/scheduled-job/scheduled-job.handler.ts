@@ -69,9 +69,13 @@ const getHandler = (job: ScheduledJob) => {
             // todo: next sequence?
           }
 
-          await pipelineUserService.atomic.updateOne({ 'pipeline._id': job.data.pipelineId }, {
+          await pipelineUserService.atomic.updateOne({
+            'pipeline._id': job.data.pipelineId,
+            deletedOn: { $exists: false },
+          }, {
             $set: {
               'sequence.lastEmailId': job.data.emailId,
+              'sequence.pendingEmailId': nextEmail?._id || null,
             },
           });
 

@@ -1,12 +1,15 @@
 import { createStyles } from '@mantine/core';
 
-export const useStyles = createStyles(({ colors }) => ({
+export const useStyles = createStyles((theme) => ({
   pipeline: {
-    backgroundColor: colors.gray[1],
+    backgroundColor: theme.colors.gray[1],
     padding: 32,
     width: 368,
     borderRadius: 12,
-    border: `1px solid ${colors.gray[2]}`,
+    border: `1px solid ${theme.colors.gray[2]}`,
+  },
+  pipelineDisabled: {
+    backgroundColor: '#d5d5d5',
   },
   addButton: {
     fontWeight: 600,

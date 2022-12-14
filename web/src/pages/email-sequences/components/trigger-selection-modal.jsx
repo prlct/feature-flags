@@ -36,7 +36,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     sequence?.trigger?.eventKey || events?.[0]?.value,
   );
   const [selectedStopEvent, setSelectedStopEvent] = useState(
-    sequence?.trigger?.eventStopKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
+    sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
   );
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
@@ -201,7 +201,7 @@ TriggerSelectionModal.propTypes = {
         allowRepeat: PropTypes.string,
         repeatDelay: PropTypes.number,
         eventKey: PropTypes.string,
-        eventStopKey: PropTypes.string,
+        stopEventKey: PropTypes.string,
       }),
     }),
   }).isRequired,

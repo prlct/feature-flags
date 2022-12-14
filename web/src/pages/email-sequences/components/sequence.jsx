@@ -1,5 +1,16 @@
 import PropTypes from 'prop-types';
-import { Group, Stack, Card, Text, Paper, Center, Menu, Button, ActionIcon, LoadingOverlay } from '@mantine/core';
+import {
+  Group,
+  Stack,
+  Card,
+  Text,
+  Paper,
+  Center,
+  Menu,
+  Button,
+  ActionIcon,
+  LoadingOverlay,
+} from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
 
@@ -12,6 +23,7 @@ import { useStyles } from './styles';
 
 const Sequence = (props) => {
   const { sequence } = props;
+  const { enabled } = sequence;
 
   const { data,
     isRefetching,
@@ -23,7 +35,7 @@ const Sequence = (props) => {
   const { classes } = useStyles();
 
   return (
-    <Paper withBorder className={classes.pipeline}>
+    <Paper withBorder className={[classes.pipeline, !enabled && classes.pipelineDisabled]}>
       <LoadingOverlay visible={isRefetching || isLoading || isFetching} />
       <Stack>
         <Group position="apart">
@@ -54,7 +66,14 @@ const Sequence = (props) => {
         </Card>
         )}
         <Stack spacing={24}>
-          {emails.map((email) => <EmailCard key={email.name} email={email} />)}
+          <Stack>
+            {emails.map((email) => (
+              <EmailCard
+                key={email.name}
+                email={email}
+              />
+            ))}
+          </Stack>
           <Center>
             <Button
               className={classes.addButton}
@@ -77,6 +96,7 @@ Sequence.propTypes = {
     completed: PropTypes.number,
     total: PropTypes.number,
     dropped: PropTypes.number,
+    enabled: PropTypes.bool,
     trigger: PropTypes.shape({
       name: PropTypes.string,
       description: PropTypes.string,
