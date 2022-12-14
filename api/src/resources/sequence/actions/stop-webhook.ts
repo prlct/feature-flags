@@ -2,38 +2,55 @@ import Joi from 'joi';
 
 import sequenceService from '../sequence.service';
 import { AppKoaContext, AppRouter } from 'types';
-import { validateMiddleware } from 'middlewares';
-import sequenceAccess from '../middlewares/sequence-access';
+import { extractTokenFromHeader, validateMiddleware } from 'middlewares';
+
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import { extractTokenFromQuery } from 'resources/application';
+import publicTokenAuthMiddleware from 'resources/application/middlewares/public-token-auth.middleware';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
-  eventKey: Joi.string().required(),
+  stopEventKey: Joi.string().required(),
 });
 
 type ValidatedData = {
-  eventKey: string,
+  stopEventKey: string,
   email: string,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
-  const { eventKey } = ctx.params;
+  const { stopEventKey } = ctx.params;
+  const { email } = ctx.validatedData;
 
-  const sequence = await sequenceService.findOne({ 'trigger.eventKey': eventKey, deletedOn: { $exists: false } });
+  const sequence = await sequenceService.findOne({
+    'trigger.stopEventKey': stopEventKey, deletedOn: { $exists: false },
+  });
 
   if (!sequence) {
     ctx.throw(400, 'Sequence not found');
     return;
   }
 
-  const pipelineUser = await pipelineUserService.findOne({
-    'pipeline._id': sequence.pipelineId,
+  await pipelineUserService.atomic.updateOne({
+    email,
+    'sequence._id': sequence._id,
     deletedOn: { $exists: false },
+  }, {
+    $set: {
+      deletedOn: new Date(),
+    },
   });
 
   ctx.body = 'ok';
 };
 
 export default (router: AppRouter) => {
-  router.put('/webhook/stop/:eventKey', sequenceAccess, validateMiddleware(schema), handler);
+  router.post(
+    '/webhook/stop/:stopEventKey',
+    extractTokenFromHeader,
+    extractTokenFromQuery,
+    publicTokenAuthMiddleware,
+    validateMiddleware(schema),
+    handler,
+  );
 };

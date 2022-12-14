@@ -14,6 +14,7 @@ const schema = Joi.object({
     name: Joi.string().required(),
     eventName: Joi.string(),
     eventKey: Joi.string(),
+    stopEventKey: Joi.string(),
     allowRepeat: Joi.bool(),
     repeatDelay: Joi.number().min(0),
     description: Joi.string().allow('').default(''),

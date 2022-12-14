@@ -10,6 +10,7 @@ const schema = Joi.object({
   name: Joi.string().required(),
   eventName: Joi.string(),
   eventKey: Joi.string(),
+  stopEventKey: Joi.string(),
   allowRepeat: Joi.bool().default(false),
   repeatDelay: Joi.number().integer().min(0),
   description: Joi.string()
@@ -23,6 +24,7 @@ type ValidatedData = {
   name: string,
   eventKey?: string,
   eventName?: string,
+  stopEventKey: string,
   allowRepeat: boolean,
   repeatDelay: number,
   description: string,
