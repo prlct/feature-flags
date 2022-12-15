@@ -44,6 +44,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
+  const [allowMoveToNextSequence, setAllowMoveToNextSequence] = useState(false);
   const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
   const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
@@ -61,6 +62,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       eventKey: selectedEvent,
       stopEventKey: selectedStopEvent,
       description: triggerDescription,
+      allowMoveToNextSequence,
     };
     if (sequence?._id) {
       updateSequenceTrigger(data);
@@ -133,6 +135,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
       <TextInput label="Trigger name" value={triggerName} onChange={(e) => setTriggerName(e.target.value)} />
       <TextInput label="Trigger description" value={triggerDescription} onChange={(e) => setTriggerDescription(e.target.value)} />
+      <Switch label="Move user to next sequence after last email sent" checked={allowMoveToNextSequence} onChange={(e) => setAllowMoveToNextSequence(e.currentTarget.checked)} />
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
         {webhooksShown && (
