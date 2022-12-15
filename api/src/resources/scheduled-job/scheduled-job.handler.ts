@@ -45,14 +45,20 @@ const getHandler = (job: ScheduledJob) => {
 
           const app = await applicationService.findOne({ _id: job.applicationId });
 
-          if (!app?.gmailCredentials?.[0]) {
+          const from = sequence.trigger?.senderEmail;
+
+          if (!from) {
+            throw new Error('Sequence has no sender email set');
+          }
+
+          if (!app?.gmailCredentials?.[from]) {
             throw new Error('Application not found or no gmail credentials provided');
           }
 
-          const builtEmail = await buildEmail(email);
           await sendEmail(
+            email,
             job.applicationId,
-            { ...builtEmail, to: job.data.targetEmail },
+            job.data.targetEmail,
           );
 
           const { results: emails } = await sequenceEmailService.find({

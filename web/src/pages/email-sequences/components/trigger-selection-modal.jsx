@@ -18,7 +18,13 @@ import { IconCopy, IconPlus } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
 
 import config from 'config';
-import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
+import {
+  useAddSequence,
+  useUpdateSequenceTrigger,
+  useGetApplicationEvents,
+  useAddApplicationEvent,
+  useGetSenderEmails, useUpdateSenderEmail,
+} from 'resources/email-sequence/email-sequence.api';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
@@ -38,6 +44,14 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const [selectedStopEvent, setSelectedStopEvent] = useState(
     sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
   );
+
+  const { data: senderEmails = [] } = useGetSenderEmails();
+
+  const [selectedSenderEmail, setSelectedSenderEmail] = useState(
+    sequence?.trigger?.senderEmail
+    || senderEmails?.filter((e) => e.value !== selectedSenderEmail)?.[0],
+  );
+
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
   const [creatingEventKey, setCreatingEventKey] = useState('');
@@ -53,6 +67,11 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
   const createSequence = useAddSequence(pipelineId).mutate;
+
+  const {
+    mutate: updateSenderEmail,
+    isLoading: isSenderEmailLoading,
+  } = useUpdateSenderEmail(sequence?._id);
 
   const handleTriggerSave = () => {
     const data = {
@@ -91,8 +110,20 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     setCreatingEventKey(name.toLowerCase().replaceAll(' ', '-'));
   };
 
+  const changeSenderEmail = async (email) => {
+    await updateSenderEmail(email);
+    setSelectedSenderEmail(email);
+  };
+
   return (
     <>
+      <Select
+        data={senderEmails}
+        label="Email original"
+        value={selectedSenderEmail}
+        onChange={changeSenderEmail}
+        disabled={isSenderEmailLoading}
+      />
       <Select
         label="Select an event to start the sequence"
         data={events}
@@ -200,6 +231,7 @@ TriggerSelectionModal.propTypes = {
       _id: PropTypes.string,
       trigger: PropTypes.shape({
         name: PropTypes.string,
+        senderEmail: PropTypes.string,
         description: PropTypes.string,
         allowRepeat: PropTypes.string,
         repeatDelay: PropTypes.number,

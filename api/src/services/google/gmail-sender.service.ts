@@ -3,6 +3,7 @@ import config from 'config';
 
 import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
+import sequenceService from '../../resources/sequence/sequence.service';
 
 
 type MailOptions = {
@@ -28,7 +29,7 @@ const encodeEmailString = (mailOptions: MailOptions, from: string) => {
   ].join('');
 };
 
-export const buildEmail = async (
+export const buildEmail = (
   sequenceEmail: SequenceEmail,
   firstName?: string,
   lastName?: string,
@@ -36,25 +37,34 @@ export const buildEmail = async (
   return { subject: sequenceEmail.subject, text: sequenceEmail.body }; // fixme
 };
 
-export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
+export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to: string) => {
   try {
     const oAuth2Client = new google.auth.OAuth2(config.gmail);
 
     const app = await applicationService.findOne({ _id: appId });
 
-    if (!app?.gmailCredentials?.[0]) {
+    const sequence = await sequenceService.findOne({ _id: sequenceEmail.sequenceId });
+
+    const from = sequence?.trigger?.senderEmail;
+
+    if (!from) {
+      return;
+    }
+
+    if (!app?.gmailCredentials?.[from]) {
       return;
     }
 
     oAuth2Client
       .setCredentials({
         refresh_token:
-          app.gmailCredentials[0].refreshToken,
+          app.gmailCredentials[from].refreshToken,
       });
 
     const gmail = google.gmail('v1');
 
-    const from = app.gmailCredentials[0].email;
+
+    const mailOptions = { ...buildEmail(sequenceEmail), to };
 
     const str = encodeEmailString(mailOptions, from);
     const encodedMail = encodeEmail(str);

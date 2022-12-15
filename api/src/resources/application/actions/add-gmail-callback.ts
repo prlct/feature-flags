@@ -35,20 +35,17 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
-  const { email } = await oAuth2Client.getTokenInfo(tokens?.access_token);
+  const { access_token: accessToken, refresh_token: refreshToken } = tokens;
+
+  const { email } = await oAuth2Client.getTokenInfo(accessToken);
   if (!email) {
     ctx.throw(403, 'No email');
     return;
   }
 
-  await applicationService.atomic.updateOne({ _id: appId }, {
-    $set: {
-      gmailCredentials: [{
-        accessToken: tokens.access_token,
-        refreshToken: tokens.refresh_token,
-        email: email,
-      }],
-    },
+  await applicationService.updateOne({ _id: appId }, (doc) => {
+    doc.gmailCredentials = { ...doc.gmailCredentials, [email]: { refreshToken, accessToken } };
+    return doc;
   });
 
   ctx.body = 'ok';

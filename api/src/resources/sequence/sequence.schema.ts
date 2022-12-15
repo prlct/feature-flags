@@ -12,6 +12,7 @@ const schema = Joi.object({
   completed: Joi.number().integer().default(0),
   trigger: Joi.object({
     name: Joi.string().required(),
+    senderEmail: Joi.string().email(),
     eventName: Joi.string(),
     eventKey: Joi.string(),
     stopEventKey: Joi.string(),

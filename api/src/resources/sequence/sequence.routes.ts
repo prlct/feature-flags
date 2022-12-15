@@ -6,7 +6,7 @@ import removeSequence from './actions/remove-sequence';
 import toggleSequenceEnabled from './actions/toggle-sequence-enabled';
 import startWebhook from './actions/start-webhook';
 import stopWebhook from './actions/stop-webhook';
-
+import updateSenderEmail from './actions/update-sender-email';
 
 const privateRoutes = routeUtil.getRoutes([
   sequenceUpdate,
@@ -14,6 +14,7 @@ const privateRoutes = routeUtil.getRoutes([
   triggerUpdate,
   removeSequence,
   toggleSequenceEnabled,
+  updateSenderEmail,
 ]);
 
 const publicRoutes = routeUtil.getRoutes([

@@ -83,7 +83,7 @@ const MainLayout = ({ children }) => {
               );
 
               if (tab.component) {
-                return <tab.component />;
+                return <tab.component key={tab.path} />;
               }
 
               return (

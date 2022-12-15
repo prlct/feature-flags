@@ -27,7 +27,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
-  await sendEmail(applicationId, { to: email, subject: sequenceEmail.subject, text: sequenceEmail.body } );
+  await sendEmail(sequenceEmail, applicationId, email);
 
   ctx.body = 'ok';
 };

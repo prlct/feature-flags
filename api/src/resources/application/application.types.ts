@@ -17,10 +17,11 @@ export type Application = {
   featureIds: string[];
   trackEnabled: boolean;
   gmailCredentials?: {
-    email: string,
-    accessToken: string,
-    refreshToken: string,
-  }[],
+    [key in string]: {
+      accessToken: string,
+      refreshToken: string,
+    }
+  },
   events?: {
     label: string,
     value: string,
