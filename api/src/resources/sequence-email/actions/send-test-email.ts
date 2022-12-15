@@ -5,7 +5,7 @@ import sequenceEmailService from 'resources/sequence-email/sequence-email.servic
 import { validateMiddleware } from 'middlewares';
 
 import sequenceEmailAccess from '../middlewares/sequence-email-access';
-import { sendEmail } from '../../../services/google/gmail-sender.service';
+import { sendEmail } from 'services/google/gmail-sender.service';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),

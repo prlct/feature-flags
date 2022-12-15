@@ -20,7 +20,7 @@ export type Application = {
     email: string,
     accessToken: string,
     refreshToken: string,
-  },
+  }[],
   events?: {
     label: string,
     value: string,

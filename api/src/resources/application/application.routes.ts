@@ -9,6 +9,8 @@ import createSequenceEmail from './actions/create-sequence-email';
 import addPipelineUsers from './actions/add-pipeline-users';
 import getEvents from './actions/get-events';
 import createEvent from './actions/create-event';
+import addGmail from './actions/add-gmail';
+import addGmailCallback from './actions/add-gmail-callback';
 
 const privateRoutes = routeUtil.getRoutes([
   createFeature,
@@ -20,8 +22,14 @@ const privateRoutes = routeUtil.getRoutes([
   addPipelineUsers,
   getEvents,
   createEvent,
+  addGmail,
+]);
+
+const publicRoutes = routeUtil.getRoutes([
+  addGmailCallback,
 ]);
 
 export default {
   privateRoutes,
+  publicRoutes,
 };

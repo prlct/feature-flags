@@ -45,7 +45,7 @@ const getHandler = (job: ScheduledJob) => {
 
           const app = await applicationService.findOne({ _id: job.applicationId });
 
-          if (!app?.gmailCredentials) {
+          if (!app?.gmailCredentials?.[0]) {
             throw new Error('Application not found or no gmail credentials provided');
           }
 

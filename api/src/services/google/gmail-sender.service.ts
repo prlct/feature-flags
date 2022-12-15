@@ -42,19 +42,19 @@ export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
 
     const app = await applicationService.findOne({ _id: appId });
 
-    if (!app?.gmailCredentials) {
+    if (!app?.gmailCredentials?.[0]) {
       return;
     }
 
     oAuth2Client
       .setCredentials({
         refresh_token:
-          app.gmailCredentials.refreshToken,
+          app.gmailCredentials[0].refreshToken,
       });
 
     const gmail = google.gmail('v1');
 
-    const from = app.gmailCredentials.email;
+    const from = app.gmailCredentials[0].email;
 
     const str = encodeEmailString(mailOptions, from);
     const encodedMail = encodeEmail(str);
@@ -67,4 +67,16 @@ export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getRedirectUrl = async (applicationId: string, state: string) => {
+  const oAuth2Client = new google.auth.OAuth2(config.gmail);
+  const url = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    client_id: config.gmail.clientId,
+    scope: ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/userinfo.email'],
+    state,
+  });
+
+  return url;
 };

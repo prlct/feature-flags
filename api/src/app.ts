@@ -24,6 +24,7 @@ import { loadJobs } from 'resources/scheduled-job/scheduled-job.handler';
 
 const initKoa = () => {
   const app = new AppKoa();
+  app.keys = [config.appCookieKey]; // todo
 
   app.use(cors({ credentials: true }));
   app.use(helmet());
