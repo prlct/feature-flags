@@ -8,7 +8,8 @@ import { InputBase, FileButton } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
 
-import { AddButton, UploadHTML } from 'public/icons';
+import { UploadHTML } from 'public/icons';
+import { IconCirclePlus } from '@tabler/icons';
 import { useStyles } from './emailEditor.styles';
 import 'react-quill/dist/quill.snow.css';
 
@@ -128,7 +129,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
           <button type="button" className="ql-align" value="center" />
           <button type="button" className="ql-align" value="right" />
           <button type="button" className="ql-align" value="justify" />
-          <button type="button" className="ql-button"><AddButton /></button>
+          <button type="button" className="ql-button"><IconCirclePlus /></button>
           <button type="button" className="ql-code-block" />
           <FileButton onChange={(value) => readFile(value)} accept="text/html">
             {(props) => <button type="button" {...props}><UploadHTML /></button>}
