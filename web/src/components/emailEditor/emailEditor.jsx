@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import clsx from 'clsx';
 
-import { InputBase } from '@mantine/core';
+import { InputBase, FileButton } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
 
+import { AddButton, UploadHTML } from 'public/icons';
 import { useStyles } from './emailEditor.styles';
 import 'react-quill/dist/quill.snow.css';
 
@@ -15,13 +17,35 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 RegExp.escape = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
 
 const formats = [
-  'bold', 'italic', 'underline', 'link',
+  'size', 'bold', 'italic', 'underline',
+  'link', 'image', 'video', 'color', 'background',
   'list', 'bullet',
   'indent', 'align',
+  ['button'], 'code-block',
 ];
 
 const EmailEditor = ({ subject, body, setSubject, setBody }) => {
   const { classes } = useStyles();
+
+  useEffect(() => {
+    const getQuillBlots = async () => {
+      const ReactQuill = (await import('react-quill')).default;
+      const Inline = ReactQuill.Quill.import('blots/inline');
+      class ButtonBlot extends Inline {
+        static create(value) {
+          const node = super.create(value);
+          node.setAttribute('style', 'padding:8px 20px;border-radius:12px;border: none;');
+          return node;
+        }
+      }
+      ButtonBlot.blotName = 'button';
+      ButtonBlot.tagName = 'button';
+      ButtonBlot.className = 'button-styles';
+      ReactQuill.Quill.register('formats/button', ButtonBlot);
+      return ReactQuill.Quill;
+    };
+    getQuillBlots();
+  }, []);
 
   const editorId = React.useMemo(() => `q${nanoid()}`, []);
   const modules = React.useMemo(() => ({
@@ -30,6 +54,31 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       matchVisual: false,
     },
   }), [editorId]);
+
+  function readFile(uploadFile) {
+    const file = uploadFile;
+
+    const reader = new FileReader();
+
+    reader.readAsText(file);
+
+    reader.onload = () => {
+      setBody(reader.result.toString());
+      showNotification({
+        title: 'Template uploaded',
+        message: 'Template successfully uploaded',
+        color: 'green',
+      });
+    };
+
+    reader.onerror = () => {
+      showNotification({
+        title: 'Error',
+        message: 'Failed to load template',
+        color: 'red',
+      });
+    };
+  }
 
   return (
     <div className={classes.root}>
@@ -62,10 +111,15 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       <div className={classes.separator} />
       <div className={classes.toolbar}>
         <div id={editorId} className={clsx(classes.quillControls, 'email-editor')}>
+          <select className="ql-size" />
           <button type="button" className="ql-bold" />
           <button type="button" className="ql-italic" />
           <button type="button" className="ql-underline" />
           <button type="button" className="ql-link" />
+          <button type="button" className="ql-image" />
+          <button type="button" className="ql-video" />
+          <select className="ql-color" />
+          <select className="ql-background" />
           <button type="button" className="ql-list" value="ordered" />
           <button type="button" className="ql-list" value="bullet" />
           <button type="button" className="ql-indent" value="-1" />
@@ -74,6 +128,11 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
           <button type="button" className="ql-align" value="center" />
           <button type="button" className="ql-align" value="right" />
           <button type="button" className="ql-align" value="justify" />
+          <button type="button" className="ql-button"><AddButton /></button>
+          <button type="button" className="ql-code-block" />
+          <FileButton onChange={(value) => readFile(value)} accept="text/html">
+            {(props) => <button type="button" {...props}><UploadHTML /></button>}
+          </FileButton>
         </div>
       </div>
     </div>

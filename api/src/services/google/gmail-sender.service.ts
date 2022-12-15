@@ -17,12 +17,13 @@ const encodeEmail = (str: string) => Buffer.from(str)
   .replace(/\//g, '_');
 
 const encodeEmailString = (mailOptions: MailOptions, from: string) => {
+  const encodedSubject = Buffer.from(mailOptions.subject).toString('base64');
   return ['Content-Type: text/html; charset="UTF-8"\n',
     'MIME-Version: 1.0\n',
     'Content-Transfer-Encoding: 7bit\n',
     'to: ', mailOptions.to, '\n',
     'from: ', from, '\n',
-    'subject: ', mailOptions.subject, '\n\n',
+    'subject: ', `=?utf-8?B?${encodedSubject}?=`, '\n\n',
     mailOptions.text,
   ].join('');
 };
