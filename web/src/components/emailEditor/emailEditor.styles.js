@@ -32,6 +32,13 @@ export const useStyles = createStyles((theme) => ({
     border: '0 !important',
     display: 'inline-flex !important',
     marginLeft: -16,
+    '& .ql-editor .button-styles': {
+      padding: '10px 24px',
+      backgroundColor: theme.colors.primary[4],
+      borderRadius: 12,
+      border: 'none',
+      color: theme.colors.gray[0],
+    },
   },
   quillWrap: {
     marginTop: 8,

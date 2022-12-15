@@ -30,6 +30,7 @@ import AddIcon from './add.svg';
 import PenIcon from './pen.svg';
 import FileUploadIcon from './file-upload.svg';
 import PriceIcon from './price.svg';
+import UploadHTML from './upload-html.svg';
 
 export {
   ArrowDownIcon,
@@ -63,4 +64,5 @@ export {
   PenIcon,
   FileUploadIcon,
   PriceIcon,
+  UploadHTML,
 };
