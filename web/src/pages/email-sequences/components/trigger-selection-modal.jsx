@@ -10,7 +10,6 @@ import {
   Button,
   Switch,
   Text,
-  Checkbox,
   NumberInput,
   Box,
 } from '@mantine/core';
@@ -197,7 +196,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
             </Group>
           </Stack>
         )}
-        <Checkbox checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow users to repeat workflow" pt={16} />
+        <Switch checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow subscribers to repeat workflow" pt={16} />
         {allowRepeat && (
           <NumberInput
             name="repeat delay"

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Container, LoadingOverlay, Tabs, Text } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
@@ -22,10 +22,16 @@ const EmailSequences = () => {
     isLoading,
     isFetching,
   } = emailSequencesApi.useGetPipelines(env);
-  const pipelines = data?.results || [];
+  const pipelines = useMemo(() => data?.results || [], [data]);
   const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || null);
 
   const defaultTab = pipelines?.[0] || null;
+
+  useEffect(() => {
+    if (!openedPipeline && pipelines.length > 0) {
+      setOpenedPipeline(pipelines[0]._id);
+    }
+  }, [openedPipeline, pipelines]);
 
   const { classes } = useStyles();
 

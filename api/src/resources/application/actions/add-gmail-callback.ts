@@ -57,7 +57,7 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
     return doc;
   });
 
-  ctx.redirect(`${config.webUrl}/email-sequences/`);
+  ctx.redirect(`${config.webUrl}/pipeline-settings/`);
 };
 
 export default (router: AppRouter) => {

@@ -23,11 +23,11 @@ const UsersList = () => {
         </UnstyledButton>
       </td>
     </tr>
-  )) : <Text mt={16}>No users found</Text>;
+  )) : <Text mt={16}>No subscribers found</Text>;
 
   return (
     <Box>
-      <Text>Users in email sequences</Text>
+      <Text>Subscribers in email sequences</Text>
       <Table verticalSpacing="xs" horizontalSpacing="xs">
         <thead>
           <tr>
