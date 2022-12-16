@@ -17,6 +17,7 @@ const schema = Joi.object({
     eventKey: Joi.string(),
     stopEventKey: Joi.string(),
     allowRepeat: Joi.bool(),
+    allowMoveToNextSequence: Joi.bool().empty(null).default(false),
     repeatDelay: Joi.number().min(0),
     description: Joi.string().allow('').default(''),
   }).allow(null).default(null),

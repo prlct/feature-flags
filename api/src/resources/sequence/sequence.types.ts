@@ -15,6 +15,7 @@ export type Sequence = {
     allowRepeat?: boolean,
     repeatDelay?: number,
     description?: string,
+    allowMoveToNextSequence: boolean,
   } | null,
   enabled: boolean,
   total: number,

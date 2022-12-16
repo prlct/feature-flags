@@ -57,7 +57,9 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
-  const [allowMoveToNextSequence, setAllowMoveToNextSequence] = useState(false);
+  const [allowMoveToNextSequence, setAllowMoveToNextSequence] = useState(
+    sequence?.trigger?.allowMoveToNextSequence ?? false,
+  );
   const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
   const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
@@ -236,6 +238,7 @@ TriggerSelectionModal.propTypes = {
         repeatDelay: PropTypes.number,
         eventKey: PropTypes.string,
         stopEventKey: PropTypes.string,
+        allowMoveToNextSequence: PropTypes.string,
       }),
     }),
   }).isRequired,

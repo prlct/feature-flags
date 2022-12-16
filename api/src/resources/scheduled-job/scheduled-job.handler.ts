@@ -4,7 +4,7 @@ import schedule, { Job } from 'node-schedule';
 import logger from 'logger';
 import { eventBus, InMemoryEvent } from '@paralect/node-mongo';
 
-import { buildEmail, sendEmail } from 'services/google/gmail-sender.service';
+import { sendEmail } from 'services/google/gmail-sender.service';
 import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
 
 import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
