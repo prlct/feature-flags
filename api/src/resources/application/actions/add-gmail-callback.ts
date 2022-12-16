@@ -30,7 +30,7 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
   const oAuth2Client = new google.auth.OAuth2(config.gmail);
   const { tokens } = await oAuth2Client.getToken(code);
 
-  if (!tokens?.access_token || !tokens?.refresh_token) {
+  if (!tokens?.access_token) {
     ctx.throw(403, 'No tokens');
     return;
   }
@@ -44,11 +44,20 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
   }
 
   await applicationService.updateOne({ _id: appId }, (doc) => {
-    doc.gmailCredentials = { ...doc.gmailCredentials, [email]: { refreshToken, accessToken } };
+    const updatedTokens = doc.gmailCredentials?.[email] || {
+      accessToken: accessToken,
+      refreshToken: '',
+    };
+
+    if (refreshToken) {
+      updatedTokens.refreshToken = refreshToken;
+    }
+
+    doc.gmailCredentials = { ...doc.gmailCredentials, [email]: updatedTokens };
     return doc;
   });
 
-  ctx.body = 'ok';
+  ctx.redirect(`${config.webUrl}/email-sequences/`);
 };
 
 export default (router: AppRouter) => {
