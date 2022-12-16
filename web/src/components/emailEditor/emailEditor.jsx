@@ -35,15 +35,43 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       class ButtonBlot extends Inline {
         static create(value) {
           const node = super.create(value);
-          node.setAttribute('style', 'padding:8px 20px;border-radius:12px;border: none;');
+          node.setAttribute('style', 'padding:8px 20px;border-radius:12px;border: 1px solid #DDDDDD;');
           return node;
         }
       }
       ButtonBlot.blotName = 'button';
       ButtonBlot.tagName = 'button';
-      ButtonBlot.className = 'button-styles';
       ReactQuill.Quill.register('formats/button', ButtonBlot);
-      return ReactQuill.Quill;
+      const AlignStyle = ReactQuill.Quill.import('attributors/style/align');
+      const BackgroundStyle = ReactQuill.Quill.import('attributors/style/background');
+      const ColorStyle = ReactQuill.Quill.import('attributors/style/color');
+      const DirectionStyle = ReactQuill.Quill.import('attributors/style/direction');
+      const SizeStyle = ReactQuill.Quill.import('attributors/style/size');
+      ReactQuill.Quill.register(AlignStyle, true);
+      ReactQuill.Quill.register(BackgroundStyle, true);
+      ReactQuill.Quill.register(ColorStyle, true);
+      ReactQuill.Quill.register(DirectionStyle, true);
+      ReactQuill.Quill.register(SizeStyle, true);
+
+      const BlockPrototype = ReactQuill.Quill.import('blots/block');
+      class CustomBlock extends BlockPrototype {
+        constructor(domNode, value) {
+          super(domNode, value);
+          /* eslint-disable react/no-this-in-sfc */
+          this.format('margin', '0px');
+        }
+
+        static tagName = 'P';
+
+        format(name, value) {
+          if (name === 'margin') {
+            this.domNode.style.margin = value;
+          } else {
+            super.format(name, value);
+          }
+        }
+      }
+      ReactQuill.Quill.register(CustomBlock, true);
     };
     getQuillBlots();
   }, []);
@@ -112,7 +140,12 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       <div className={classes.separator} />
       <div className={classes.toolbar}>
         <div id={editorId} className={clsx(classes.quillControls, 'email-editor')}>
-          <select className="ql-size" />
+          <select title="Size" className="ql-size">
+            <option value="10px">Small</option>
+            <option value="13px" selected>Normal</option>
+            <option value="18px">Large</option>
+            <option value="32px">Huge</option>
+          </select>
           <button type="button" className="ql-bold" />
           <button type="button" className="ql-italic" />
           <button type="button" className="ql-underline" />

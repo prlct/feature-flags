@@ -47,5 +47,9 @@ export const useStyles = createStyles((theme) => ({
     height: 300,
     minHeight: 300,
     overflow: 'auto',
+    '& button': {
+      color: 'inherit',
+      backgroundColor: 'inherit',
+    },
   },
 }));
