@@ -21,6 +21,7 @@ export type Sequence = {
   total: number,
   completed: number,
   dropped: number,
+  index: number,
 
   createdOn?: Date;
   updatedOn?: Date;

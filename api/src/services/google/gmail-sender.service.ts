@@ -4,6 +4,7 @@ import config from 'config';
 import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
 import sequenceService from '../../resources/sequence/sequence.service';
+import sequenceEmailService from '../../resources/sequence-email/sequence-email.service';
 
 
 type MailOptions = {
@@ -74,6 +75,7 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
       userId: 'me',
       requestBody: { raw: encodedMail },
     });
+    await sequenceEmailService.atomic.updateOne({ _id: sequenceEmail._id }, {  $inc: { sent: 1 } });
   } catch (error) {
     console.error(error);
   }

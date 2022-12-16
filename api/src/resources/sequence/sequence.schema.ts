@@ -21,6 +21,7 @@ const schema = Joi.object({
     repeatDelay: Joi.number().min(0),
     description: Joi.string().allow('').default(''),
   }).allow(null).default(null),
+  index: Joi.number().integer().min(0),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

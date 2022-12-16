@@ -3,6 +3,7 @@ export type Pipeline = {
   name: string,
   applicationId: string,
   env: string,
+  index: number,
 
   createdOn?: Date;
   updatedOn?: Date;

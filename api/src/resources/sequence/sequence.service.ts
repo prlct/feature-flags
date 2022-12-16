@@ -6,4 +6,15 @@ import { Sequence } from './sequence.types';
 
 const service = db.createService<Sequence>(DATABASE_DOCUMENTS.SEQUENCES, { schema });
 
-export default Object.assign(service, {});
+const findNextEnabledSequence = async (sequence: Sequence) => {
+  const { results: sequences } = await service.find({
+    applicationId: sequence.applicationId,
+    enabled: true,
+    index: { $gt: sequence.index },
+    deletedOn: { $exists: false },
+  });
+
+  return sequences?.[0];
+};
+
+export default Object.assign(service, { findNextEnabledSequence });

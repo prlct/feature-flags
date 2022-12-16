@@ -17,6 +17,15 @@ export const todayScheduledJobs = {
   current: [] as Job[],
 };
 
+const failJob = async (jobId: string, reason: string) => {
+  return scheduledJobService.atomic.updateOne({ _id: jobId }, {
+    $set: {
+      status: ScheduledJobStatus.FAILED,
+      result: `Execute failed: ${reason}`,
+    },
+  });
+};
+
 const getHandler = (job: ScheduledJob) => {
   switch (job.type) {
     case ScheduledJobType.EMAIL_SEQUENCE_SEND: {
@@ -30,7 +39,7 @@ const getHandler = (job: ScheduledJob) => {
           });
 
           if (!email) {
-            throw new Error(`Sequence email not found or was disabled: ${job.data.emailId}`);
+            return await failJob(job._id, `Sequence email not found or was disabled: ${job.data.emailId}`);
           }
 
           const sequence = await sequenceService.findOne({
@@ -40,7 +49,7 @@ const getHandler = (job: ScheduledJob) => {
           });
 
           if (!sequence) {
-            throw new Error('Sequence not found or was removed');
+            return await failJob(job._id, 'Sequence not found or was removed');
           }
 
           const app = await applicationService.findOne({ _id: job.applicationId });
@@ -48,11 +57,11 @@ const getHandler = (job: ScheduledJob) => {
           const from = sequence.trigger?.senderEmail;
 
           if (!from) {
-            throw new Error('Sequence has no sender email set');
+            return await failJob(job._id, 'Sequence has no sender email set');
           }
 
           if (!app?.gmailCredentials?.[from]) {
-            throw new Error('Application not found or no gmail credentials provided');
+            return await failJob(job._id, 'Application not found or no gmail credentials provided');
           }
 
           await sendEmail(
@@ -61,22 +70,28 @@ const getHandler = (job: ScheduledJob) => {
             job.data.targetEmail,
           );
 
-          const { results: emails } = await sequenceEmailService.find({
-            sequenceId: email.sequenceId,
-            enabled: true,
-            deletedOn: { $exists: false },
-          });
-
-          const nextEmail = emails.find((m) => moment(m.createdOn).isAfter(moment(email.createdOn)));
+          const nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
 
           if (nextEmail) {
-            await scheduledJobService.addEmailSend(nextEmail, job.data.targetEmail);
+            await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
           } else {
-            // todo: next sequence?
+            const nextSequence = await sequenceService.findNextEnabledSequence(sequence);
+            if (nextSequence) {
+              const { results: nextEmails } = await sequenceEmailService.find({
+                sequenceId: nextSequence._id,
+                enabled: true,
+                deletedOn: { $exists: false },
+              });
+              const nextSequenceEmail = nextEmails?.[0];
+              if (nextSequenceEmail) {
+                await scheduledJobService.scheduleSequenceEmail(nextSequenceEmail, job.data.targetEmail);
+              }
+            }
           }
 
           await pipelineUserService.atomic.updateOne({
             'pipeline._id': job.data.pipelineId,
+            'sequence._id': sequence._id,
             deletedOn: { $exists: false },
           }, {
             $set: {
@@ -85,7 +100,6 @@ const getHandler = (job: ScheduledJob) => {
             },
           });
 
-          await sequenceEmailService.atomic.updateOne({ _id: job.data.emailId }, {  $inc: { sent: 1 } });
           await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
             return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
           });

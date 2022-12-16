@@ -7,6 +7,7 @@ const schema = Joi.object({
   applicationId: Joi.string().required(),
   name: Joi.string().required(),
   env: Joi.string().valid(...Object.values(Env)),
+  index: Joi.number().integer().min(0),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

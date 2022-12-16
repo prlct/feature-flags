@@ -46,6 +46,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     email,
     applicationId,
     'pipeline._id': pipeline._id,
+    'sequence._id': sequence._id,
     deletedOn: { $exists: false },
   });
 
@@ -70,7 +71,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     },
   });
 
-  await scheduledJobService.addEmailSend(results[0], email);
+  await scheduledJobService.scheduleSequenceEmail(results[0], email);
 
   ctx.body = createdUser;
 };

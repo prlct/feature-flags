@@ -84,7 +84,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       },
     });
 
-    await scheduledJobService.addEmailSend(firstEmail, email);
+    await scheduledJobService.scheduleSequenceEmail(firstEmail, email);
 
   }
 

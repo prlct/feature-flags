@@ -20,11 +20,18 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { name, env } = ctx.validatedData;
   const { applicationId } = ctx.params;
+  const { results: pipelines } = await pipelineService.find({
+    applicationId,
+    deletedOn: { $exists: false },
+  }, { projection: { index: 1 }, sort: { index: -1 }, limit: 1 });
+
+  const index = (pipelines[0]?.index ?? -1) + 1;
 
   ctx.body = await pipelineService.insertOne({
     applicationId,
     name,
     env,
+    index,
   });
 };
 

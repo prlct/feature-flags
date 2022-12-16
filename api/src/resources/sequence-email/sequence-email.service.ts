@@ -6,4 +6,14 @@ import { SequenceEmail } from './sequence-email.types';
 
 const service = db.createService<SequenceEmail>(DATABASE_DOCUMENTS.SEQUENCE_EMAILS, { schema });
 
-export default Object.assign(service, {});
+const findNextEnabledEmail = async (email: SequenceEmail) => {
+  const { results: emails } = await service.find({
+    sequenceId: email.sequenceId,
+    enabled: true,
+    index: { $gt: email.index },
+    deletedOn: { $exists: false },
+  });
+  return emails?.[0];
+};
+
+export default Object.assign(service, { findNextEnabledEmail });
