@@ -47,6 +47,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     applicationId,
     'pipeline._id': pipeline._id,
     'sequence._id': sequence._id,
+    finished: false,
     deletedOn: { $exists: false },
   });
 

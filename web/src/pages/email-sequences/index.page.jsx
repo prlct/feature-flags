@@ -28,7 +28,9 @@ const EmailSequences = () => {
   const defaultTab = pipelines?.[0] || null;
 
   useEffect(() => {
-    if (!openedPipeline && pipelines.length > 0) {
+    const noPipelineSelected = !openedPipeline
+      || !pipelines.find((pl) => pl._id === openedPipeline);
+    if (noPipelineSelected && pipelines.length > 0) {
       setOpenedPipeline(pipelines[0]._id);
     }
   }, [openedPipeline, pipelines]);

@@ -71,11 +71,10 @@ const getHandler = (job: ScheduledJob) => {
           );
 
           let nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
+          let nextSequence = null;
 
-          if (nextEmail) {
-            await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
-          } else {
-            const nextSequence = await sequenceService.findNextEnabledSequence(sequence);
+          if (!nextEmail && sequence.trigger?.allowMoveToNextSequence) {
+            nextSequence = await sequenceService.findNextEnabledSequence(sequence);
             if (nextSequence) {
               const { results: nextEmails } = await sequenceEmailService.find({
                 sequenceId: nextSequence._id,
@@ -83,22 +82,30 @@ const getHandler = (job: ScheduledJob) => {
                 deletedOn: { $exists: false },
               });
               nextEmail = nextEmails?.[0];
-              if (nextEmail) {
-                await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
-              }
             }
           }
+
+          const userFinishedSequence = !nextEmail;
+
+          const userUpdates = {
+            'sequence._id': nextSequence ? nextSequence._id : sequence._id,
+            'sequence.name': nextSequence ? nextSequence.name : sequence.name,
+            'sequence.lastEmailId': job.data.emailId,
+            'sequence.pendingEmailId': nextEmail?._id || null,
+            finished: userFinishedSequence,
+          };
 
           await pipelineUserService.atomic.updateOne({
             'pipeline._id': job.data.pipelineId,
             'sequence._id': sequence._id,
             deletedOn: { $exists: false },
           }, {
-            $set: {
-              'sequence.lastEmailId': job.data.emailId,
-              'sequence.pendingEmailId': nextEmail?._id || null,
-            },
+            $set: userUpdates,
           });
+
+          if (nextEmail) {
+            await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
+          }
 
           await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
             return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };

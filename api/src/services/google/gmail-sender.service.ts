@@ -5,6 +5,7 @@ import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
 import sequenceService from '../../resources/sequence/sequence.service';
 import sequenceEmailService from '../../resources/sequence-email/sequence-email.service';
+import pipelineUserService from '../../resources/pipeline-user/pipeline-user.service';
 
 
 type MailOptions = {
@@ -43,9 +44,7 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
     const oAuth2Client = new google.auth.OAuth2(config.gmail);
 
     const app = await applicationService.findOne({ _id: appId });
-
     const sequence = await sequenceService.findOne({ _id: sequenceEmail.sequenceId });
-
     const from = sequence?.trigger?.senderEmail;
 
     if (!from) {
@@ -76,6 +75,15 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
       requestBody: { raw: encodedMail },
     });
     await sequenceEmailService.atomic.updateOne({ _id: sequenceEmail._id }, {  $inc: { sent: 1 } });
+    await pipelineUserService.atomic.updateOne({
+      applicationId: appId,
+      email: to,
+      deletedOn: { $exists: false },
+      'sequence._id': sequence._id,
+    }, {
+      $set: { [`sequenceHistory.${sequence._id}`]: new Date() },
+    });
+    console.log(sequenceEmail.sequenceId, sequence._id);
   } catch (error) {
     console.error(error);
   }
