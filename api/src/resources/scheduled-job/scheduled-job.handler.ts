@@ -70,7 +70,7 @@ const getHandler = (job: ScheduledJob) => {
             job.data.targetEmail,
           );
 
-          const nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
+          let nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
 
           if (nextEmail) {
             await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
@@ -82,9 +82,9 @@ const getHandler = (job: ScheduledJob) => {
                 enabled: true,
                 deletedOn: { $exists: false },
               });
-              const nextSequenceEmail = nextEmails?.[0];
-              if (nextSequenceEmail) {
-                await scheduledJobService.scheduleSequenceEmail(nextSequenceEmail, job.data.targetEmail);
+              nextEmail = nextEmails?.[0];
+              if (nextEmail) {
+                await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
               }
             }
           }

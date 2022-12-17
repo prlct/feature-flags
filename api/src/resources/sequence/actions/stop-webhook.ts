@@ -6,7 +6,7 @@ import { extractTokenFromHeader, validateMiddleware } from 'middlewares';
 
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import { extractTokenFromQuery } from 'resources/application';
-import publicTokenAuthMiddleware from 'resources/application/middlewares/public-token-auth.middleware';
+import privateTokenAuthMiddleware from '../../application/middlewares/private-token-auth.middleware';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
@@ -49,7 +49,7 @@ export default (router: AppRouter) => {
     '/webhook/stop/:stopEventKey',
     extractTokenFromHeader,
     extractTokenFromQuery,
-    publicTokenAuthMiddleware,
+    privateTokenAuthMiddleware,
     validateMiddleware(schema),
     handler,
   );
