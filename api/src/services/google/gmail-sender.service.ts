@@ -83,7 +83,6 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
     }, {
       $set: { [`sequenceHistory.${sequence._id}`]: new Date() },
     });
-    console.log(sequenceEmail.sequenceId, sequence._id);
   } catch (error) {
     console.error(error);
   }
