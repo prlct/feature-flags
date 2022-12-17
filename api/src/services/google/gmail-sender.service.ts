@@ -3,6 +3,9 @@ import config from 'config';
 
 import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
+import sequenceService from '../../resources/sequence/sequence.service';
+import sequenceEmailService from '../../resources/sequence-email/sequence-email.service';
+import pipelineUserService from '../../resources/pipeline-user/pipeline-user.service';
 
 
 type MailOptions = {
@@ -28,7 +31,7 @@ const encodeEmailString = (mailOptions: MailOptions, from: string) => {
   ].join('');
 };
 
-export const buildEmail = async (
+export const buildEmail = (
   sequenceEmail: SequenceEmail,
   firstName?: string,
   lastName?: string,
@@ -36,25 +39,32 @@ export const buildEmail = async (
   return { subject: sequenceEmail.subject, text: sequenceEmail.body }; // fixme
 };
 
-export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
+export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to: string) => {
   try {
     const oAuth2Client = new google.auth.OAuth2(config.gmail);
 
     const app = await applicationService.findOne({ _id: appId });
+    const sequence = await sequenceService.findOne({ _id: sequenceEmail.sequenceId });
+    const from = sequence?.trigger?.senderEmail;
 
-    if (!app?.gmailCredentials) {
+    if (!from) {
+      return;
+    }
+
+    if (!app?.gmailCredentials?.[from]) {
       return;
     }
 
     oAuth2Client
       .setCredentials({
         refresh_token:
-          app.gmailCredentials.refreshToken,
+          app.gmailCredentials[from].refreshToken,
       });
 
     const gmail = google.gmail('v1');
 
-    const from = app.gmailCredentials.email;
+
+    const mailOptions = { ...buildEmail(sequenceEmail), to };
 
     const str = encodeEmailString(mailOptions, from);
     const encodedMail = encodeEmail(str);
@@ -64,7 +74,28 @@ export const sendEmail = async (appId: string, mailOptions: MailOptions) => {
       userId: 'me',
       requestBody: { raw: encodedMail },
     });
+    await sequenceEmailService.atomic.updateOne({ _id: sequenceEmail._id }, {  $inc: { sent: 1 } });
+    await pipelineUserService.atomic.updateOne({
+      applicationId: appId,
+      email: to,
+      deletedOn: { $exists: false },
+      'sequence._id': sequence._id,
+    }, {
+      $set: { [`sequenceHistory.${sequence._id}`]: new Date() },
+    });
   } catch (error) {
     console.error(error);
   }
+};
+
+export const getRedirectUrl = async (applicationId: string, state: string) => {
+  const oAuth2Client = new google.auth.OAuth2(config.gmail);
+  const url = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    client_id: config.gmail.clientId,
+    scope: ['https://www.googleapis.com/auth/gmail.send', 'https://www.googleapis.com/auth/userinfo.email'],
+    state,
+  });
+
+  return url;
 };

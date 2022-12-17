@@ -8,8 +8,8 @@ import sequenceEmailService from 'resources/sequence-email/sequence-email.servic
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
-import publicTokenAuthMiddleware from 'resources/application/middlewares/public-token-auth.middleware';
 import { extractTokenFromQuery } from 'resources/application';
+import privateTokenAuthMiddleware from 'resources/application/middlewares/private-token-auth.middleware';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
@@ -84,7 +84,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       },
     });
 
-    await scheduledJobService.addEmailSend(firstEmail, email);
+    await scheduledJobService.scheduleSequenceEmail(firstEmail, email);
 
   }
 
@@ -96,7 +96,7 @@ export default (router: AppRouter) => {
     '/webhook/start/:eventKey',
     extractTokenFromHeader,
     extractTokenFromQuery,
-    publicTokenAuthMiddleware,
+    privateTokenAuthMiddleware,
     validateMiddleware(schema),
     handler,
   );

@@ -305,3 +305,26 @@ export function useSendTestEmail(id) {
     },
   });
 }
+
+export function useGetSenderEmails() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const getSenderEmails = () => apiService.get(`/applications/${applicationId}/sender-emails`);
+
+  return useQuery(['sender-emails'], getSenderEmails);
+}
+
+export function useUpdateSenderEmail(sequenceId) {
+  const updateEmail = (email) => apiService.put(`${sequencesResource}/${sequenceId}/sender-email`, { email });
+
+  return useMutation(updateEmail, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Sender email updated',
+        message: 'Sender email updated',
+        color: 'green',
+      });
+    },
+  });
+}

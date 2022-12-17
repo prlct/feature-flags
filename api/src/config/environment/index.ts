@@ -5,6 +5,7 @@ const base = {
   env,
   port: process.env.PORT || 3001,
   isDev: env === 'development',
+  appCookieKey: process.env.APP_COOKIE_KEY || 'development-key',
   mongo: {
     connection: process.env.MONGO_CONNECTION || '',
     dbName: '',

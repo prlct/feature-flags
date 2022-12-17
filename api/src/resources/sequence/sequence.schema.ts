@@ -12,13 +12,16 @@ const schema = Joi.object({
   completed: Joi.number().integer().default(0),
   trigger: Joi.object({
     name: Joi.string().required(),
+    senderEmail: Joi.string().email(),
     eventName: Joi.string(),
     eventKey: Joi.string(),
     stopEventKey: Joi.string(),
     allowRepeat: Joi.bool(),
+    allowMoveToNextSequence: Joi.bool().empty(null).default(false),
     repeatDelay: Joi.number().min(0),
     description: Joi.string().allow('').default(''),
   }).allow(null).default(null),
+  index: Joi.number().integer().min(0),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

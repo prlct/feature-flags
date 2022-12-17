@@ -10,7 +10,7 @@ import sequenceService from 'resources/sequence/sequence.service';
 
 const service = db.createService<ScheduledJob>(DATABASE_DOCUMENTS.SCHEDULED_JOBS, { schema });
 
-const addEmailSend = async (sequenceEmail: SequenceEmail, email: string) => {
+const scheduleSequenceEmail = async (sequenceEmail: SequenceEmail, email: string) => {
   const scheduledDate = moment().add(sequenceEmail.delayDays, 'days').toDate();
   const sequence = await sequenceService.findOne({
     _id: sequenceEmail.sequenceId,
@@ -36,4 +36,4 @@ const addEmailSend = async (sequenceEmail: SequenceEmail, email: string) => {
   await service.insertOne(job);
 };
 
-export default Object.assign({ addEmailSend }, service);
+export default Object.assign({ scheduleSequenceEmail }, service);

@@ -15,8 +15,12 @@ const PipelinesNavbarItem = () => {
       route: routes.route.emailSequences,
     },
     {
-      name: 'Users',
+      name: 'Subscribers',
       route: routes.route.pipelineUsers,
+    },
+    {
+      name: 'Settings',
+      route: routes.route.pipelineSettings,
     },
   ];
 

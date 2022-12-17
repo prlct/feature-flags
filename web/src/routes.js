@@ -26,6 +26,7 @@ export const route = {
   featureFlag: '/feature-flags/[id]',
   emailSequences: '/email-sequences',
   pipelineUsers: '/pipeline-users',
+  pipelineSettings: '/pipeline-settings',
   apiKey: '/api-key',
   members: '/members',
   subscriptionPlans: '/subscription-plans',
@@ -119,6 +120,11 @@ export const configuration = {
   },
   pipelineUsers: {
     route: route.pipelineUsers,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  pipelineSettings: {
+    route: route.pipelineSettings,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },

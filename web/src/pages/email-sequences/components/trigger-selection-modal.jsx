@@ -10,7 +10,6 @@ import {
   Button,
   Switch,
   Text,
-  Checkbox,
   NumberInput,
   Box,
 } from '@mantine/core';
@@ -18,7 +17,13 @@ import { IconCopy, IconPlus } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
 
 import config from 'config';
-import { useAddSequence, useUpdateSequenceTrigger, useGetApplicationEvents, useAddApplicationEvent } from 'resources/email-sequence/email-sequence.api';
+import {
+  useAddSequence,
+  useUpdateSequenceTrigger,
+  useGetApplicationEvents,
+  useAddApplicationEvent,
+  useGetSenderEmails, useUpdateSenderEmail,
+} from 'resources/email-sequence/email-sequence.api';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
@@ -38,12 +43,23 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const [selectedStopEvent, setSelectedStopEvent] = useState(
     sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
   );
+
+  const { data: senderEmails = [] } = useGetSenderEmails();
+
+  const [selectedSenderEmail, setSelectedSenderEmail] = useState(
+    sequence?.trigger?.senderEmail
+    || senderEmails?.filter((e) => e.value !== selectedSenderEmail)?.[0],
+  );
+
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
   const [creatingEventKey, setCreatingEventKey] = useState('');
 
   const [webhooksShown, setWebhooksShown] = useState(false);
   const [triggerDescription, setTriggerDescription] = useState(sequence?.trigger?.description ?? '');
+  const [allowMoveToNextSequence, setAllowMoveToNextSequence] = useState(
+    sequence?.trigger?.allowMoveToNextSequence ?? false,
+  );
   const [allowRepeat, setAllowRepeat] = useState(sequence?.trigger?.allowRepeat ?? false);
   const [repeatDelay, setRepeatDelay] = useState(sequence?.trigger?.repeatDelay ?? 0);
 
@@ -53,6 +69,11 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
   const createSequence = useAddSequence(pipelineId).mutate;
 
+  const {
+    mutate: updateSenderEmail,
+    isLoading: isSenderEmailLoading,
+  } = useUpdateSenderEmail(sequence?._id);
+
   const handleTriggerSave = () => {
     const data = {
       allowRepeat,
@@ -61,6 +82,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       eventKey: selectedEvent,
       stopEventKey: selectedStopEvent,
       description: triggerDescription,
+      allowMoveToNextSequence,
     };
     if (sequence?._id) {
       updateSequenceTrigger(data);
@@ -89,8 +111,20 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     setCreatingEventKey(name.toLowerCase().replaceAll(' ', '-'));
   };
 
+  const changeSenderEmail = async (email) => {
+    await updateSenderEmail(email);
+    setSelectedSenderEmail(email);
+  };
+
   return (
     <>
+      <Select
+        data={senderEmails}
+        label="Email original"
+        value={selectedSenderEmail}
+        onChange={changeSenderEmail}
+        disabled={isSenderEmailLoading}
+      />
       <Select
         label="Select an event to start the sequence"
         data={events}
@@ -133,6 +167,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
       <TextInput label="Trigger name" value={triggerName} onChange={(e) => setTriggerName(e.target.value)} />
       <TextInput label="Trigger description" value={triggerDescription} onChange={(e) => setTriggerDescription(e.target.value)} />
+      <Switch label="Move user to next sequence after last email sent" checked={allowMoveToNextSequence} onChange={(e) => setAllowMoveToNextSequence(e.currentTarget.checked)} />
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
         {webhooksShown && (
@@ -163,7 +198,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
             </Group>
           </Stack>
         )}
-        <Checkbox checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow users to repeat workflow" pt={16} />
+        <Switch checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow subscribers to repeat workflow" pt={16} />
         {allowRepeat && (
           <NumberInput
             name="repeat delay"
@@ -197,11 +232,13 @@ TriggerSelectionModal.propTypes = {
       _id: PropTypes.string,
       trigger: PropTypes.shape({
         name: PropTypes.string,
+        senderEmail: PropTypes.string,
         description: PropTypes.string,
         allowRepeat: PropTypes.string,
         repeatDelay: PropTypes.number,
         eventKey: PropTypes.string,
         stopEventKey: PropTypes.string,
+        allowMoveToNextSequence: PropTypes.string,
       }),
     }),
   }).isRequired,

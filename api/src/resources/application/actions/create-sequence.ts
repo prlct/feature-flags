@@ -12,9 +12,11 @@ const schema = Joi.object({
     name: Joi.string().required(),
     eventName: Joi.string(),
     eventKey: Joi.string(),
+    eventStopKey: Joi.string(),
     allowRepeat: Joi.bool().default(false),
     repeatDelay: Joi.number().min(0).integer(),
     description: Joi.string().empty(null).default('').allow(''),
+    allowMoveToNextSequence: Joi.bool().default(false),
   }).allow(null),
   pipelineId: Joi.string().required(),
 });
@@ -22,12 +24,28 @@ const schema = Joi.object({
 type ValidatedData = {
   name: string,
   pipelineId: string,
-  trigger: object,
+  trigger?: {
+    name: string,
+    eventName: string,
+    eventKey: string,
+    stopEventKey: string,
+    allowRepeat: boolean,
+    repeatDelay: number,
+    description: string,
+    allowMoveToNextSequence: boolean,
+  } | null,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
   const { name, pipelineId, trigger } = ctx.validatedData;
+
+  const { results } = await sequenceService.find({
+    pipelineId,
+    deletedOn: { $exists: false },
+  }, { projection: { index: 1 }, sort: { index: -1 }, limit: 1 });
+
+  const index = (results[0]?.index ?? -1) + 1;
 
   ctx.body = await sequenceService.insertOne({
     applicationId,
@@ -35,6 +53,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     name,
     enabled: false,
     trigger,
+    index,
   });
 };
 

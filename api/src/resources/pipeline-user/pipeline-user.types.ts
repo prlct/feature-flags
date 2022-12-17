@@ -14,6 +14,10 @@ export type PipelineUser = {
     lastEmailId?: string | null,
     pendingEmailId?: string | null,
   },
+  finished: boolean,
+  sequenceHistory?: {
+    [key in string]: Date;
+  },
 
   createdOn?: Date;
   updatedOn?: Date;

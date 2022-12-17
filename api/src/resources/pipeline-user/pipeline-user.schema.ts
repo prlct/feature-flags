@@ -17,6 +17,11 @@ const schema = Joi.object({
     lastEmailId: Joi.string().allow(null),
     pendingEmailId: Joi.string().allow(null),
   }).default(null),
+  finished: Joi.bool().empty(null).default(false),
+  sequenceHistory: Joi.object({})
+    .pattern(Joi.string().required(), Joi.date().required())
+    .empty(null)
+    .default({}),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

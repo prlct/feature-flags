@@ -19,11 +19,10 @@ const schema = Joi.object({
     [Env.DEMO]: envDataSchema,
     [Env.PRODUCTION]: envDataSchema,
   }),
-  gmailCredentials: Joi.object({
-    email: Joi.string().email().required(),
+  gmailCredentials: Joi.object({}).allow(null).pattern(Joi.string().email(), {
     accessToken: Joi.string().allow(''),
     refreshToken: Joi.string().allow(''),
-  }).allow(null),
+  }),
   events: Joi.array().items({
     label: Joi.string().required(),
     value: Joi.string().required(),

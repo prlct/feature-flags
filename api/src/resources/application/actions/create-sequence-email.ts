@@ -26,6 +26,13 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
   const { name, sequenceId, subject, body, delayDays } = ctx.validatedData;
 
+  const { results } = await sequenceEmailService.find({
+    sequenceId,
+    deletedOn: { $exists: false },
+  }, { projection: { index: 1 }, sort: { index: -1 }, limit: 1 });
+
+  const index = (results[0]?.index ?? -1) + 1;
+
   ctx.body = await sequenceEmailService.insertOne({
     applicationId,
     name,
@@ -34,6 +41,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     sequenceId,
     subject,
     body,
+    index,
   });
 };
 
