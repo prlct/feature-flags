@@ -13,7 +13,7 @@ export const useGetPipelines = (env) => {
   const applicationId = currentAdmin.applicationIds[0];
   const getPipelines = async () => apiService.get(pipelinesResource, { env, applicationId });
 
-  return useQuery([pipelinesResource], getPipelines);
+  return useQuery([pipelinesResource, env], getPipelines);
 };
 
 export function useAddPipeline(env) {
