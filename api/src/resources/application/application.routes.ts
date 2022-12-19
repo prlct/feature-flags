@@ -12,6 +12,7 @@ import createEvent from './actions/create-event';
 import addGmail from './actions/add-gmail';
 import addGmailCallback from './actions/add-gmail-callback';
 import getSenderEmails from './actions/get-sender-emails';
+import triggerEvent from './actions/trigger-event';
 
 const privateRoutes = routeUtil.getRoutes([
   createFeature,
@@ -29,6 +30,7 @@ const privateRoutes = routeUtil.getRoutes([
 
 const publicRoutes = routeUtil.getRoutes([
   addGmailCallback,
+  triggerEvent,
 ]);
 
 export default {

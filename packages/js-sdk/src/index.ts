@@ -1,4 +1,4 @@
-import apiService from './api.service';
+import apiService, { ApiClientType } from './api.service';
 import storage from './storage'
 
 const featureFlagResource = '/feature-flags';
@@ -11,6 +11,7 @@ export interface Constructor {
   publicApiKey: string;
   env: string;
   defaultFeatures: { [key: string]: boolean };
+  isDevelopmentApi: boolean,
 }
 
 export enum UserEventType {
@@ -94,11 +95,12 @@ class FeatureFlags {
   private _featureOverrides: FeatureOverride[];
   private _configs: { [key in string]: string };
   private _variants: { [key in string]: ABVariant };
+  private apiClient: ApiClientType;
 
-  constructor({ publicApiKey, env, defaultFeatures = {} }: Constructor) {
+  constructor({ publicApiKey, env, defaultFeatures = {}, isDevelopmentApi = false }: Constructor) {
     this._apiKey = publicApiKey;
     this._env = env;
-
+    this.apiClient = apiService(isDevelopmentApi);
 
     this._features = defaultFeatures;
     this._featureOverrides = []
@@ -182,7 +184,7 @@ class FeatureFlags {
     };
 
     try {
-      await apiService.post(userEventResource, data, config);
+      await this.apiClient.post(userEventResource, data, config);
     } catch (error) {
       console.log(consoleLogPrefix, error);
     }
@@ -202,7 +204,7 @@ class FeatureFlags {
     };
 
     try {
-      const response = await apiService.get(`${featureFlagResource}/features`, params, config);
+      const response = await this.apiClient.get(`${featureFlagResource}/features`, params, config);
 
       const features = response.features || {};
       this._features = this.mergeFeatures(features);
@@ -217,6 +219,20 @@ class FeatureFlags {
     }
   }
 
+  async triggerEvent(eventKey: string) {
+    if (!this._user) {
+      return;
+    }
+
+    const config = {
+      headers: {
+        Authorization: 'Bearer ' + this._apiKey,
+      },
+    };
+
+    return await this.apiClient.post(`/applications/trigger-event`, { eventKey, userId: this._user._id }, config)
+  }
+
   private async _createUser(user: CreateUserParams) {
     const { id, email, data } = user;
     const reqData: CreateUserData = { env: this._env, id, email, data };
@@ -228,7 +244,7 @@ class FeatureFlags {
     };
 
     try {
-      const response = await apiService.post(`${userResource}`, reqData, config);
+      const response = await this.apiClient.post(`${userResource}`, reqData, config);
 
       this._user = response;
 
@@ -273,7 +289,7 @@ class FeatureFlags {
 let instance: FeatureFlags;
 
 export default {
-  create: ({ publicApiKey, env, defaultFeatures }: Constructor) => {
+  create: ({ publicApiKey, env, defaultFeatures, isDevelopmentApi = false }: Constructor) => {
     if (!publicApiKey) {
       throw new RangeError('Invalid arguments: "publicApiKey" must be provided.');
     }
@@ -286,7 +302,7 @@ export default {
       return instance;
     }
 
-    instance = new FeatureFlags({ publicApiKey, env, defaultFeatures });
+    instance = new FeatureFlags({ publicApiKey, env, defaultFeatures, isDevelopmentApi });
 
     return instance;
   }

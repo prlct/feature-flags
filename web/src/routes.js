@@ -31,6 +31,7 @@ export const route = {
   members: '/members',
   subscriptionPlans: '/subscription-plans',
   emailEditor: '/email-editor',
+  sequencesDemo: '/sequences-demo',
 };
 
 export const path = {
@@ -148,6 +149,11 @@ export const configuration = {
   },
   emailEditor: {
     route: route.emailEditor,
+    scope: scope.PRIVATE,
+    layout: layout.MAIN,
+  },
+  sequencesDemo: {
+    route: route.sequencesDemo,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
   },
