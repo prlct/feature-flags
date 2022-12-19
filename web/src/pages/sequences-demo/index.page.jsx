@@ -12,12 +12,13 @@ const SequencesDemo = () => {
 
   const demoConfig = gf.getConfig('sequences-demo');
   const demoText = demoConfig?.text;
+  const demoEventKey = demoConfig?.eventKey || 'sequences-demo';
   const demoButtonText = demoConfig?.buttonText || 'Demo button';
 
   const triggerDemoEvent = async () => {
     try {
       setIsLoading(true);
-      await gf.triggerEvent('sequences-demo');
+      await gf.triggerEvent(demoEventKey);
     } finally {
       setIsLoading(false);
     }
