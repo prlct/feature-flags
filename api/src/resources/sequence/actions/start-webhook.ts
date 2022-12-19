@@ -57,7 +57,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
-  const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
+  const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId, deletedOn: { $exists: false } });
 
   if (!pipeline) {
     ctx.throw(400, 'Pipeline not found');

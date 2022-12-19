@@ -40,6 +40,8 @@ interface ErrorResponse {
   data: unknown;
 }
 
+export type ApiClientType = ApiClient;
+
 class ApiClient {
   _handlers: any;
   _api: any;
@@ -118,8 +120,8 @@ class ApiClient {
   }
 }
 
-export default new ApiClient({
-  baseURL: API_URL,
+export default (isDev: boolean = false) => new ApiClient({
+  baseURL: isDev ? 'http://localhost:3001' : API_URL,
   withCredentials: true,
   responseType: 'json',
 });

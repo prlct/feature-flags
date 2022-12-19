@@ -30,6 +30,7 @@ const navbarTabs = [{
   path: routes.route.emailSequences,
   icon: <IconFilter />,
   component: PipelinesNavbarItem,
+  featureFlag: 'email-sequences',
 },
 {
   label: routes.navbarTabs.API_KEYS,
@@ -46,19 +47,24 @@ const navbarTabs = [{
   path: routes.route.subscriptionPlans,
   icon: <PriceIcon />,
 },
+{
+  label: 'Sequences demo',
+  path: routes.route.sequencesDemo,
+  icon: <IconFlag />,
+  featureFlag: 'sequences-demo',
+},
 ];
 
 const MainLayout = ({ children }) => {
   const growthflags = useGrowthFlags();
-  const sideBarIsOn = growthflags?.isOn('email-sequences');
 
   const { classes } = useStyles();
 
-  const navbarTabsFiltered = navbarTabs.filter((tab) => !(tab.path === '/email-sequences' && !sideBarIsOn));
+  const navbarTabsFiltered = navbarTabs.filter((tab) => !tab.featureFlag
+    || (tab.featureFlag && growthflags?.isOn(tab.featureFlag)));
   return (
     <AppShell
       header={<Header />}
-              // footer={<Footer />}
       navbar={(
         <Navbar
           p={0}
@@ -126,7 +132,7 @@ const MainLayout = ({ children }) => {
             })}
           </Group>
         </Navbar>
-              )}
+      )}
       fixed
       padding={0}
       styles={(theme) => ({
