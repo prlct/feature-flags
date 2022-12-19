@@ -40,6 +40,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     applicationId: application._id,
     'trigger.eventKey': eventKey,
     enabled: true,
+    index: 0,
     deletedOn: { $exists: false },
   });
 
@@ -49,6 +50,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const pipelineUser = await pipelineUserService.findOne({
     'pipeline._id': sequence.pipelineId,
+    email: email,
     finished: { $ne: true },
     deletedOn: { $exists: false },
   });
