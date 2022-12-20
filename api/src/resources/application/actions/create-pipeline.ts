@@ -27,6 +27,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const index = (pipelines[0]?.index ?? -1) + 1;
 
+  // todo: create 2 empty sequences
+
   ctx.body = await pipelineService.insertOne({
     applicationId,
     name,

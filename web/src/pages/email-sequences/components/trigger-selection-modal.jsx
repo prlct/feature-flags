@@ -41,7 +41,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     sequence?.trigger?.eventKey || events?.[0]?.value,
   );
   const [selectedStopEvent, setSelectedStopEvent] = useState(
-    sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0],
+    sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0]?.value,
   );
 
   const { data: senderEmails = [] } = useGetSenderEmails();
@@ -66,15 +66,20 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const startURL = `${config.apiUrl}/sequences/webhook/start/${selectedEvent}`;
   const stopURL = `${config.apiUrl}/sequences/webhook/stop/${selectedEvent}`;
 
-  const updateSequenceTrigger = useUpdateSequenceTrigger(sequence?._id).mutate;
-  const createSequence = useAddSequence(pipelineId).mutate;
+  const {
+    mutate: updateSequenceTrigger,
+    error: updateError,
+  } = useUpdateSequenceTrigger(sequence?._id);
+  const { mutate: createSequence, error: createError } = useAddSequence(pipelineId);
+
+  const errors = updateError?.data?.errors || createError?.data?.errors;
 
   const {
     mutate: updateSenderEmail,
     isLoading: isSenderEmailLoading,
   } = useUpdateSenderEmail(sequence?._id);
 
-  const handleTriggerSave = () => {
+  const handleTriggerSave = async () => {
     const data = {
       allowRepeat,
       repeatDelay,
@@ -85,12 +90,18 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       allowMoveToNextSequence,
     };
     if (sequence?._id) {
-      updateSequenceTrigger(data);
+      await updateSequenceTrigger(data, {
+        onSuccess: () => {
+          context.closeModal(id);
+        },
+      });
     } else {
-      createSequence({ name: 'new sequence', trigger: data });
+      await createSequence({ name: 'new sequence', trigger: data }, {
+        onSuccess: () => {
+          context.closeModal(id);
+        },
+      });
     }
-
-    context.closeModal(id);
   };
 
   const saveEvent = () => {
@@ -124,6 +135,18 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
         value={selectedSenderEmail}
         onChange={changeSenderEmail}
         disabled={isSenderEmailLoading}
+      />
+      <TextInput
+        error={errors?.name}
+        label="Trigger name"
+        value={triggerName}
+        onChange={(e) => setTriggerName(e.target.value)}
+      />
+      <TextInput
+        label="Trigger description"
+        value={triggerDescription}
+        onChange={(e) => setTriggerDescription(e.target.value)}
+        error={errors?.description}
       />
       <Select
         label="Select an event to start the sequence"
@@ -165,8 +188,6 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
         </Stack>
       )}
 
-      <TextInput label="Trigger name" value={triggerName} onChange={(e) => setTriggerName(e.target.value)} />
-      <TextInput label="Trigger description" value={triggerDescription} onChange={(e) => setTriggerDescription(e.target.value)} />
       <Switch label="Move user to next sequence after last email sent" checked={allowMoveToNextSequence} onChange={(e) => setAllowMoveToNextSequence(e.currentTarget.checked)} />
       <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
       <Stack>
