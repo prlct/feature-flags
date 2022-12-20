@@ -6,6 +6,7 @@ import { AppKoaContext, AppRouter } from 'types';
 import pipelineService from 'resources/pipeline/pipeline.service';
 import { Env } from '../index';
 import applicationAuth from '../middlewares/application-auth.middleware';
+import sequenceService from '../../sequence/sequence.service';
 
 const schema = Joi.object({
   name: Joi.string().required(),
@@ -27,14 +28,29 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const index = (pipelines[0]?.index ?? -1) + 1;
 
-  // todo: create 2 empty sequences
-
-  ctx.body = await pipelineService.insertOne({
+  const createdPipeline = await pipelineService.insertOne({
     applicationId,
     name,
     env,
     index,
   });
+
+  await sequenceService.insertMany([{
+    pipelineId: createdPipeline._id,
+    applicationId,
+    enabled: false,
+    name: 'New sequence',
+    index: 0,
+  },
+  {
+    pipelineId: createdPipeline._id,
+    applicationId,
+    enabled: false,
+    name: 'New sequence',
+    index: 1,
+  }]);
+
+  ctx.body = createdPipeline;
 };
 
 export default (router: AppRouter) => {
