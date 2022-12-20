@@ -15,6 +15,7 @@ import Header from './Header';
 
 import { useStyles } from './styles';
 import PipelinesNavbarItem from './PipelinesNavbarItem';
+import DemoNavbarItem from './DemoNavbarItem';
 
 const ASIDE_WIDTH = 255;
 
@@ -52,6 +53,7 @@ const navbarTabs = [{
   path: routes.route.sequencesDemo,
   icon: <IconFlag />,
   featureFlag: 'sequences-demo',
+  component: DemoNavbarItem,
 },
 ];
 
@@ -89,7 +91,7 @@ const MainLayout = ({ children }) => {
               );
 
               if (tab.component) {
-                return <tab.component key={tab.path} />;
+                return <tab.component key={tab.path} tab={tab} isTabActive={isTabActive} />;
               }
 
               return (
