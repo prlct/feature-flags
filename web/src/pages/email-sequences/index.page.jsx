@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Container, Group, LoadingOverlay, Tabs, Text, Title, Button } from '@mantine/core';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -29,14 +29,6 @@ const EmailSequences = () => {
   const [openedPipelineName, setOpenedPipelineName] = useState(pipelines?.[0]?.name || '');
 
   const defaultTab = pipelines?.[0] || null;
-
-  useEffect(() => {
-    const noPipelineSelected = !openedPipeline
-      || !pipelines.find((pl) => pl._id === openedPipeline);
-    if (noPipelineSelected && pipelines.length > 0) {
-      setOpenedPipeline(pipelines[0]._id);
-    }
-  }, [openedPipeline, pipelines]);
 
   const { classes } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
