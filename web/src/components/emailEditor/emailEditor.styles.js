@@ -5,6 +5,9 @@ export const useStyles = createStyles((theme) => ({
     minWidth: 700,
     position: 'relative',
     margin: 16,
+    '@media (max-width: 768px)': {
+      margin: 0,
+    },
   },
   subject: {
     display: 'flex',
@@ -27,6 +30,7 @@ export const useStyles = createStyles((theme) => ({
 
   toolbar: {
     display: 'flex',
+
   },
   quillControls: {
     border: '0 !important',
@@ -38,6 +42,14 @@ export const useStyles = createStyles((theme) => ({
       borderRadius: 12,
       border: 'none',
       color: theme.colors.gray[0],
+    },
+    '@media (max-width: 768px)': {
+      flexWrap: 'wrap',
+      '& svg': {
+        width: 22,
+        height: 20,
+        padding: '2px 3px',
+      },
     },
   },
   quillWrap: {

@@ -11,6 +11,12 @@ export const useStyles = createStyles(({ colors }) => ({
     marginBottom: 45,
     marginTop: 29,
     marginLeft: 31,
+    '@media (max-width: 768px)': {
+      '& svg': {
+        height: 24,
+        maxWidth: 140,
+      },
+    },
   },
   activeTab: {
     backgroundColor: colors.gray[0],
@@ -36,6 +42,9 @@ export const useStyles = createStyles(({ colors }) => ({
     fontWeight: 400,
     fontSize: 14,
     lineHeight: '24px',
+    '@media (max-width: 768px)': {
+      fontSize: 16,
+    },
   },
   activeLabel: {
     fontWeight: 700,
@@ -43,5 +52,33 @@ export const useStyles = createStyles(({ colors }) => ({
   },
   pipelineActiveTab: {
     backgroundColor: colors.gray[0],
+  },
+  container: {
+    padding: 24,
+    '@media (max-width: 768px)': {
+      padding: '0 20px',
+      borderTop: `1px solid ${colors.gray[2]}`,
+    },
+  },
+  logout: {
+    margin: 16,
+    paddingTop: 8,
+    height: 40,
+    width: 'calc(100% - 16px)',
+    position: 'relative',
+    borderTop: `1px solid ${colors.gray[2]}`,
+    '&:hover': {
+      backgroundColor: colors.gray[0],
+      height: 56,
+      '&:after': {
+        content: '""',
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        height: 56,
+        width: 2,
+        backgroundColor: colors.gray[9],
+      },
+    },
   },
 }));

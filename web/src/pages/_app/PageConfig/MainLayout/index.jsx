@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import router from 'next/router';
-import { AppShell, Container, Group, Navbar, Text, ActionIcon } from '@mantine/core';
-import { IconFlag, IconFilter, IconApiApp, IconUsers } from '@tabler/icons';
+import { AppShell, Container, Group, Navbar, Burger, Accordion, MediaQuery, ActionIcon, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { IconFlag, IconFilter, IconApiApp, IconUsers, IconLogout } from '@tabler/icons';
 
 import { PriceIcon } from 'public/icons';
 
@@ -10,16 +10,18 @@ import { Link } from 'components';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
 import * as routes from 'routes';
 
-import { LogoDarkImage } from 'public/images';
+import { LogoDarkImage, LogoImage } from 'public/images';
+import { useState, useCallback } from 'react';
+import { accountApi } from 'resources/account';
+import { useAmplitude } from 'contexts/amplitude-context';
 import Header from './Header';
 
 import { useStyles } from './styles';
 import PipelinesNavbarItem from './PipelinesNavbarItem';
 import DemoNavbarItem from './DemoNavbarItem';
+import NavbarItems from './NavbarItems';
 
 const ASIDE_WIDTH = 255;
-
-const configurations = Object.values(routes.configuration);
 
 const navbarTabs = [{
   label: routes.navbarTabs.FEATURE_FLAGS,
@@ -61,78 +63,123 @@ const MainLayout = ({ children }) => {
   const growthflags = useGrowthFlags();
 
   const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navbarTabsFiltered = navbarTabs.filter((tab) => !tab.featureFlag
     || (tab.featureFlag && growthflags?.isOn(tab.featureFlag)));
+
+  const handleMenuOpen = (value) => {
+    setMenuOpen(value);
+  };
+
+  const { mutate: signOut } = accountApi.useSignOut();
+
+  const amplitude = useAmplitude();
+
+  const onClickSignOut = useCallback(() => {
+    amplitude.track('Admin log out');
+    signOut();
+  }, [amplitude, signOut]);
+
   return (
     <AppShell
-      header={<Header />}
+      header={<Header menu={!menuOpen} />}
       navbar={(
         <Navbar
           p={0}
-          style={{ height: '100vh', top: 0 }}
           hiddenBreakpoint="sm"
           width={{ sm: ASIDE_WIDTH, lg: ASIDE_WIDTH }}
           position={{ top: 0, left: 0 }}
+          sx={{
+            height: '100vh',
+            top: 0,
+            '@media (max-width: 768px)': {
+              height: '72px',
+              background: 'transparent',
+            },
+          }}
         >
-          <Group spacing={36} className={classes.logoGroup}>
-            <Link type="router" href={routes.route.home} underline={false}>
-              <LogoDarkImage />
-            </Link>
-          </Group>
-          <Group
-            pl={16}
-            direction="column"
-            position="left"
-          >
-            {navbarTabsFiltered.map((tab) => {
-              const isTabActive = configurations.find(
-                (item) => item.route === router.route && item.navbarTab === tab.label,
-              );
+          {matches ? (
+            <>
+              <MediaQuery
+                query="(max-width: 768px)"
+                styles={{ marginBottom: 16, '& svg': { width: !menuOpen && 29 } }}
+              >
+                <Group spacing={36} className={classes.logoGroup}>
+                  <Link type="router" href={routes.route.home} underline={false}>
+                    {menuOpen ? (
+                      <LogoDarkImage />
+                    ) : (
+                      <LogoImage sx={{ width: 30 }} />
+                    )}
+                  </Link>
 
-              if (tab.component) {
-                return <tab.component key={tab.path} tab={tab} isTabActive={isTabActive} />;
-              }
-
-              return (
-                <Link
-                  key={tab.label}
-                  href={tab.path}
-                  underline={false}
-                  type="router"
-                  style={{ width: '100%' }}
-                >
-                  <Group
-                    direction="row"
-                    className={[
-                      classes.tabItem,
-                      isTabActive && classes.activeTab,
-                    ]}
-                  >
-                    <ActionIcon
-                      radius="md"
-                      variant="transparent"
-                      size={40}
-                      className={[
-                        classes.tabIcon,
-                        isTabActive && classes.activeIcon,
-                      ]}
+                </Group>
+              </MediaQuery>
+              <Accordion
+                value={menuOpen}
+                onChange={handleMenuOpen}
+                chevron={(
+                  <Burger
+                    size={16}
+                    opened={menuOpen}
+                    onClick={() => setMenuOpen((o) => !o)}
+                  />
+            )}
+                variant="filled"
+                styles={{
+                  chevron: {
+                    position: 'absolute',
+                    left: 'auto',
+                    right: 32,
+                    top: 30,
+                  },
+                  item: { backgroundColor: '#ffff !important', height: menuOpen && '100vh' },
+                  control: { padding: 0, color: '#424242' },
+                  content: { paddingTop: 25 },
+                }}
+              >
+                <Accordion.Item value="menu">
+                  <Accordion.Control />
+                  <Accordion.Panel>
+                    <NavbarItems
+                      navbarTabs={navbarTabsFiltered}
+                      menuOpen={() => handleMenuOpen(false)}
+                    />
+                    <Group
+                      direction="row"
+                      className={classes.logout}
+                      onClick={onClickSignOut}
                     >
-                      {tab.icon}
-                    </ActionIcon>
-
-                    <Text className={[
-                      classes.label,
-                      isTabActive && classes.activeLabel,
-                    ]}
-                    >
-                      {tab.label}
-                    </Text>
-                  </Group>
+                      <ActionIcon
+                        radius="md"
+                        variant="transparent"
+                        size={40}
+                        className={classes.tabIcon}
+                      >
+                        <IconLogout size={24} />
+                      </ActionIcon>
+                      <Text>
+                        Logout
+                      </Text>
+                    </Group>
+                  </Accordion.Panel>
+                </Accordion.Item>
+              </Accordion>
+            </>
+          ) : (
+            <>
+              <Group spacing={36} className={classes.logoGroup}>
+                <Link type="router" href={routes.route.home} underline={false}>
+                  <LogoDarkImage />
                 </Link>
-              );
-            })}
-          </Group>
+              </Group>
+              <NavbarItems navbarTabs={navbarTabsFiltered} />
+            </>
+          )}
+
         </Navbar>
       )}
       fixed
@@ -143,13 +190,18 @@ const MainLayout = ({ children }) => {
           flexDirection: 'column',
           minHeight: '100vh',
           backgroundColor: theme.white,
+          '@media (max-width: 768px)': {
+            '& .mantine-AppShell-main': {
+              paddingTop: 82,
+            },
+          },
         },
         main: {
           width: '99vw',
         },
       })}
     >
-      <Container fluid size="xl" p={24}>
+      <Container fluid size="xl" className={classes.container}>
         {children}
       </Container>
     </AppShell>

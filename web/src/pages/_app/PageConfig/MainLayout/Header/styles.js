@@ -21,4 +21,9 @@ export const useStyles = createStyles((theme) => ({
   logoGroup: {
     width: 255,
   },
+  menu: {
+    '@media (max-width: 768px)': {
+      marginTop: 13,
+    },
+  },
 }));

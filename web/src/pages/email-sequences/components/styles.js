@@ -7,9 +7,14 @@ export const useStyles = createStyles((theme) => ({
     width: 368,
     borderRadius: 12,
     border: `1px solid ${theme.colors.gray[2]}`,
+    '@media (max-width: 768px)': {
+      width: 280,
+      padding: 16,
+      fontSize: 16,
+    },
   },
   pipelineDisabled: {
-    backgroundColor: '#d5d5d5',
+    backgroundColor: theme.colors.gray[1],
   },
   addButton: {
     fontWeight: 600,

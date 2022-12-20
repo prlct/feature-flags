@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import clsx from 'clsx';
 
 import { InputBase, FileButton } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
 
@@ -27,6 +28,7 @@ const formats = [
 
 const EmailEditor = ({ subject, body, setSubject, setBody }) => {
   const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     const getQuillBlots = async () => {
@@ -110,7 +112,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
   }
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ minWidth: matches ? 'calc(100vw - 70px)' : 700 }}>
       <div className={classes.subject}>
         <div className={classes.subjectInputWrap}>
           <InputBase
@@ -140,9 +142,9 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
       <div className={classes.separator} />
       <div className={classes.toolbar}>
         <div id={editorId} className={clsx(classes.quillControls, 'email-editor')}>
-          <select title="Size" className="ql-size">
+          <select title="Size" className="ql-size" defaultValue="13px">
             <option value="10px">Small</option>
-            <option value="13px" selected>Normal</option>
+            <option value="13px">Normal</option>
             <option value="18px">Large</option>
             <option value="32px">Huge</option>
           </select>
