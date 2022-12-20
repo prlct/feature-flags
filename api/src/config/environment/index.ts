@@ -1,4 +1,5 @@
 import { configUtil } from 'utils';
+import * as process from 'process';
 const env = process.env.APP_ENV || 'development';
 
 const base = {
@@ -25,6 +26,7 @@ const base = {
   gmail: {
     clientId: process.env.GMAIL_CLIENT_ID || '',
     clientSecret: process.env.GMAIL_CLIENT_SECRET || '',
+    redirectUri: process.env.GMAIL_REDIRECT_URI || '',
   },
   subscriptions: {
     starter: process.env.STARTER_SUBSCRIPTION_ID || '',
