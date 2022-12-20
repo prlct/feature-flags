@@ -10,9 +10,9 @@ const schema = Joi.object({
   name: Joi.string().required(),
   trigger: Joi.object({
     name: Joi.string().required(),
-    eventName: Joi.string(),
-    eventKey: Joi.string(),
-    eventStopKey: Joi.string(),
+    eventName: Joi.string().optional(),
+    eventKey: Joi.string().optional(),
+    eventStopKey: Joi.string().optional(),
     allowRepeat: Joi.bool().default(false),
     repeatDelay: Joi.number().min(0).integer(),
     description: Joi.string().empty(null).default('').allow(''),

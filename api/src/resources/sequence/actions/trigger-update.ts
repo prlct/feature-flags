@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-import sequenceService from '../sequence.service';
+import sequenceService from 'resources/sequence/sequence.service';
 import { AppKoaContext, AppRouter } from 'types';
 import { validateMiddleware } from 'middlewares';
 
@@ -8,9 +8,9 @@ import sequenceAccess from '../middlewares/sequence-access';
 
 const schema = Joi.object({
   name: Joi.string().required(),
-  eventName: Joi.string(),
-  eventKey: Joi.string(),
-  stopEventKey: Joi.string(),
+  eventName: Joi.string().optional(),
+  eventKey: Joi.string().optional(),
+  stopEventKey: Joi.string().optional(),
   allowRepeat: Joi.bool().default(false),
   allowMoveToNextSequence: Joi.bool().empty(null).default(false),
   repeatDelay: Joi.number().integer().min(0),
@@ -25,7 +25,7 @@ type ValidatedData = {
   name: string,
   eventKey?: string,
   eventName?: string,
-  stopEventKey: string,
+  stopEventKey?: string,
   allowRepeat: boolean,
   repeatDelay: number,
   description: string,
