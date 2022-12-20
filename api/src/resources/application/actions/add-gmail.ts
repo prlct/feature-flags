@@ -1,4 +1,3 @@
-import { google } from 'googleapis';
 import { nanoid } from 'nanoid';
 
 import { AppKoaContext, AppRouter } from 'types';

@@ -8,6 +8,9 @@
     "redirectUri" : "https://api.growthflags.com/users/google/code",
     "authRedirectUri": "https://api.growthflags.com/account/sign-in/google"
   },
+  "gmail": {
+    "redirectUri": "https://api.growthflags.com/applications/add-gmail"
+  },
   "github": {
     "redirectUri": "https://api.growthflags.com/account/sign-in/github"
   },
