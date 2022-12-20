@@ -12,7 +12,7 @@ const schema = Joi.object({
     name: Joi.string().required(),
     eventName: Joi.string().optional(),
     eventKey: Joi.string().optional(),
-    eventStopKey: Joi.string().optional(),
+    stopEventKey: Joi.string().optional(),
     allowRepeat: Joi.bool().default(false),
     repeatDelay: Joi.number().min(0).integer(),
     description: Joi.string().empty(null).default('').allow(''),
