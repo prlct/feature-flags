@@ -38,6 +38,7 @@ const signinGoogleWithCode = async (ctx: AppKoaContext, next: Next) => {
         google: true,
       },
     };
+    amplitudeService.trackEvent(admin._id, 'Admin sign in', { method: 'google' });
   } else {
     ctx.state.authAdminData = {
       email: payload.email,
@@ -51,8 +52,6 @@ const signinGoogleWithCode = async (ctx: AppKoaContext, next: Next) => {
   }
 
   await next();
-
-  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'google' });
 
   ctx.redirect(config.webUrl);
 };
