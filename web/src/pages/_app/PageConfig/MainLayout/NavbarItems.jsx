@@ -25,7 +25,14 @@ const NavbarItems = ({ navbarTabs, menuOpen }) => {
         );
 
         if (tab.component) {
-          return <tab.component key={tab.path} menuOpen={menuOpen} />;
+          return (
+            <tab.component
+              key={tab.path}
+              tab={tab}
+              isTabActive={isTabActive}
+              menuOpen={menuOpen}
+            />
+          );
         }
 
         return (
