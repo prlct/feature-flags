@@ -3,6 +3,7 @@ import { IconEdit, IconPlayerPlay, IconPlayerStop, IconSend, IconTrash } from '@
 import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 
 import { openContextModal } from '@mantine/modals';
+import { useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
@@ -22,6 +23,8 @@ const EmailCard = (props) => {
     _id,
   } = email;
 
+  const matches = useMediaQuery('(max-width: 768px)');
+
   const textColor = enabled ? 'gray' : 'dimmed';
 
   const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
@@ -29,42 +32,48 @@ const EmailCard = (props) => {
   const handleEmailToggle = emailSequencesApi.useEmailToggle(_id).mutate;
   const handleEmailRemove = emailSequencesApi.useEmailRemove(_id).mutate;
 
+  const enabledMenuIcon = enabled ? <IconPlayerStop size={16} /> : <IconPlayerPlay size={16} />;
+
   return (
     <Stack style={{ position: 'relative' }}>
       <DayBadge days={delayDays} />
       <Card shadow="sm" withBorder sx={{ position: 'relative', color: textColor, borderRadius: 12 }}>
         <Stack spacing={0}>
-          <Group position="apart">
-            <Text size={18} weight={600} color={enabled ? '#17181A' : 'dimmed'} style={{ lineHeight: '22px' }}>{name}</Text>
-            <Menu withinPortal>
+          <Group position="apart" sx={{ '& .mantine-Modal-inner': { padding: 0 } }}>
+            <Text size={matches ? 16 : 18} weight={600} color={enabled ? '#17181A' : 'dimmed'} style={{ lineHeight: '22px' }}>{name}</Text>
+            <Menu withinPortal position={matches ? 'bottom-end' : 'bottom'} width={matches && 190}>
               <Menu.Target>
                 <CardSettingsButton />
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item
-                  icon={enabled ? <IconPlayerStop size={16} /> : <IconPlayerPlay size={16} />}
+                  icon={!matches && enabledMenuIcon}
                   onClick={handleEmailToggle}
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>
                 <Menu.Item
-                  icon={<IconEdit size={16} />}
+                  icon={!matches && <IconEdit size={16} />}
                   onClick={() => openContextModal({
                     modal: 'sequenceEmail',
                     innerProps: { email },
-                    size: 800,
+                    size: (matches ? 'calc(100vw - 32px)' : 800),
                   })}
                 >
                   Edit
                 </Menu.Item>
-                <Menu.Item icon={<IconTrash size={16} color="red" />} onClick={handleEmailRemove}>
-                  Remove
-                </Menu.Item>
                 <Menu.Item
-                  icon={<IconSend size={16} />}
+                  icon={!matches && <IconSend size={16} />}
                   onClick={() => openContextModal({ modal: 'sendTestEmail', innerProps: { email } })}
                 >
                   Send a test email
+                </Menu.Item>
+                <Menu.Item
+                  icon={!matches && <IconTrash size={16} color="red" />}
+                  onClick={handleEmailRemove}
+                  sx={{ color: 'red' }}
+                >
+                  Remove
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>

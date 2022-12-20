@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea, LoadingOverlay } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
+import { useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
@@ -28,6 +29,7 @@ const Pipeline = ({ id }) => {
   const paddedSequencesNumber = sequences.length >= padSeqTo ? 0 : padSeqTo - sequences.length;
 
   const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const emptySequences = useMemo(() => (new Array(paddedSequencesNumber)
     .fill(null)
@@ -46,7 +48,7 @@ const Pipeline = ({ id }) => {
           <Paper key={seq._id} withBorder className={classes.pipeline}>
             <Stack spacing={0}>
               <Group position="apart">
-                <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">New sequence</Text>
+                <Text weight={600} size={matches ? 16 : 18} style={{ lineHeight: '22px' }} color="#17181A">New sequence</Text>
                 <SequenceMenu id={seq._id} sequence={seq} />
               </Group>
               <Space h="sm" />
@@ -78,7 +80,7 @@ const Pipeline = ({ id }) => {
             onClick={() => handleAddSequence({ name: 'New sequence' })}
             variant="light"
             className={classes.addButton}
-            style={{ minWidth: 304 }}
+            style={{ minWidth: matches ? 248 : 304 }}
           >
             + Add sequence
           </Button>

@@ -13,6 +13,7 @@ import {
 } from '@mantine/core';
 import { IconEdit } from '@tabler/icons';
 import { openContextModal } from '@mantine/modals';
+import { useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
@@ -33,13 +34,14 @@ const Sequence = (props) => {
 
   const emails = data?.results || [];
   const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   return (
     <Paper withBorder className={[classes.pipeline, !enabled && classes.pipelineDisabled]}>
       <LoadingOverlay visible={isRefetching || isLoading || isFetching} />
       <Stack>
         <Group position="apart">
-          <Text weight={600} size={18} style={{ lineHeight: '22px' }} color="#17181A">
+          <Text weight={600} size={matches ? 16 : 18} style={{ lineHeight: '22px' }} color="#17181A">
             {sequence.name}
           </Text>
           <SequenceMenu sequence={sequence} />
@@ -49,7 +51,7 @@ const Sequence = (props) => {
         <Card shadow="sm" p="sm" radius="sm" withBorder mt={16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>
             <Group position="apart">
-              <Text size="lg" weight="bold">{sequence.trigger?.name}</Text>
+              <Text size={matches ? 16 : 'lg'} weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
                 <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}>
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>

@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { Container, LoadingOverlay, Tabs, Text } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
+import { Container, Group, LoadingOverlay, Tabs, Text, Title, Button } from '@mantine/core';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import Pipeline from './components/pipeline';
 
-import { useStyles } from './styles';
+import { useStyles, tabListStyles } from './styles';
 import PipelineTab from './components/pipeline-tab';
+import InactivePipelineTab from './components/inactive-pipeline-tab';
 
 const EmailSequences = () => {
   const [env] = useLocalStorage({
@@ -22,26 +23,23 @@ const EmailSequences = () => {
     isLoading,
     isFetching,
   } = emailSequencesApi.useGetPipelines(env);
+
   const pipelines = useMemo(() => data?.results || [], [data]);
-  const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || null);
+  const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || 'activation-pipelines');
+  const [openedPipelineName, setOpenedPipelineName] = useState(pipelines?.[0]?.name || '');
 
   const defaultTab = pipelines?.[0] || null;
 
-  useEffect(() => {
-    const noPipelineSelected = !openedPipeline
-      || !pipelines.find((pl) => pl._id === openedPipeline);
-    if (noPipelineSelected && pipelines.length > 0) {
-      setOpenedPipeline(pipelines[0]._id);
-    }
-  }, [openedPipeline, pipelines]);
-
   const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const handleTabChange = (newTabName) => {
     if (['add-new', 'remove-current'].includes(newTabName)) {
       return;
     }
     setOpenedPipeline(newTabName);
+    setOpenedPipelineName(pipelines?.filter((pipeline) => (
+      pipeline._id === newTabName))[0]?.name);
   };
 
   const {
@@ -56,8 +54,52 @@ const EmailSequences = () => {
 
   const isLoaderVisible = isCreateInProgress || isRemoveInProgress || isLoading || isFetching;
 
+  if (openedPipeline === 'activation-pipelines') {
+    return (
+      <Container sx={{ marginTop: 16, maxWidth: '100%' }} ml={0} p={0}>
+        <LoadingOverlay visible={isLoaderVisible} overlayBlur={2} />
+
+        <Group className={classes.headerGroup}>
+          <Title order={2}>Activation pipelines</Title>
+          <Button
+            className={classes.addButton}
+            variant="light"
+            onClick={handleAddPipeline}
+          >
+            + Add pipeline
+          </Button>
+        </Group>
+
+        <Tabs
+          defaultValue={defaultTab}
+          value={openedPipeline}
+          onTabChange={handleTabChange}
+          variant="pills"
+          keepMounted={false}
+          sx={{ position: 'relative' }}
+        >
+          <Tabs.List
+            grow={false}
+            className={classes.tabPanel}
+            sx={(theme) => tabListStyles(theme, openedPipeline)}
+          >
+            {pipelines.map((pipeline) => (
+              <InactivePipelineTab key={pipeline._id} pipeline={pipeline} />
+            ))}
+          </Tabs.List>
+
+          {pipelines.map((pipeline) => (
+            <Tabs.Panel key={pipeline._id} value={pipeline._id}>
+              <Pipeline id={pipeline._id} />
+            </Tabs.Panel>
+          ))}
+        </Tabs>
+      </Container>
+    );
+  }
+
   return (
-    <Container sx={{ maxWidth: 'fit-content', marginTop: 16 }} ml={0} p={0}>
+    <Container sx={{ marginTop: 16, maxWidth: '100%' }} ml={0} p={0}>
       <LoadingOverlay visible={isLoaderVisible} overlayBlur={2} />
       <Tabs
         defaultValue={defaultTab}
@@ -65,23 +107,57 @@ const EmailSequences = () => {
         onTabChange={handleTabChange}
         variant="pills"
         keepMounted={false}
+        sx={{ position: 'relative' }}
       >
-        <Tabs.List grow={false} className={classes.tabPanel} style={{ width: 'calc(100% - 120px)' }}>
-          {pipelines.map((pipeline) => (
-            <PipelineTab key={pipeline._id} pipeline={pipeline} />
-          ))}
-          <Tabs.Tab value="add-new" onClick={handleAddPipeline} className={classes.tabItem}>
-            <Text>+ New pipeline</Text>
-          </Tabs.Tab>
+        <Tabs.List
+          grow={false}
+          className={classes.tabPanel}
+          sx={(theme) => tabListStyles(theme, openedPipeline)}
+          style={{ width: matches && '100%' }}
+        >
+          {matches ? (
+            <Tabs.Tab value="activation-pipelines" className={classes.tabItem}>
+              <Text sx={{ fontSize: 14, color: 'black', textDecoration: 'underline' }}>All pipelines </Text>
+              <Text sx={{ fontSize: 14, color: 'black', paddingLeft: 3 }}>/</Text>
+              <Text sx={{ fontSize: 14, color: '#797C80', width: '100%', paddingLeft: 3 }}>
+                {openedPipelineName}
+              </Text>
+            </Tabs.Tab>
+          ) : (
+            <>
+              <Tabs.Tab value="activation-pipelines" className={classes.tabItem}>
+                <Text>All pipelines</Text>
+              </Tabs.Tab>
+              {pipelines.map((pipeline) => (
+                <PipelineTab key={pipeline._id} pipeline={pipeline} />
+              ))}
+            </>
+          )}
+
+        </Tabs.List>
+        {matches ? (
+          <Tabs.List style={{ alignItems: 'center', color: 'black', justifyContent: 'space-between', marginBottom: 16 }}>
+            <Text sx={{ fontSize: 16, fontWeight: 700 }}>{openedPipelineName}</Text>
+            <Tabs.Tab
+              value="remove-current"
+              onClick={() => handleRemovePipeline(openedPipeline)}
+              className={classes.tabItem}
+              style={{ color: 'black', height: 24 }}
+            >
+              <Text>Delete pipeline</Text>
+            </Tabs.Tab>
+          </Tabs.List>
+        ) : (
           <Tabs.Tab
             value="remove-current"
             onClick={() => handleRemovePipeline(openedPipeline)}
             className={classes.tabItem}
-            style={{ position: 'absolute', right: 0 }}
+            style={{ position: 'absolute', right: 0, top: 0 }}
           >
             <Text>Delete pipeline</Text>
           </Tabs.Tab>
-        </Tabs.List>
+        )}
+
         {pipelines.map((pipeline) => (
           <Tabs.Panel key={pipeline._id} value={pipeline._id}>
             <Pipeline id={pipeline._id} />

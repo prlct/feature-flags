@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Accordion, ActionIcon, Divider, Group, Text } from '@mantine/core';
 
 import { Link } from 'components';
@@ -8,7 +9,7 @@ import router from 'next/router';
 
 import { useStyles } from './styles';
 
-const PipelinesNavbarItem = () => {
+const PipelinesNavbarItem = ({ menuOpen }) => {
   const items = [
     {
       name: 'Pipelines',
@@ -47,7 +48,12 @@ const PipelinesNavbarItem = () => {
             </ActionIcon>
           )}
         >
-          <Text size="sm">Activation&nbsp;pipelines</Text>
+          <Text
+            size="sm"
+            className={classes.label}
+          >
+            Activation&nbsp;pipelines
+          </Text>
         </Accordion.Control>
         <Accordion.Panel>
           <Group
@@ -64,6 +70,7 @@ const PipelinesNavbarItem = () => {
                 type="router"
                 pl={4}
                 style={{ width: '100%' }}
+                onClick={menuOpen}
               >
                 <Group style={{ height: '32px' }}>
                   <Divider orientation="vertical" size="xs" />
@@ -84,6 +91,14 @@ const PipelinesNavbarItem = () => {
       </Accordion.Item>
     </Accordion>
   );
+};
+
+PipelinesNavbarItem.propTypes = {
+  menuOpen: PropTypes.func,
+};
+
+PipelinesNavbarItem.defaultProps = {
+  menuOpen: null,
 };
 
 export default PipelinesNavbarItem;

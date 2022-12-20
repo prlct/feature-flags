@@ -50,6 +50,7 @@ const PipelineTab = ({ pipeline }) => {
             onBlur={saveName}
             variant="unstyled"
             autoFocus
+            sx={{ minWidth: 100 }}
           />
         )
         : <Text onDoubleClick={openInput}>{pipelineName}</Text>}
