@@ -26,7 +26,7 @@ const DemoNavbarItem = ({ tab, isTabActive }) => {
       href={tab.path}
       underline={false}
       type="router"
-      style={{ width: '100%' }}
+      style={{ width: '100%', color: '#424242' }}
     >
       <Group
         direction="row"
