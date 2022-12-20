@@ -40,6 +40,7 @@ const signinGithubWithCode = async (ctx: AppKoaContext, next: Next) => {
         github: true,
       },
     };
+    amplitudeService.trackEvent(admin._id, 'Admin sign in', { method: 'github' });
   } else {
     ctx.state.authAdminData = {
       email: payload.email,
@@ -52,8 +53,6 @@ const signinGithubWithCode = async (ctx: AppKoaContext, next: Next) => {
     };
   }
   await next();
-
-  amplitudeService.trackEvent(ctx, admin ? 'Admin sign in' : 'Admin sign up', { method: 'github' });
 
   ctx.redirect(config.webUrl);
 };

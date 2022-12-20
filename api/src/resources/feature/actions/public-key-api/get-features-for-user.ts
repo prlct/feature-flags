@@ -42,8 +42,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   if (!application.sdkInstalled) {
     await applicationService.atomic.updateOne({ _id: application._id }, { $set: { sdkInstalled: true } });
-    amplitudeService.trackEvent(ctx, 'Install SDK');
-    amplitudeService.identifyUser(ctx, 'sdk', true);
+    amplitudeService.trackEvent(undefined, 'Install SDK');
   }
 
   const features = await featureService.getFeaturesForEnv(application._id, env);

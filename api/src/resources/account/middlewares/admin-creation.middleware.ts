@@ -9,6 +9,7 @@ import { Admin, adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 import slackService from 'services/slack.service';
 import mailerLiteService from 'services/mailerlite.service';
+import amplitudeService from 'services/amplitude/amplitude.service';
 
 const createAdmin = async (ctx: AppKoaContext) => {
 
@@ -29,7 +30,7 @@ const createAdmin = async (ctx: AppKoaContext) => {
       { _id: admin._id },
       (old) => ({ ...old, oauth: { ...old.oauth, ...admin.oauth } }),
     );
-      
+
     const adminUpdated = adminChanged || admin;
     await Promise.all([
       adminService.updateLastRequest(adminUpdated._id),
@@ -83,14 +84,15 @@ const createAdmin = async (ctx: AppKoaContext) => {
         }, { session });
         return { newAdmin: createdAdmin };
       });
-    
+
     if (newAdmin) {
       await Promise.all([
         adminService.updateLastRequest(newAdmin._id),
         authService.setTokens(ctx, newAdmin._id),
       ]);
       const name = `${newAdmin.firstName} ${newAdmin.lastName}`.trim();
-
+      const method = Object.keys(ctx.state.authAdminData?.oauth || {})[0];
+      amplitudeService.trackEvent(newAdmin._id, 'Admin sign up', { method });
       slackService.send(`${name} just signed up! Reach out by email: ${newAdmin.email}.`);
       mailerLiteService.addOnboardingSubscriber({ email: newAdmin.email, name });
     }
