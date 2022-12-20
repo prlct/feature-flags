@@ -13,6 +13,7 @@ const schema = Joi.object({
   privateApiKey: Joi.string().required(),
   featureIds: Joi.array().items(Joi.string()).unique().required().default([]),
   trackEnabled: Joi.boolean(),
+  sdkInstalled: Joi.boolean().default(false).empty(null),
   envs: Joi.object({
     [Env.DEVELOPMENT]: envDataSchema,
     [Env.STAGING]: envDataSchema,

@@ -4,6 +4,7 @@ import { validateMiddleware, extractTokenFromHeader } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { featureService } from 'resources/feature';
 import { Env } from 'resources/application';
+import { applicationService } from 'resources/application';
 import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userService } from 'resources/user';
 import  { amplitudeService } from 'services';
@@ -39,8 +40,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     }
   }
 
-  // amplitudeService.trackEvent(ctx, 'Install SDK');
-  // amplitudeService.identifyUser(ctx, 'sdk', true);
+  if (!application.sdkInstalled) {
+    await applicationService.atomic.updateOne({ _id: application._id }, { $set: { sdkInstalled: true } });
+    amplitudeService.trackEvent(ctx, 'Install SDK');
+    amplitudeService.identifyUser(ctx, 'sdk', true);
+  }
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
 

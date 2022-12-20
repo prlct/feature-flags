@@ -16,6 +16,7 @@ export type Application = {
   privateApiKey: string;
   featureIds: string[];
   trackEnabled: boolean;
+  sdkInstalled?: boolean;
   gmailCredentials?: {
     [key in string]: {
       accessToken: string,
