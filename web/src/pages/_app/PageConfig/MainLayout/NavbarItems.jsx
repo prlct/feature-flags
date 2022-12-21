@@ -79,7 +79,11 @@ const NavbarItems = ({ navbarTabs, menuOpen }) => {
 };
 
 NavbarItems.propTypes = {
-  navbarTabs: PropTypes.arrayOf(PropTypes.string).isRequired,
+  navbarTabs: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    icon: PropTypes.node,
+    path: PropTypes.string,
+  })).isRequired,
   menuOpen: PropTypes.func,
 };
 

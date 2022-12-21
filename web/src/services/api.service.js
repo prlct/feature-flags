@@ -1,6 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
 import axios from 'axios';
-import qs from 'qs';
 
 import config from 'config';
 
@@ -109,5 +108,4 @@ export default new ApiClient({
   baseURL: config.apiUrl,
   withCredentials: true,
   responseType: 'json',
-  paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'brackets' }),
 });

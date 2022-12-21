@@ -1,6 +1,6 @@
 {
   "name": "@growthflags/js-sdk",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "license": "MIT",
   "description": "Growthflags Javascript SDK",
   "main": "dist/index.js",
@@ -21,7 +21,7 @@
     "directory": "packages/js-sdk"
   },
   "peerDependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2 || ^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.14",
