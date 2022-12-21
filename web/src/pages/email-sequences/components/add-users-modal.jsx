@@ -1,47 +1,38 @@
 import { useState } from 'react';
-import { Stack, TextInput, Text, Group, Button, Accordion, useMantineTheme } from '@mantine/core';
+import { useForm } from 'react-hook-form';
+import { Stack, TextInput, Text, Group, Button, Accordion, useMantineTheme, Table, Box } from '@mantine/core';
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
 import { Dropzone } from '@mantine/dropzone';
 import { showNotification } from '@mantine/notifications';
 import * as Papa from 'papaparse';
 
-import { useAddUsers, useAddUsersList } from 'resources/email-sequence/email-sequence.api';
+import { useAddUsersList } from 'resources/email-sequence/email-sequence.api';
 import PropTypes from 'prop-types';
 
 const AddUsersModal = ({ context, id, innerProps }) => {
   const { sequence } = innerProps;
 
+  const {
+    register,
+    handleSubmit,
+  } = useForm();
+
   const sequenceId = sequence._id;
-  const handleAddUser = useAddUsers(sequenceId).mutate;
   const handleAddUsersList = useAddUsersList(sequenceId).mutate;
-  const [email, setEmail] = useState('');
+  const [users, setUsersList] = useState([]);
   const [fileCSV, setFileCSV] = useState(null);
-  const [emailList, setEmailList] = useState([]);
   const theme = useMantineTheme();
 
-  const addUser = ({ email, sequenceId }) => {
-    handleAddUser({ email, sequenceId }, {
+  const addUsersList = ({ usersList, sequenceId }) => {
+    handleAddUsersList({ usersList, sequenceId }, {
       onSuccess: () => {
         context.closeModal(id);
       },
-    });
-  };
-
-  const addUsersList = ({ emailList, sequenceId }) => {
-    handleAddUsersList({ emailList, sequenceId }, {
-      onSuccess: () => {
-        context.closeModal(id);
+      onError: () => {
+        setUsersList([]);
+        setFileCSV(null);
       },
     });
-  };
-
-  const handleSaveUser = () => {
-    if (email) {
-      addUser({ email, sequenceId });
-    }
-    if (emailList.length) {
-      addUsersList({ emailList, sequenceId });
-    }
   };
 
   function readFile(uploadFile) {
@@ -55,7 +46,7 @@ const AddUsersModal = ({ context, id, innerProps }) => {
         ...commonConfig,
         header: true,
         complete: (result) => {
-          setEmailList(result.data);
+          setUsersList([...users, ...result.data.slice(0, -1)]);
         },
       },
     );
@@ -69,19 +60,41 @@ const AddUsersModal = ({ context, id, innerProps }) => {
     });
   };
 
+  const onAddUser = (data) => {
+    let usersList = users;
+    if (data.email) {
+      usersList = [...usersList, data];
+    }
+    addUsersList({ usersList, sequenceId });
+  };
+
   return (
     <Stack>
       <Accordion>
         <Accordion.Item value="addUsers">
           <Accordion.Control>Add users</Accordion.Control>
           <Accordion.Panel>
-            <TextInput
-              label="email"
-              placeholder="some@email.com"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-            />
+            <form id="addUser" onSubmit={handleSubmit(onAddUser)}>
+              <TextInput
+                {...register('email')}
+                label="Email"
+                placeholder="some@email.com"
+                type="email"
+              />
+              <TextInput
+                {...register('first name')}
+                label="First name"
+                placeholder="Enter first name"
+                type="text"
+              />
+              <TextInput
+                {...register('last name')}
+                label="Last name"
+                placeholder="Enter last name"
+                type="text"
+              />
+            </form>
+
           </Accordion.Panel>
         </Accordion.Item>
 
@@ -123,11 +136,32 @@ const AddUsersModal = ({ context, id, innerProps }) => {
                     <IconPhoto size={50} stroke={1.5} />
                   </Dropzone.Idle>
 
-                  <div>
-                    <Text size="md" inline>
-                      Drag or click to select cvs file with email addresses to upload
+                  <Box sx={{ width: '100%' }}>
+                    <Text size="sm" inline>
+                      Drag or click to select cvs file in format
                     </Text>
-                  </div>
+                    <Table
+                      fontSize="xs"
+                      verticalSpacing="xs"
+                      withColumnBorders
+                      sx={{ lineHeight: '10px' }}
+                    >
+                      <thead>
+                        <tr>
+                          <th>email</th>
+                          <th>first name</th>
+                          <th>last name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>some@email.com</td>
+                          <td>John</td>
+                          <td>Smith</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Box>
                 </Group>
               )}
 
@@ -140,7 +174,7 @@ const AddUsersModal = ({ context, id, innerProps }) => {
         <Button variant="subtle" onClick={() => context.closeModal(id)}>
           Cancel
         </Button>
-        <Button onClick={handleSaveUser}>
+        <Button form="addUser" type="submit">
           Save
         </Button>
       </Group>

@@ -248,9 +248,9 @@ export function useAddUsersList() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
 
-  const addUsersList = ({ emailList, sequenceId }) => apiService.post(
+  const addUsersList = ({ usersList, sequenceId }) => apiService.post(
     `/applications/${applicationId}/pipeline-users-list`,
-    { emailList, sequenceId },
+    { usersList, sequenceId },
   );
 
   return useMutation(addUsersList, {
@@ -262,7 +262,8 @@ export function useAddUsersList() {
       });
       queryClient.invalidateQueries([sequencesResource]);
     },
-    onError() {
+    onError(error) {
+      console.log('error', error);
       showNotification({
         title: 'User already in an active pipeline',
         message: 'User already in an active pipeline',
