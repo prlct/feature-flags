@@ -14,6 +14,7 @@ import pipelines from 'resources/pipeline/pipeline.routes';
 import sequences from 'resources/sequence/sequence.routes';
 import sequenceEmails from 'resources/sequence-email/sequence-email.routes';
 import pipelineUserRoutes from 'resources/pipeline-user/pipeline-user.routes';
+import pipelineUsersListRoutes from 'resources/pipeline-user/pipeline-user.routes';
 
 import auth from './middlewares/auth.middleware';
 
@@ -32,4 +33,5 @@ export default (app: AppKoa) => {
   app.use(mount('/sequences', compose([auth, sequences.privateRoutes])));
   app.use(mount('/sequence-emails', compose([auth, sequenceEmails.privateRoutes])));
   app.use(mount('/pipeline-users', compose([auth, pipelineUserRoutes.privateRoutes])));
+  app.use(mount('/pipeline-users-list', compose([auth, pipelineUsersListRoutes.privateRoutes])));
 };
