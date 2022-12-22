@@ -114,8 +114,9 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const createdUser = await pipelineUserService.insertMany(newUserList);
 
-  for (const user of newUserList) {
-    await scheduledJobService.scheduleSequenceEmail(firstEmail, user.email);
+  const extraDelayMillis = 100;
+  for (const [i, user] of Object.entries(newUserList)) {
+    await scheduledJobService.scheduleSequenceEmail(firstEmail, user.email, +i * extraDelayMillis);
   }
 
   ctx.body = createdUser;
