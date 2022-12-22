@@ -25,7 +25,7 @@ const EmailCard = (props) => {
 
   const matches = useMediaQuery('(max-width: 768px)');
 
-  const textColor = enabled ? 'gray' : 'dimmed';
+  const textColor = enabled ? 'gray' : '#ddd';
 
   const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
@@ -40,7 +40,7 @@ const EmailCard = (props) => {
       <Card shadow="sm" withBorder sx={{ position: 'relative', color: textColor, borderRadius: 12 }}>
         <Stack spacing={0}>
           <Group position="apart" sx={{ '& .mantine-Modal-inner': { padding: 0 } }}>
-            <Text size={matches ? 16 : 18} weight={600} color={enabled ? '#17181A' : 'dimmed'} style={{ lineHeight: '22px' }}>{name}</Text>
+            <Text size={matches ? 16 : 18} weight={600} color={textColor} style={{ lineHeight: '22px' }}>{name}</Text>
             <Menu withinPortal position={matches ? 'bottom-end' : 'bottom'} width={matches && 190}>
               <Menu.Target>
                 <CardSettingsButton />
@@ -101,7 +101,7 @@ const EmailCard = (props) => {
         </Stack>
         {!enabled && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Text size="sm" p={2} color="dimmed">Draft</Text>
+            <Text size="sm" p={2} color="#ddd">Draft</Text>
           </Box>
         )}
       </Card>
