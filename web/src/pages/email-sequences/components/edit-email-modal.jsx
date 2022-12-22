@@ -15,25 +15,49 @@ const EditEmailModal = ({ context, id, innerProps }) => {
 
   const isEdit = !!email;
 
-  const handleEmailUpdate = emailSequencesApi.useEmailUpdate(email?._id).mutate;
-  const handleEmailCreate = emailSequencesApi.useEmailCreate().mutate;
+  const {
+    mutate: handleEmailUpdate,
+    error: updateError,
+  } = emailSequencesApi.useEmailUpdate(email?._id);
+  const { mutate: handleEmailCreate, error: createError } = emailSequencesApi.useEmailCreate();
+
+  const errors = updateError?.data?.errors || createError?.data?.errors;
 
   const onSave = () => {
     const data = { ...email, delayDays, name: emailName, subject, body, sequenceId };
     if (isEdit) {
-      handleEmailUpdate(data);
+      handleEmailUpdate(data, {
+        onSuccess: () => context.closeModal(id),
+      });
     } else {
-      handleEmailCreate(data);
+      handleEmailCreate(data, {
+        onSuccess: () => context.closeModal(id),
+      });
     }
-
-    context.closeModal(id);
   };
 
   return (
     <Stack>
-      <NumberInput value={delayDays} onChange={setDelayDays} label="Delay days" min={0} />
-      <TextInput label="Email name" value={emailName} onChange={(e) => setEmailName(e.target.value)} />
-      <EmailEditor subject={subject} body={body} setBody={setBody} setSubject={setSubject} />
+      <NumberInput
+        value={delayDays}
+        onChange={setDelayDays}
+        label="Delay days"
+        min={0}
+        error={errors?.delayDays}
+      />
+      <TextInput
+        label="Email name"
+        value={emailName}
+        onChange={(e) => setEmailName(e.target.value)}
+        error={errors?.name}
+      />
+      <EmailEditor
+        subject={subject}
+        body={body}
+        setBody={setBody}
+        setSubject={setSubject}
+        errors={errors}
+      />
       <Group position="apart" mt={16}>
         <Button variant="subtle" onClick={() => context.closeModal(id)}>Cancel</Button>
         <Button onClick={onSave}>Save</Button>
