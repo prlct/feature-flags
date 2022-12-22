@@ -12,6 +12,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconCheck } from '@tabler/icons';
 
 import { subscriptionApi } from 'resources/subscription';
@@ -30,6 +31,7 @@ const PlanItem = (props) => {
     onPreviewUpgrade,
   } = props;
   const { classes, cx } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const subscribeMutation = subscriptionApi.useSubscribe();
 
@@ -61,7 +63,7 @@ const PlanItem = (props) => {
     if (price[interval]) {
       return (
         <>
-          <Text sx={{ display: 'inline', fontSize: '48px' }} weight="600">
+          <Text sx={{ display: 'inline', fontSize: matches ? 18 : 48 }} weight="600">
             $
             {price[interval]}
           </Text>
@@ -80,8 +82,8 @@ const PlanItem = (props) => {
       );
     }
 
-    return <Text sx={{ fontSize: '48px' }} weight="600">Free</Text>;
-  }, [interval, price]);
+    return <Text sx={{ fontSize: matches ? 18 : 48 }} weight="600">Free</Text>;
+  }, [interval, price, matches]);
 
   /* eslint-disable react/no-array-index-key */
   const renderFeatureList = useCallback(
@@ -97,7 +99,7 @@ const PlanItem = (props) => {
           padding: 0,
         }}
       >
-        <IconCheck size={14} className={classes.icon} />
+        <IconCheck size={16} className={classes.icon} />
         <Space w={8} />
         {item}
       </Container>
@@ -110,41 +112,40 @@ const PlanItem = (props) => {
       <Card
         withBorder
         radius="sm"
-        p={32}
+        p={matches ? 16 : 32}
         className={cx(classes.card, {
           [classes.active]: isCurrentSubscription,
         })}
       >
         <Container
           sx={{
+            padding: matches && 0,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
           }}
         >
-          <Title order={3}>{title}</Title>
+          <Title order={matches ? 5 : 3}>{title}</Title>
           {isCurrentSubscription && (
             <Badge
               size="lg"
-              sx={(theme) => ({
-                backgroundColor: theme.colors.blue[6],
-                color: theme.white,
-              })}
+              variant="filled"
+              className={classes.badge}
             >
               Current plan
             </Badge>
           )}
         </Container>
-        <Space h={24} />
+        <Space h={matches ? 12 : 24} />
         {priceText}
 
-        <Space h={40} />
+        <Space h={matches ? 12 : 40} />
 
-        <Stack>
+        <Stack spacing={matches ? 5 : 16}>
           {renderFeatureList()}
         </Stack>
 
-        <Space h={64} />
+        <Space h={matches ? 24 : 64} />
 
         {!isCurrentSubscription && (
           <Button
