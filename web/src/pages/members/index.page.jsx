@@ -14,32 +14,39 @@ import {
   Text,
   Group,
   Badge,
-  ActionIcon,
-  Tooltip,
   Paper,
   ScrollArea,
   Table,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
+import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconTrash } from '@tabler/icons';
+import { IconSearch } from '@tabler/icons';
 import { useQueryClient } from 'react-query';
 
 import { handleError } from 'helpers';
 import { companyApi } from 'resources/company';
 import { useAmplitude } from 'contexts/amplitude-context';
+import DeleteMenu from './components/delete-menu';
+
+import { useStyles } from './styles';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
 });
 
-const columns = ['Email', 'First name', 'Last name', 'Actions'];
+const columns = ['Email', 'First name', 'Last name', ''];
 
 const Members = () => {
+  const { classes } = useStyles();
+  const modals = useModals();
   const queryClient = useQueryClient();
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const { data, isLoading } = companyApi.useGetMembers();
 
   const amplitude = useAmplitude();
+
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const {
     register, handleSubmit, formState: { errors }, setError, reset,
@@ -83,49 +90,136 @@ const Members = () => {
   const cancelInvitationMutation = companyApi.useCancelInvitation();
 
   const handleCancelInvitation = (email) => () => {
-    // TODO: useModals().openConfirmModal
-    // eslint-disable-next-line no-restricted-globals
-    const isConfirmed = confirm(`Chancel invitation for ${email}?`);
-
-    if (!isConfirmed) {
-      return;
-    }
-
-    cancelInvitationMutation.mutate({ email }, {
-      onSuccess: () => {
-        showNotification({
-          title: 'Success',
-          message: `The invitation for ${email} has been canceled.`,
-          color: 'green',
-        });
-      },
-      onError: (e) => handleError(e, setError),
+    modals.openConfirmModal({
+      title: (<Title order={3}>Delete invitation</Title>),
+      centered: true,
+      children: (
+        <Text>
+          <Text weight={700} component="span">{`Chancel invitation for ${email}?`}</Text>
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      onConfirm: () => cancelInvitationMutation.mutate({ email }, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Success',
+            message: `The invitation for ${email} has been canceled.`,
+            color: 'green',
+          });
+        },
+        onError: (e) => handleError(e, setError),
+      }),
     });
   };
 
   const removeMemberMutation = companyApi.useRemoveMember();
 
   const handleMemberRemove = useCallback((_id, email) => () => {
-    // TODO: useModals().openConfirmModal
-    // eslint-disable-next-line no-restricted-globals
-    const isConfirmed = confirm(`Remove team member ${email}?`);
-
-    if (!isConfirmed) {
-      return;
-    }
-
-    removeMemberMutation.mutate({ _id }, {
-      onSuccess: () => {
-        showNotification({
-          title: 'Success',
-          message: `The team member ${email} has been removed.`,
-          color: 'green',
-        });
-      },
-      onError: (e) => handleError(e, setError),
+    modals.openConfirmModal({
+      title: (<Title order={3}>Delete invitation</Title>),
+      centered: true,
+      children: (
+        <Text>
+          <Text weight={700} component="span">{`Remove team member ${email}?`}</Text>
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      onConfirm: () => removeMemberMutation.mutate({ _id }, {
+        onSuccess: () => {
+          showNotification({
+            title: 'Success',
+            message: `The team member ${email} has been removed.`,
+            color: 'green',
+          });
+        },
+        onError: (e) => handleError(e, setError),
+      }),
     });
-  }, [removeMemberMutation, setError]);
+  }, [removeMemberMutation, setError, modals]);
 
+  if (matches) {
+    return (
+      <>
+        <Head>
+          <title>Team members</title>
+        </Head>
+        {isLoading ? <Loader /> : (
+          <Stack spacing={16}>
+            <Title order={4} sx={{ paddingTop: 24 }}>Team members</Title>
+            <Group className={classes.headerGroup} spacing={12}>
+              <TextInput
+                {...register('email')}
+                icon={<IconSearch size={16} />}
+                placeholder="Enter email"
+                error={errors?.email?.message}
+                className={classes.search}
+              />
+              <Button
+                className={classes.addButton}
+                variant="light"
+                loading={inviteMemberMutation.isLoading}
+                sx={{ borderRadius: 12, fontSize: 18 }}
+                onClick={handleSubmit(handleInvite)}
+              >
+                Invite
+              </Button>
+            </Group>
+
+            <Paper radius="sm">
+              <ScrollArea>
+                <Stack spacing={8}>
+                  {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
+                    <Stack key={_id} className={classes.itemBlock}>
+                      <Group sx={{ justifyContent: 'space-between' }}>
+                        <Text size="sm" weight={600}>
+                          {email}
+                        </Text>
+                        <Group sx={{ justifyContent: 'flex-end' }}>
+                          {
+                            !isInvitation
+                            && currentAdmin?.ownCompanyId
+                            && _id !== currentAdmin?._id
+                            && (
+                              <DeleteMenu
+                                mainAction={handleMemberRemove(_id, email)}
+                                loading={removeMemberMutation.isLoading}
+                              />
+                            )
+                          }
+                          {isInvitation && (
+                            <DeleteMenu
+                              mainAction={handleCancelInvitation(email)}
+                              loading={cancelInvitationMutation.isLoading}
+                            />
+
+                          )}
+                        </Group>
+                      </Group>
+                      <Group>
+                        {isInvitation
+                          && <Badge className={classes.badge} variant="light">Pending invitation</Badge>}
+                        {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                          && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
+                      </Group>
+                      {firstName && (
+                        <Text size="sm" weight={600}>
+                          {`${firstName} ${lastName}`}
+                        </Text>
+                      )}
+                    </Stack>
+                  ))}
+                </Stack>
+              </ScrollArea>
+            </Paper>
+          </Stack>
+        )}
+      </>
+    );
+  }
   return (
     <>
       <Head>
@@ -134,29 +228,31 @@ const Members = () => {
       {isLoading ? <Loader /> : (
         <Stack spacing="lg">
           <Title order={2}>Team members</Title>
-          <Stack sx={{ maxWidth: '600px' }}>
+
+          <Group sx={{ width: '100%' }}>
             <TextInput
               {...register('email')}
+              icon={<IconSearch size={16} />}
               placeholder="Enter email"
               error={errors?.email?.message}
-              rightSectionWidth="200"
-              rightSection={(
-                <Button
-                  loading={inviteMemberMutation.isLoading}
-                  sx={{ borderRadius: 6, borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
-                  onClick={handleSubmit(handleInvite)}
-                >
-                  Invite
-                </Button>
-              )}
+              className={classes.search}
             />
-          </Stack>
+            <Button
+              variant="light"
+              loading={inviteMemberMutation.isLoading}
+              sx={{ borderRadius: 12, fontSize: 18 }}
+              onClick={handleSubmit(handleInvite)}
+            >
+              Send invite
+            </Button>
+          </Group>
 
           <Paper radius="sm" withBorder>
             <ScrollArea>
               <Table
                 horizontalSpacing="xl"
                 verticalSpacing="lg"
+                className={classes.table}
               >
                 <thead>
                   <tr>
@@ -170,61 +266,45 @@ const Members = () => {
                     <tr key={_id}>
                       <td>
                         <Group>
-                          <Text size="md" weight={700}>
+                          <Text size="sm" weight={600}>
                             {email}
                           </Text>
-                          {isInvitation && <Badge variant="light">Pending invitation</Badge>}
-                          {
-                            currentAdmin?.ownCompanyId && _id === currentAdmin?._id
-                              && <Badge variant="light" color="grape">Company Owner</Badge>
-                          }
+                          {isInvitation
+                            && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
+                          { currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                            && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
                         </Group>
                       </td>
                       <td>
-                        <Text size="md" weight={700}>
+                        <Text size="sm" weight={600}>
                           {firstName}
                         </Text>
                       </td>
                       <td>
-                        <Text size="md" weight={700}>
+                        <Text size="sm" weight={600}>
                           {lastName}
                         </Text>
                       </td>
                       <td>
-                        <Group sx={{ width: 50 }}>
+                        <Group sx={{ justifyContent: 'flex-end' }}>
                           {
                             !isInvitation
                             && currentAdmin?.ownCompanyId
                             && _id !== currentAdmin?._id
                             && (
-                              <Tooltip label="Remove member" withArrow position="right">
-                                <ActionIcon
-                                  loading={removeMemberMutation.isLoading}
-                                  size="lg"
-                                  color="red"
-                                  variant="filled"
-                                  onClick={handleMemberRemove(_id, email)}
-                                >
-                                  <IconTrash size={16} />
-                                </ActionIcon>
-                              </Tooltip>
+                              <DeleteMenu
+                                mainAction={handleMemberRemove(_id, email)}
+                                loading={removeMemberMutation.isLoading}
+                              />
                             )
                           }
-                          {
-                            isInvitation && (
-                              <Tooltip label="Cancel invitation" withArrow position="right">
-                                <ActionIcon
-                                  loading={cancelInvitationMutation.isLoading}
-                                  size="lg"
-                                  color="red"
-                                  variant="filled"
-                                  onClick={handleCancelInvitation(email)}
-                                >
-                                  <IconTrash size={16} />
-                                </ActionIcon>
-                              </Tooltip>
-                            )
-                          }
+                          { isInvitation && (
+                            <DeleteMenu
+                              mainAction={handleCancelInvitation(email)}
+                              loading={cancelInvitationMutation.isLoading}
+                            />
+
+                          )}
                         </Group>
                       </td>
                     </tr>

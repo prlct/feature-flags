@@ -9,6 +9,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import dayjs from 'dayjs';
 
 import { subscriptionApi } from 'resources/subscription';
@@ -24,6 +25,8 @@ const SubscriptionPlans = () => {
 
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
+
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const endSubscriptionDate = currentSubscription && dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
 
@@ -45,18 +48,25 @@ const SubscriptionPlans = () => {
         <title>Pricing plans</title>
       </Head>
       <Stack
-        align="center"
+        align={matches ? 'start' : 'center'}
         sx={{ maxWidth: '1280px', margin: '0 auto' }}
       >
-        <Title align="center">Pricing plans</Title>
+        <Title
+          order={matches ? 4 : 1}
+          sx={{ paddingTop: matches && 24 }}
+        >
+          Pricing plans
+        </Title>
         <Text size="sm">
           <Badge color="orange" sx={{ marginRight: '8px' }}>Save up to 15%</Badge>
           with yearly subscription
         </Text>
-        <Space h={16} />
+        {!matches && (
+          <Space h={16} />
+        )}
 
         <SegmentedControl
-          size="md"
+          size={matches ? 'sm' : 'md'}
           value={interval}
           data={[
             { label: 'Yearly', value: 'year' },
@@ -65,17 +75,23 @@ const SubscriptionPlans = () => {
           onChange={setInterval}
         />
       </Stack>
-
-      <Space h={48} />
+      {!matches ? (
+        <Space h={48} />
+      ) : (
+        <Space h={16} />
+      )}
 
       <Group
-        grow
+        grow={!matches && true}
         component="section"
         position="center"
         sx={{
           maxWidth: '1280px',
           margin: '0 auto',
           alignItems: 'stretch',
+          '@media (max-width: 768px)': {
+            flexDirection: 'column',
+          },
         }}
       >
         {renderItems()}

@@ -3,7 +3,7 @@ export const dashboardColumns = [
     title: 'Feature name',
   },
   {
-    title: 'Enabled',
+    title: 'Availability',
     width: '20%',
   },
   {

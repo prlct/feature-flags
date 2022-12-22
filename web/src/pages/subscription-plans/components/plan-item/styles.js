@@ -3,14 +3,18 @@ import { createStyles } from '@mantine/core';
 export const useStyles = createStyles((theme) => ({
   card: {
     flex: '1 1',
-    borderColor: theme.colors.gray[4],
+    borderColor: theme.colors.gray[3],
+    borderRadius: 10,
   },
   active: {
     border: 'none',
-    background: `linear-gradient(0deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), ${theme.colors.gray[4]}`,
+    background: `linear-gradient(0deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), ${theme.colors.gray[3]}`,
   },
   icon: {
-    color: theme.colors.blue[6],
+    color: theme.colors.gray[6],
+    '@media (max-width: 768px)': {
+      strokeWidth: 4,
+    },
   },
   activeText: {
     height: '42px',
@@ -23,5 +27,13 @@ export const useStyles = createStyles((theme) => ({
     backgroundColor: theme.colors.green[9],
     borderRadius: '50%',
     color: theme.white,
+  },
+  badge: {
+    padding: '0 8px',
+    borderRadius: 8,
+    '@media (max-width: 768px)': {
+      height: 24,
+      fontSize: 10,
+    },
   },
 }));

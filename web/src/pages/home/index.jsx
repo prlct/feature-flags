@@ -153,7 +153,7 @@ const Home = () => {
             height={42}
             radius="sm"
             visible={isLoading}
-            width="auto"
+            width="100%"
             sx={{ flexGrow: '0.25' }}
           >
             <TextInput
@@ -303,10 +303,11 @@ const Home = () => {
             height={42}
             radius="sm"
             visible={isLoading}
-            width="auto"
+            width={568}
             sx={{ flexGrow: '0.25' }}
           >
             <TextInput
+              className={classes.search}
               value={search}
               onChange={handleSearch}
               placeholder="Search by feature name"
@@ -356,6 +357,7 @@ const Home = () => {
               <Table
                 horizontalSpacing="xl"
                 verticalSpacing="lg"
+                className={classes.table}
               >
                 <thead>
                   <tr>
@@ -389,10 +391,10 @@ const Home = () => {
                             <Text size="sm" color="grey">{description}</Text>
                           </td>
                           <td>
-                            <Stack>
+                            <Group>
                               <Switch
                                 checked={enabled}
-                                sx={{ label: { cursor: 'pointer' } }}
+                                sx={{ display: 'flex', label: { cursor: 'pointer' } }}
                                 disabled={isRefetching}
                                 onChange={() => handleSwitchChange({
                                   _id,
@@ -407,7 +409,7 @@ const Home = () => {
                                   targetingRulesCount={targetingRules?.length || 0}
                                 />
                               </Stack>
-                            </Stack>
+                            </Group>
                           </td>
                           <td>
                             {`${usersViewedCount} ${pluralize('user', usersViewedCount)}`}
