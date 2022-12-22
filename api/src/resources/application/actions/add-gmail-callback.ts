@@ -21,7 +21,7 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
   const cookieState = ctx.cookies.get('gmail-add-state');
 
   if (cookieState !== state) {
-    ctx.throw(403, 'Invalid State');
+    ctx.throwClientError({ state: 'Invalid State' });
     return;
   }
 
@@ -31,7 +31,7 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { tokens } = await oAuth2Client.getToken(code);
 
   if (!tokens?.access_token) {
-    ctx.throw(403, 'No tokens');
+    ctx.throwClientError({ tokens: 'No tokens' });
     return;
   }
 
@@ -39,7 +39,7 @@ const resultHandler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const { email } = await oAuth2Client.getTokenInfo(accessToken);
   if (!email) {
-    ctx.throw(403, 'No email');
+    ctx.throwClientError({ tokens: 'No email' });
     return;
   }
 

@@ -27,7 +27,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   } });
 
   if (!application?.gmailCredentials?.[email]) {
-    ctx.throw(400, 'Invalid email');
+    ctx.throwClientError({ email: 'Invalid email' });
     return;
   }
 

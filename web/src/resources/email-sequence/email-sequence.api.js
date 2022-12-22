@@ -133,6 +133,13 @@ export function useToggleSequenceEnabled() {
     onSuccess: () => {
       queryClient.invalidateQueries([sequencesResource]);
     },
+    onError: (err) => {
+      showNotification({
+        title: 'Toggle sequence enabled failed',
+        message: err?.data?.errors.sequence,
+        color: 'red',
+      });
+    },
   });
 }
 

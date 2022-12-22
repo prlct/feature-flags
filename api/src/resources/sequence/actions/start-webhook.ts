@@ -37,7 +37,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   });
 
   if (!sequence) {
-    ctx.throw(400, 'Sequence not found');
+    ctx.throwClientError({ sequence: 'Sequence not found' });
     return;
   }
 
@@ -53,14 +53,14 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   });
 
   if (sequenceEmails.length < 1) {
-    ctx.throw(400, 'No enabled emails found for the sequence');
+    ctx.throwClientError({ sequence: 'No enabled emails found for the sequence' });
     return;
   }
 
   const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId, deletedOn: { $exists: false } });
 
   if (!pipeline) {
-    ctx.throw(400, 'Pipeline not found');
+    ctx.throwClientError({ pipeline: 'Pipeline not found' });
     return;
   }
 

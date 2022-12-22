@@ -6,11 +6,11 @@ import userService from 'resources/user/user.service';
 
 import { extractTokenFromQuery } from '../middlewares';
 import publicTokenAuthMiddleware from '../middlewares/public-token-auth.middleware';
-import sequenceService from '../../sequence/sequence.service';
-import pipelineUserService from '../../pipeline-user/pipeline-user.service';
-import sequenceEmailService from '../../sequence-email/sequence-email.service';
-import pipelineService from '../../pipeline/pipeline.service';
-import scheduledJobService from '../../scheduled-job/scheduled-job.service';
+import sequenceService from 'resources/sequence/sequence.service';
+import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import pipelineService from 'resources/pipeline/pipeline.service';
+import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
 
 const schema = Joi.object({
   eventKey: Joi.string().required(),
@@ -31,6 +31,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const user = await userService.findOne({ _id: userId });
   if (!user) {
+    ctx.status = 400;
+    ctx.body = 'fail';
     return;
   }
   const email = user.email || user.data.email;
@@ -45,6 +47,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   });
 
   if (!sequence) {
+    ctx.status = 400;
+    ctx.body = 'fail';
     return;
   }
 
@@ -63,12 +67,16 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   });
 
   if (!sequenceEmail) {
+    ctx.status = 400;
+    ctx.body = 'fail';
     return;
   }
 
   const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId, deletedOn: { $exists: false } });
 
   if (!pipeline) {
+    ctx.status = 400;
+    ctx.body = 'fail';
     return;
   }
 
