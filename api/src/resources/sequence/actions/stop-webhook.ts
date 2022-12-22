@@ -27,7 +27,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   });
 
   if (!sequence) {
-    ctx.throw(400, 'Sequence not found');
+    ctx.throwClientError({ sequence: 'Sequence not found' });
     return;
   }
 

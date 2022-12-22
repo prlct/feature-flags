@@ -23,7 +23,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const sequenceEmail = await sequenceEmailService.findOne({ _id: sequenceEmailId });
 
   if (!sequenceEmail) {
-    ctx.throw(400, 'Email not found');
+    ctx.throwClientError({ email: 'Email not found' });
     return;
   }
 

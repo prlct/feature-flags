@@ -14,7 +14,7 @@ export const useStyles = createStyles((theme) => ({
     },
   },
   pipelineDisabled: {
-    backgroundColor: theme.colors.gray[1],
+    backgroundColor: theme.colors.gray[3],
   },
   addButton: {
     fontWeight: 600,
