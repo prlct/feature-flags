@@ -5,7 +5,6 @@ import {
   Card,
   Text,
   Paper,
-  Center,
   Menu,
   Button,
   ActionIcon,
@@ -76,7 +75,18 @@ const Sequence = (props) => {
               />
             ))}
           </Stack>
-          <Center>
+          <Stack>
+            <Button
+              className={classes.addButton}
+              variant="light"
+              onClick={() => openContextModal({
+                modal: 'triggerSelection',
+                title: 'Add trigger',
+                innerProps: { pipelineId: sequence.pipelineId, sequence },
+              })}
+            >
+              + Add trigger
+            </Button>
             <Button
               className={classes.addButton}
               variant="light"
@@ -84,7 +94,7 @@ const Sequence = (props) => {
             >
               + Add email
             </Button>
-          </Center>
+          </Stack>
         </Stack>
       </Stack>
     </Paper>
@@ -94,6 +104,7 @@ const Sequence = (props) => {
 Sequence.propTypes = {
   sequence: PropTypes.shape({
     _id: PropTypes.string.isRequired,
+    pipelineId: PropTypes.string.isRequired,
     name: PropTypes.string,
     completed: PropTypes.number,
     total: PropTypes.number,

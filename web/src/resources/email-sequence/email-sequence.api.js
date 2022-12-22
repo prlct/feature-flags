@@ -269,8 +269,7 @@ export function useAddUsersList() {
       });
       queryClient.invalidateQueries([sequencesResource]);
     },
-    onError(error) {
-      console.log('error', error);
+    onError() {
       showNotification({
         title: 'User already in an active pipeline',
         message: 'User already in an active pipeline',
@@ -356,18 +355,4 @@ export function useGetSenderEmails() {
   const getSenderEmails = () => apiService.get(`/applications/${applicationId}/sender-emails`);
 
   return useQuery(['sender-emails'], getSenderEmails);
-}
-
-export function useUpdateSenderEmail(sequenceId) {
-  const updateEmail = (email) => apiService.put(`${sequencesResource}/${sequenceId}/sender-email`, { email });
-
-  return useMutation(updateEmail, {
-    onSuccess: () => {
-      showNotification({
-        title: 'Sender email updated',
-        message: 'Sender email updated',
-        color: 'green',
-      });
-    },
-  });
 }

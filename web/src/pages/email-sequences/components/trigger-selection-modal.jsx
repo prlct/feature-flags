@@ -11,7 +11,7 @@ import {
   Switch,
   Text,
   NumberInput,
-  Box,
+  Box, Code,
 } from '@mantine/core';
 import { IconCopy, IconPlus } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
@@ -22,7 +22,7 @@ import {
   useUpdateSequenceTrigger,
   useGetApplicationEvents,
   useAddApplicationEvent,
-  useGetSenderEmails, useUpdateSenderEmail,
+  useGetSenderEmails,
 } from 'resources/email-sequence/email-sequence.api';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
@@ -74,11 +74,6 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const errors = updateError?.data?.errors || createError?.data?.errors;
 
-  const {
-    mutate: updateSenderEmail,
-    isLoading: isSenderEmailLoading,
-  } = useUpdateSenderEmail(sequence?._id);
-
   const handleTriggerSave = async () => {
     const data = {
       allowRepeat,
@@ -88,6 +83,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       stopEventKey: selectedStopEvent,
       description: triggerDescription,
       allowMoveToNextSequence,
+      senderEmail: selectedSenderEmail,
     };
     if (sequence?._id) {
       await updateSequenceTrigger(data, {
@@ -122,22 +118,17 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     setCreatingEventKey(name.toLowerCase().replaceAll(' ', '-'));
   };
 
-  const changeSenderEmail = async (email) => {
-    await updateSenderEmail(email);
-    setSelectedSenderEmail(email);
-  };
-
   return (
     <>
       <Select
         data={senderEmails}
         label="Email original"
         value={selectedSenderEmail}
-        onChange={changeSenderEmail}
-        disabled={isSenderEmailLoading}
+        onChange={setSelectedSenderEmail}
+        error={errors?.['trigger.senderEmail']}
       />
       <TextInput
-        error={errors?.name}
+        error={errors?.['trigger.name']}
         label="Trigger name"
         value={triggerName}
         onChange={(e) => setTriggerName(e.target.value)}
@@ -146,22 +137,38 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
         label="Trigger description"
         value={triggerDescription}
         onChange={(e) => setTriggerDescription(e.target.value)}
-        error={errors?.description}
+        error={errors?.['trigger.description']}
       />
-      <Select
-        label="Select an event to start the sequence"
-        data={events}
-        placeholder="Select event"
-        value={selectedEvent}
-        onChange={setSelectedEvent}
-      />
-      <Select
-        label="Select an event to stop the sequence"
-        data={events.filter((e) => e.value !== selectedEvent)}
-        placeholder="Select event"
-        value={selectedStopEvent}
-        onChange={setSelectedStopEvent}
-      />
+      <Stack spacing={0}>
+        <Select
+          label="Select an event to start the sequence"
+          data={events}
+          placeholder="Select event"
+          value={selectedEvent}
+          onChange={setSelectedEvent}
+        />
+        <Text size="sm">
+          eventKey:&nbsp;
+          <Code size="sm" component="span">
+            {events?.find((e) => e.value === selectedEvent)?.value}
+          </Code>
+        </Text>
+      </Stack>
+      <Stack spacing={0}>
+        <Select
+          label="Select an event to stop the sequence"
+          data={events.filter((e) => e.value !== selectedEvent)}
+          placeholder="Select event"
+          value={selectedStopEvent}
+          onChange={setSelectedStopEvent}
+        />
+        <Text size="sm">
+          eventKey:&nbsp;
+          <Code size="sm" component="span">
+            {events?.find((e) => e.value === selectedStopEvent)?.value}
+          </Code>
+        </Text>
+      </Stack>
       <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
         <Group spacing={0}>
           <IconPlus color="#734ab7" />
