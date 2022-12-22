@@ -244,6 +244,35 @@ export function useAddUsers() {
   });
 }
 
+export function useAddUsersList() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const addUsersList = ({ usersList, sequenceId }) => apiService.post(
+    `/applications/${applicationId}/pipeline-users-list`,
+    { usersList, sequenceId },
+  );
+
+  return useMutation(addUsersList, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Added users to sequence',
+        message: 'Added users to sequence',
+        color: 'green',
+      });
+      queryClient.invalidateQueries([sequencesResource]);
+    },
+    onError(error) {
+      console.log('error', error);
+      showNotification({
+        title: 'User already in an active pipeline',
+        message: 'User already in an active pipeline',
+        color: 'red',
+      });
+    },
+  });
+}
+
 export function useRemoveUser() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
@@ -261,6 +290,13 @@ export function useRemoveUser() {
         color: 'green',
       });
       queryClient.invalidateQueries([pipelineUsersResource]);
+    },
+    onError() {
+      showNotification({
+        title: 'Users already in an active pipeline',
+        message: 'Users already in an active pipeline',
+        color: 'red',
+      });
     },
   });
 }
