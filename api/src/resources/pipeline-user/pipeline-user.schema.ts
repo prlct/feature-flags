@@ -4,8 +4,8 @@ const schema = Joi.object({
   _id: Joi.string().required(),
 
   applicationId: Joi.string().required(),
-  firstName: Joi.string().trim(),
-  lastName: Joi.string().trim(),
+  firstName: Joi.string().trim().allow(''),
+  lastName: Joi.string().trim().allow(''),
   email: Joi.string().email().required(),
   pipeline: Joi.object({
     _id: Joi.string().required(),

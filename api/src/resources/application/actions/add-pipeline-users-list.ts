@@ -15,15 +15,15 @@ const schema = Joi.object({
   sequenceId: Joi.string().required(),
   usersList: Joi.array().items(Joi.object({
     email: Joi.string().email().required(),
-    'first name': Joi.string().allow(''),
-    'last name': Joi.string().allow(''),
+    firstName: Joi.string().empty(null).allow('').default(''),
+    lastName: Joi.string().empty(null).allow('').default(''),
   })).unique((a, b) => a.email === b.email),
 });
 
 type ValidatedListItem = {
   email: string,
-  'first name'?:string,
-  'last name'?: string,
+  firstName?:string,
+  lastName?: string,
 };
 
 type ValidatedData = {
@@ -57,27 +57,27 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const [ existingUsers ] = await pipelineUserService.aggregate([
     {
-      $match: { 
+      $match: {
         'email': { $in: emailArray },
         applicationId,
         'pipeline._id': pipeline._id,
         'sequence._id': sequence._id,
         finished: false,
         deletedOn: { $exists: false },
-      },      
+      },
     },
-    { $group: { 
-      _id: null, 
-      emails: { 
-        $push: '$email', 
-      }, 
-    }, 
+    { $group: {
+      _id: null,
+      emails: {
+        $push: '$email',
+      },
     },
-    { $project: { 
-      _id: 0, 
-      emails: 1, 
-    }, 
-    },   
+    },
+    { $project: {
+      _id: 0,
+      emails: 1,
+    },
+    },
   ]);
 
   const newUsers = existingUsers ? usersList.filter((item) => !existingUsers.emails.includes(item.email)) : usersList;
@@ -86,12 +86,19 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     ctx.throw(400, 'Users already in an active pipeline');
   }
 
-  const { results } = await sequenceEmailService.find({ sequenceId, deletedOn: { $exists: false }, enabled: true });
+  const { results: [firstEmail] } = await sequenceEmailService.find({
+    sequenceId,
+    deletedOn: { $exists: false },
+    enabled: true,
+  }, {
+    sort: {  index: -1 },
+    limit: 1,
+  });
 
   const newUserList = newUsers.map((item) => ({
     email: item.email,
-    ...(item['first name'] && { firstName: item['first name'] }),
-    ...(item['last name'] && { lastName: item['last name'] }),
+    firstName: item.firstName,
+    lastName: item.lastName,
     applicationId,
     pipeline: {
       _id: pipeline._id,
@@ -101,14 +108,14 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       _id: sequence._id,
       name: sequence.name,
       lastEmailId: null,
-      pendingEmailId: results?.[0]?._id,
-    }, 
+      pendingEmailId: firstEmail?._id,
+    },
   }));
 
   const createdUser = await pipelineUserService.insertMany(newUserList);
 
   for (const user of newUserList) {
-    await scheduledJobService.scheduleSequenceEmail(results[0], user.email);
+    await scheduledJobService.scheduleSequenceEmail(firstEmail, user.email);
   }
 
   ctx.body = createdUser;

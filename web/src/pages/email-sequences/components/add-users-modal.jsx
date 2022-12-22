@@ -8,6 +8,8 @@ import * as Papa from 'papaparse';
 
 import { useAddUsersList } from 'resources/email-sequence/email-sequence.api';
 import PropTypes from 'prop-types';
+import { camelCase } from 'lodash/string';
+import trim from 'lodash/trim';
 
 const AddUsersModal = ({ context, id, innerProps }) => {
   const { sequence } = innerProps;
@@ -38,7 +40,10 @@ const AddUsersModal = ({ context, id, innerProps }) => {
   function readFile(uploadFile) {
     setFileCSV(uploadFile);
 
-    const commonConfig = { delimiter: ';' };
+    const commonConfig = {
+      header: true,
+      transformHeader: (header) => camelCase(trim(header)),
+    };
 
     Papa.parse(
       uploadFile,
