@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import clsx from 'clsx';
 
-import { InputBase, FileButton } from '@mantine/core';
+import { InputBase, FileButton, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
@@ -26,7 +26,7 @@ const formats = [
   ['button'], 'code-block',
 ];
 
-const EmailEditor = ({ subject, body, setSubject, setBody }) => {
+const EmailEditor = ({ subject, body, setSubject, setBody, errors }) => {
   const { classes } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
 
@@ -126,6 +126,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
           />
         </div>
       </div>
+      {errors?.subject && <Text size="xs" color="red">{errors?.subject}</Text>}
       <div className={classes.quillWrap}>
         <ReactQuill
           theme="snow"
@@ -171,6 +172,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody }) => {
           </FileButton>
         </div>
       </div>
+      {errors?.body && <Text size="xs" color="red">{errors?.body}</Text>}
     </div>
   );
 };
@@ -180,6 +182,14 @@ EmailEditor.propTypes = {
   setSubject: PropTypes.func.isRequired,
   body: PropTypes.string.isRequired,
   setBody: PropTypes.func.isRequired,
+  errors: PropTypes.shape({
+    subject: PropTypes.string,
+    body: PropTypes.string,
+  }),
+};
+
+EmailEditor.defaultProps = {
+  errors: {},
 };
 
 export default EmailEditor;
