@@ -20,6 +20,7 @@ import { useStyles } from './styles';
 import PipelinesNavbarItem from './PipelinesNavbarItem';
 import DemoNavbarItem from './DemoNavbarItem';
 import NavbarItems from './NavbarItems';
+import EnvSelect from './Header/components/EnvSelect';
 
 const ASIDE_WIDTH = 255;
 
@@ -85,7 +86,7 @@ const MainLayout = ({ children }) => {
 
   return (
     <AppShell
-      header={<Header menu={!menuOpen} />}
+      header={<Header />}
       navbar={(
         <Navbar
           p={0}
@@ -107,7 +108,11 @@ const MainLayout = ({ children }) => {
                 query="(max-width: 768px)"
                 styles={{ marginBottom: 16, '& svg': { width: !menuOpen && 29 } }}
               >
-                <Group spacing={36} className={classes.logoGroup}>
+                <Group
+                  spacing={36}
+                  className={classes.logoGroup}
+                  sx={{ marginTop: menuOpen && 33 }}
+                >
                   <Link type="router" href={routes.route.home} underline={false}>
                     {menuOpen ? (
                       <LogoDarkImage />
@@ -115,7 +120,9 @@ const MainLayout = ({ children }) => {
                       <LogoImage sx={{ width: 30 }} />
                     )}
                   </Link>
-
+                  {!menuOpen && (
+                    <EnvSelect />
+                  )}
                 </Group>
               </MediaQuery>
               <Accordion

@@ -67,7 +67,7 @@ const Settings = ({ feature, env }) => {
   };
 
   return (
-    <Stack spacing={24}>
+    <Stack spacing={24} pt={24}>
       <Stack spacing={24} sx={{ maxWidth: '800px' }}>
         <VisibilitySettings feature={feature} />
 

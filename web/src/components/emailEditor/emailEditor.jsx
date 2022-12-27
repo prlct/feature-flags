@@ -137,6 +137,9 @@ const EmailEditor = ({ subject, body, setSubject, setBody, errors }) => {
           modules={modules}
           style={{
             minHeight: 300,
+            '@media (max-width: 768px)': {
+              minHeight: '200px !important',
+            },
           }}
         />
       </div>

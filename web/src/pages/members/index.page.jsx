@@ -170,7 +170,7 @@ const Members = () => {
             </Group>
 
             <Paper radius="sm">
-              <ScrollArea>
+              <ScrollArea pb={20}>
                 <Stack spacing={8}>
                   {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
                     <Stack key={_id} className={classes.itemBlock}>
@@ -240,7 +240,7 @@ const Members = () => {
             <Button
               variant="light"
               loading={inviteMemberMutation.isLoading}
-              sx={{ borderRadius: 12, fontSize: 18 }}
+              sx={{ borderRadius: 12, fontSize: 16 }}
               onClick={handleSubmit(handleInvite)}
             >
               Send invite

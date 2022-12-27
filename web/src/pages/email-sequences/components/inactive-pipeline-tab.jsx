@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Tabs, Text } from '@mantine/core';
 import PropTypes from 'prop-types';
+import { RectangleImage } from 'public/images';
 
 import { useStyles } from '../styles';
 
@@ -15,6 +16,7 @@ const InactivePipelineTab = ({ pipeline }) => {
 
   return (
     <Tabs.Tab key={pipeline._id} value={pipeline._id} className={classes.inactiveTabItem}>
+      <RectangleImage />
       <Text>{pipelineName}</Text>
     </Tabs.Tab>
   );

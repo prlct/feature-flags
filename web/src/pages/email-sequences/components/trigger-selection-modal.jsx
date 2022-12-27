@@ -12,9 +12,12 @@ import {
   Text,
   NumberInput,
   Box, Code,
+  Textarea,
 } from '@mantine/core';
-import { IconCopy, IconPlus } from '@tabler/icons';
+import { useMediaQuery } from '@mantine/hooks';
+import { IconCopy } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
+import * as routes from 'routes';
 
 import config from 'config';
 import {
@@ -24,6 +27,7 @@ import {
   useAddApplicationEvent,
   useGetSenderEmails,
 } from 'resources/email-sequence/email-sequence.api';
+import { Link } from 'components';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
@@ -34,6 +38,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     isLoading,
     error: eventCreationError,
   } = useAddApplicationEvent();
+
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const events = fetchedEvents?.events || [];
 
@@ -51,6 +57,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     || senderEmails?.filter((e) => e.value !== selectedSenderEmail)?.[0],
   );
 
+  const [startEvent, setStartEvent] = useState(false);
+  const [stopEvent, setStopEvent] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
   const [creatingEventKey, setCreatingEventKey] = useState('');
@@ -120,124 +128,271 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   return (
     <>
-      <Select
-        data={senderEmails}
-        label="Email original"
-        value={selectedSenderEmail}
-        onChange={setSelectedSenderEmail}
-        error={errors?.['trigger.senderEmail']}
-      />
-      <TextInput
-        error={errors?.['trigger.name']}
-        label="Trigger name"
-        value={triggerName}
-        onChange={(e) => setTriggerName(e.target.value)}
-      />
-      <TextInput
-        label="Trigger description"
-        value={triggerDescription}
-        onChange={(e) => setTriggerDescription(e.target.value)}
-        error={errors?.['trigger.description']}
-      />
-      <Stack spacing={0}>
-        <Select
-          label="Select an event to start the sequence"
-          data={events}
-          placeholder="Select event"
-          value={selectedEvent}
-          onChange={setSelectedEvent}
+      <Stack spacing={24}>
+        <TextInput
+          error={errors?.['trigger.name']}
+          label="Trigger name"
+          placeholder="Enter trigger name"
+          value={triggerName}
+          onChange={(e) => setTriggerName(e.target.value)}
         />
-        <Text size="sm">
-          eventKey:&nbsp;
-          <Code size="sm" component="span">
-            {events?.find((e) => e.value === selectedEvent)?.value}
-          </Code>
-        </Text>
-      </Stack>
-      <Stack spacing={0}>
-        <Select
-          label="Select an event to stop the sequence"
-          data={events.filter((e) => e.value !== selectedEvent)}
-          placeholder="Select event"
-          value={selectedStopEvent}
-          onChange={setSelectedStopEvent}
+        <Textarea
+          label="Trigger description"
+          placeholder="Enter trigger description"
+          value={triggerDescription}
+          onChange={(e) => setTriggerDescription(e.target.value)}
+          error={errors?.['trigger.description']}
+          sx={{ height: 80 }}
         />
-        <Text size="sm">
-          eventKey:&nbsp;
-          <Code size="sm" component="span">
-            {events?.find((e) => e.value === selectedStopEvent)?.value}
-          </Code>
-        </Text>
+        <Box sx={{ padding: '24px 0', borderTop: '1px solid #D4D8DD' }}>
+          <Select
+            data={senderEmails}
+            label="Send emails from"
+            placeholder="Select"
+            value={selectedSenderEmail}
+            onChange={setSelectedSenderEmail}
+            error={errors?.['trigger.senderEmail']}
+          />
+          <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
+            <Group spacing={0} sx={{ paddingTop: 8 }}>
+              <UnstyledButton onClick={() => context.closeModal(id)}>
+                <Link type="router" href={routes.route.pipelineSettings} underline={false}>
+                  <Text color="primary" sx={{ fontWeight: 700 }}>+ Add new email</Text>
+                </Link>
+              </UnstyledButton>
+            </Group>
+          </UnstyledButton>
+        </Box>
       </Stack>
-      <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
-        <Group spacing={0}>
-          <IconPlus color="#734ab7" />
-          <Text color="primary">Add new event</Text>
-        </Group>
-      </UnstyledButton>
-      {creatingEvent && (
-        <Stack spacing={0} m="0 16px 16px 16px">
-          <TextInput
-            label="Event name"
-            value={creatingEventName}
-            onChange={(e) => handleEventNameChange(e.target.value)}
-            error={eventCreationError?.data?.errors?.label}
-          />
-          <TextInput
-            label="Event key"
-            value={creatingEventKey}
-            onChange={(e) => setCreatingEventKey(e.target.value)}
-            error={eventCreationError?.data?.errors?.value}
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button mt={4} onClick={saveEvent} styles={{ maxWidth: '80px' }} disabled={isLoading}>Save</Button>
-          </Box>
-        </Stack>
-      )}
 
-      <Switch label="Move user to next sequence after last email sent" checked={allowMoveToNextSequence} onChange={(e) => setAllowMoveToNextSequence(e.currentTarget.checked)} />
-      <Switch label="Add webhook triggers" checked={webhooksShown} onChange={(e) => setWebhooksShown(e.currentTarget.checked)} />
-      <Stack>
+      <Stack spacing={0} sx={{ borderTop: '1px solid #D4D8DD' }}>
+        <Switch
+          checked={startEvent}
+          onChange={(e) => setStartEvent(e.currentTarget.checked)}
+          label="Add start event"
+          pt={10}
+          pb={25}
+          sx={{ lineHeight: '20px' }}
+        />
+
+        {startEvent && (
+        <>
+          <Select
+            label="Select an event to start the sequence"
+            data={events}
+            placeholder="Select"
+            value={selectedEvent}
+            onChange={setSelectedEvent}
+          />
+          <Text size="sm">
+            eventKey:&nbsp;
+            <Code size="sm" component="span">
+              {events?.find((e) => e.value === selectedEvent)?.value}
+            </Code>
+          </Text>
+          {creatingEvent ? (
+            <Stack spacing={24} p="20px" sx={{ margin: '24px 0', border: '1px solid #D4D8DD', borderRadius: 6 }}>
+              <Text>New event</Text>
+              <TextInput
+                label="Event name"
+                value={creatingEventName}
+                onChange={(e) => handleEventNameChange(e.target.value)}
+                error={eventCreationError?.data?.errors?.label}
+              />
+              <TextInput
+                label="Event key"
+                value={creatingEventKey}
+                onChange={(e) => setCreatingEventKey(e.target.value)}
+                error={eventCreationError?.data?.errors?.value}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
+                <Button
+                  variant="subtle"
+                  color="black"
+                  mt={4}
+                  onClick={() => setCreatingEvent((prev) => !prev)}
+                  styles={{ maxWidth: '80px', fontWeight: 600 }}
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="light"
+                  mt={4}
+                  onClick={saveEvent}
+                  styles={{ maxWidth: '80px' }}
+                  disabled={isLoading}
+                >
+                  Add
+                </Button>
+              </Box>
+            </Stack>
+          ) : (
+            <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
+              <Group spacing={0} sx={{ paddingBottom: 24 }}>
+                <Text color="primary" sx={{ fontWeight: 700 }}>+ Add new event</Text>
+              </Group>
+            </UnstyledButton>
+
+          )}
+        </>
+        )}
+      </Stack>
+      <Stack spacing={0} sx={{ borderTop: '1px solid #D4D8DD' }}>
+        <Switch
+          checked={stopEvent}
+          onChange={(e) => setStopEvent(e.currentTarget.checked)}
+          label="Add end event"
+          pt={10}
+          pb={25}
+          sx={{ lineHeight: '20px' }}
+        />
+        {stopEvent && (
+        <>
+          <Select
+            label="Select the event that ends the sequence"
+            data={events.filter((e) => e.value !== selectedEvent)}
+            placeholder="Select"
+            value={selectedStopEvent}
+            onChange={setSelectedStopEvent}
+          />
+          <Text size="sm">
+            eventKey:&nbsp;
+            <Code size="sm" component="span">
+              {events?.find((e) => e.value === selectedStopEvent)?.value}
+            </Code>
+          </Text>
+          {creatingEvent ? (
+            <Stack spacing={24} p="20px" sx={{ margin: '24px 0', border: '1px solid #D4D8DD', borderRadius: 6 }}>
+              <Text>New event</Text>
+              <TextInput
+                label="Event name"
+                value={creatingEventName}
+                onChange={(e) => handleEventNameChange(e.target.value)}
+                error={eventCreationError?.data?.errors?.label}
+              />
+              <TextInput
+                label="Event key"
+                value={creatingEventKey}
+                onChange={(e) => setCreatingEventKey(e.target.value)}
+                error={eventCreationError?.data?.errors?.value}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 16 }}>
+                <Button
+                  variant="subtle"
+                  color="black"
+                  onClick={() => setCreatingEvent((prev) => !prev)}
+                  styles={{ maxWidth: '80px', fontWeight: 600 }}
+                  disabled={isLoading}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="light"
+                  onClick={saveEvent}
+                  styles={{ maxWidth: '80px' }}
+                  disabled={isLoading}
+                >
+                  Add
+                </Button>
+              </Box>
+            </Stack>
+          ) : (
+            <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
+              <Group spacing={0} sx={{ paddingBottom: 24 }}>
+                <Text color="primary" sx={{ fontWeight: 700 }}>+ Add new event</Text>
+              </Group>
+            </UnstyledButton>
+          )}
+        </>
+        )}
+
+      </Stack>
+
+      <Switch
+        label="Move user to next sequence after last email sent"
+        checked={allowMoveToNextSequence}
+        onChange={(e) => setAllowMoveToNextSequence(e.currentTarget.checked)}
+        pt={10}
+        pb={25}
+        sx={{ lineHeight: '20px', borderTop: '1px solid #D4D8DD' }}
+      />
+      <Switch
+        label="Add webhook triggers"
+        checked={webhooksShown}
+        onChange={(e) => setWebhooksShown(e.currentTarget.checked)}
+        pt={10}
+        pb={25}
+        sx={{ lineHeight: '20px', borderTop: '1px solid #D4D8DD' }}
+      />
+      <Stack spacing={24}>
         {webhooksShown && (
           <Stack>
-            <Text>
+            <Text sx={(theme) => ({ fontSize: 14, color: theme.colors.gray[4] })}>
               Authorized POST requests with firstName,
               lastName, email parameters can trigger sequence start/stop
             </Text>
             <Group>
-              <TextInput label="Start webhook" value={startURL} readOnly />
-              <CopyButton value={startURL}>
-                {({ copy }) => (
-                  <UnstyledButton onClick={copy}>
-                    <IconCopy />
-                  </UnstyledButton>
-                )}
-              </CopyButton>
+              <Group sx={{ width: matches && '100%' }}>
+                <TextInput
+                  label="Start webhook"
+                  value={startURL}
+                  readOnly
+                  rightSection={(
+                    <CopyButton value={startURL}>
+                      {({ copy }) => (
+                        <UnstyledButton onClick={copy}>
+                          <IconCopy size={16} />
+                        </UnstyledButton>
+                      )}
+                    </CopyButton>
+                  )}
+                  sx={{ width: matches && '100%' }}
+                />
+              </Group>
+
+              <Group sx={{ width: matches && '100%' }}>
+                <TextInput
+                  label="Stop webhook"
+                  value={stopURL}
+                  readOnly
+                  rightSection={(
+                    <CopyButton value={stopURL}>
+                      {({ copy }) => (
+                        <UnstyledButton onClick={copy}>
+                          <IconCopy size={16} />
+                        </UnstyledButton>
+                      )}
+                    </CopyButton>
+                  )}
+                  sx={{ width: matches && '100%' }}
+                />
+              </Group>
             </Group>
-            <Group>
-              <TextInput label="Stop webhook" value={stopURL} readOnly />
-              <CopyButton value={stopURL}>
-                {({ copy }) => (
-                  <UnstyledButton onClick={copy}>
-                    <IconCopy />
-                  </UnstyledButton>
-                )}
-              </CopyButton>
-            </Group>
+
           </Stack>
         )}
-        <Switch checked={allowRepeat} onChange={(e) => setAllowRepeat(e.currentTarget.checked)} label="Allow subscribers to repeat workflow" pt={16} />
+        <Switch
+          checked={allowRepeat}
+          onChange={(e) => setAllowRepeat(e.currentTarget.checked)}
+          label="Allow to repeat workflow"
+          pt={10}
+          sx={{ lineHeight: '20px', borderTop: '1px solid #D4D8DD' }}
+        />
         {allowRepeat && (
-          <NumberInput
-            name="repeat delay"
-            label="days to repeat workflow"
-            value={repeatDelay}
-            onChange={setRepeatDelay}
-            min={0}
-          />
+          <Group>
+            <NumberInput
+              name="repeat delay"
+              value={repeatDelay}
+              onChange={setRepeatDelay}
+              min={0}
+              sx={(theme) => ({ width: 61, '& input, & button': { borderColor: theme.colors.gray[2] } })}
+            />
+            <Text size="sm">days to repeat workflow</Text>
+          </Group>
         )}
-        <Group position="apart">
-          <Button variant="subtle" onClick={() => context.closeModal(id)}>
+        <Group position="apart" sx={{ justifyContent: 'flex-end' }}>
+          <Button variant="subtle" color="black" onClick={() => context.closeModal(id)}>
             Cancel
           </Button>
           <Button onClick={handleTriggerSave}>

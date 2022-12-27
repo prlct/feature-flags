@@ -21,11 +21,13 @@ export const useStyles = createStyles((theme) => ({
   subjectInputWrap: {
     width: '80%',
   },
-
   separator: {
     borderTop: 'solid 1px grey',
     paddingTop: 16,
     width: '100%',
+    '@media (max-width: 768px)': {
+      paddingTop: 0,
+    },
   },
 
   toolbar: {
@@ -62,6 +64,10 @@ export const useStyles = createStyles((theme) => ({
     '& button': {
       color: 'inherit',
       backgroundColor: 'inherit',
+    },
+    '@media (max-width: 768px)': {
+      height: 200,
+      minHeight: 200,
     },
   },
 }));

@@ -27,6 +27,7 @@ const useStyles = createStyles((theme) => ({
   },
   rightSection: {
     pointerEvents: 'none',
+    right: 10,
   },
 }));
 
@@ -40,7 +41,7 @@ const EnvSelect = () => {
       size="sm"
       data={environmentsList}
       onChange={setEnv}
-      rightSection={<IconChevronDown size={18} />}
+      rightSection={<IconChevronDown size={12} />}
       classNames={{
         input: classes.input,
         rightSection: classes.rightSection,

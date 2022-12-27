@@ -188,7 +188,7 @@ const Home = () => {
           {(!!filteredFeatureFlags.length && !isLoading) && (
           <Paper radius="sm">
             <ScrollArea>
-              <Stack spacing={8}>
+              <Stack spacing={8} pb={20}>
                 {filteredFeatureFlags
                   .map(({
                     _id,

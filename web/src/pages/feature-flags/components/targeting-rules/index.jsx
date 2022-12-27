@@ -11,6 +11,7 @@ import {
   ActionIcon,
   Tooltip,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconHelp, IconTrash } from '@tabler/icons';
 
 import { DEFAULT_TARGETING_RULE, TARGETING_RULES_OPERATORS } from 'helpers/constants';
@@ -33,6 +34,7 @@ const defaultAttributes = ['email', 'companyId', 'id'];
 
 const TargetingRules = ({ rules, onChange, disabled, sx }) => {
   const [attributes, setAttributes] = useState(defaultAttributes);
+  const matches = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     const ruleAttributes = rules
@@ -100,7 +102,21 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
 
       {shownRules.map(({ attribute, operator, value, description }, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <Group key={index} align="start" noWrap gap={16}>
+        <Group
+          key={index}
+          align="start"
+          gap={16}
+          sx={{
+            flexWrap: 'nowrap',
+            '@media (max-width: 768px)': {
+              padding: 16,
+              flexWrap: 'wrap',
+              flexDirection: 'column',
+              border: '1px solid #ced4da',
+              borderRadius: 4,
+            },
+          }}
+        >
           <Select
             label={(<Text size="sm">Attribute</Text>)}
             placeholder="Type to create new"
@@ -155,21 +171,43 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
               onChange={(e) => handleInputChange(index, 'description', e.currentTarget.value)}
             />
           </Stack>
-          <ActionIcon
-            size="lg"
-            color="red"
-            variant="transparent"
-            disabled={disabled}
-            onClick={() => handleRuleDelete(index)}
-            sx={{
-              marginTop: '32px',
-              '&:disabled': {
-                backgroundColor: 'transparent',
-                border: 0,
-              } }}
-          >
-            <IconTrash size={18} />
-          </ActionIcon>
+          {matches ? (
+            <Button
+              variant="subtle"
+              color="red"
+              disabled={disabled}
+              onClick={() => handleRuleDelete(index)}
+              sx={{
+                padding: 0,
+                height: 20,
+                '@media( hover: hover)': {
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    textDecoration: 'underline',
+                  },
+                },
+              }}
+            >
+              Delete rule
+            </Button>
+          ) : (
+            <ActionIcon
+              size="lg"
+              color="red"
+              variant="transparent"
+              disabled={disabled}
+              onClick={() => handleRuleDelete(index)}
+              sx={{
+                marginTop: '32px',
+                '&:disabled': {
+                  backgroundColor: 'transparent',
+                  border: 0,
+                } }}
+            >
+              <IconTrash size={18} />
+            </ActionIcon>
+          )}
+
         </Group>
       ))}
       <Group position="left">
