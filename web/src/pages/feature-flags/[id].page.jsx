@@ -9,7 +9,7 @@ import {
   Switch,
   Text,
 } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 
 import { featureFlagApi } from 'resources/feature-flag';
@@ -31,6 +31,7 @@ const FeatureFlag = () => {
   });
 
   const tab = router.asPath.split('#')?.[1] || 'settings';
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const { id } = router.query;
 
@@ -80,10 +81,19 @@ const FeatureFlag = () => {
       {feature ? (
         <Stack spacing="sm">
           <Group pt={24}>
-            <Breadcrumbs sx={{ '& a': { color: 'black' } }}>{breadcrumbItems}</Breadcrumbs>
+            <Breadcrumbs sx={{
+              '& a': {
+                color: 'black',
+                fontSize: matches && 16,
+                fontWeight: matches && 600,
+              },
+            }}
+            >
+              {breadcrumbItems}
+            </Breadcrumbs>
             <Switch
               label={
-                <Text span size="lg" weight={600}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Text>
+                <Text span size={matches ? 16 : 'lg'} weight={600}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Text>
               }
               styles={{ body: { alignItems: 'center' } }}
               sx={{ label: { cursor: 'pointer' } }}

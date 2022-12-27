@@ -32,7 +32,21 @@ const SequencesDemo = () => {
   }
 
   return (
-    <Box sx={{ marginLeft: '270px', display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '579px', height: '528px' }}>
+    <Box sx={{
+      margin: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      width: '579px',
+      height: '528px',
+      '@media (max-width: 768px)': {
+        width: '80%',
+        height: '50%',
+        fontSize: 14,
+        marginTop: 24,
+      },
+    }}
+    >
       <Stack sx={{ backgroundColor: '#734AB70D', borderRadius: '20px', padding: 80 }}>
         <Text sx={{ fontSize: 40, textAlign: 'center' }}>
           👋🏻

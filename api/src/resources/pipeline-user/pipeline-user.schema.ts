@@ -11,6 +11,10 @@ const schema = Joi.object({
     _id: Joi.string().required(),
     name: Joi.string().required(),
   }).default(null),
+  pipelines: Joi.array().items(Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+  })).default(null),
   sequence: Joi.object({
     _id: Joi.string().required(),
     name: Joi.string().required(),
