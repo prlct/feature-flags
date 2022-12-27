@@ -9,13 +9,6 @@ export const useStyles = createStyles(({ colors }) => ({
       '& h2': {
         fontSize: 18,
       },
-      '& button': {
-        padding: 8,
-        borderRadius: 8,
-        width: 156,
-        height: 40,
-        fontSize: 16,
-      },
     },
   },
   search: {
@@ -46,6 +39,19 @@ export const useStyles = createStyles(({ colors }) => ({
       fontWeight: 400,
       padding: '8px 24px',
       lineHeight: '24px',
+    },
+  },
+  addButton: {
+    padding: '8px 24px',
+    fontWeight: 600,
+    fontSize: 16,
+    lineHeight: '19px',
+    width: 205,
+    textAlign: 'center',
+    '@media (max-width: 768px)': {
+      padding: '8px 12px',
+      fontSize: 15,
+      width: 156,
     },
   },
 }));

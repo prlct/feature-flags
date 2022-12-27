@@ -1,28 +1,44 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Stack, TextInput, Text, Group, Button, Accordion, useMantineTheme, Table, Box } from '@mantine/core';
-import { IconUpload, IconPhoto, IconX } from '@tabler/icons';
+import * as yup from 'yup';
+import { Stack, TextInput, Text, Group, Button, useMantineTheme, Table, Box, SegmentedControl, FileButton, ActionIcon } from '@mantine/core';
+import { IconCheck, IconUpload, IconX } from '@tabler/icons';
 import { Dropzone } from '@mantine/dropzone';
 import { showNotification } from '@mantine/notifications';
 import * as Papa from 'papaparse';
+import { useMediaQuery } from '@mantine/hooks';
 
 import { useAddUsersList } from 'resources/email-sequence/email-sequence.api';
 import PropTypes from 'prop-types';
 import { camelCase } from 'lodash/string';
 import trim from 'lodash/trim';
+import { DeleteAlt, UploadCSV } from 'public/icons';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+import { useStyles } from './styles';
+
+const schema = yup.object().shape({
+  email: yup.string().email('Email format is incorrect.').required('Field is required.'),
+  firstName: yup.string(),
+  lastName: yup.string(),
+});
 
 const AddUsersModal = ({ context, id, innerProps }) => {
   const { sequence } = innerProps;
+  const { classes } = useStyles();
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const {
     register,
     handleSubmit,
-  } = useForm();
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
 
   const sequenceId = sequence._id;
   const handleAddUsersList = useAddUsersList(sequenceId).mutate;
   const [users, setUsersList] = useState([]);
   const [fileCSV, setFileCSV] = useState(null);
+  const [toggle, setToggle] = useState('email');
   const theme = useMantineTheme();
 
   const addUsersList = ({ usersList, sequenceId }) => {
@@ -37,7 +53,7 @@ const AddUsersModal = ({ context, id, innerProps }) => {
     });
   };
 
-  function readFile(uploadFile) {
+  const readFile = (uploadFile) => {
     setFileCSV(uploadFile);
 
     const commonConfig = {
@@ -55,7 +71,7 @@ const AddUsersModal = ({ context, id, innerProps }) => {
         },
       },
     );
-  }
+  };
 
   const rejected = () => {
     showNotification({
@@ -66,120 +82,235 @@ const AddUsersModal = ({ context, id, innerProps }) => {
   };
 
   const onAddUser = (data) => {
-    let usersList = users;
-    if (data.email) {
-      usersList = [...usersList, data];
-    }
-    addUsersList({ usersList, sequenceId });
+    addUsersList({ data, sequenceId });
   };
 
+  const onAddUsersList = () => {
+    if (users.length) {
+      addUsersList({ users, sequenceId });
+    } else {
+      showNotification({
+        title: 'File is empty',
+        message: 'File is empty',
+        color: 'red',
+      });
+    }
+  };
+
+  const handleDeleteFile = () => {
+    setFileCSV(null);
+    setUsersList([]);
+  };
+
+  if (toggle === 'email') {
+    return (
+      <Stack spacing={24}>
+        <SegmentedControl
+          value={toggle}
+          data={[
+            { label: 'Email', value: 'email' },
+            { label: 'Import list', value: 'import list' },
+          ]}
+          onChange={setToggle}
+          color="primary"
+          radius={8}
+          sx={{ backgroundColor: '#F1EDF8' }}
+        />
+
+        <form id="addUser" onSubmit={handleSubmit(onAddUser)}>
+          <TextInput
+            {...register('email')}
+            label="Email"
+            placeholder="some@email.com"
+            type="email"
+            sx={{ paddingBottom: 24 }}
+            error={errors?.email?.message}
+          />
+          <TextInput
+            {...register('firstName')}
+            label="First name"
+            type="text"
+            sx={{ paddingBottom: 24 }}
+          />
+          <TextInput
+            {...register('lastName')}
+            label="Last name"
+            type="text"
+          />
+        </form>
+
+        <Group position="apart" sx={{ justifyContent: matches ? 'space-between' : 'flex-end' }}>
+          <Button variant="subtle" color="black" onClick={() => context.closeModal(id)}>
+            Cancel
+          </Button>
+          <Button variant="light" form="addUser" type="submit">
+            Save
+          </Button>
+        </Group>
+      </Stack>
+    );
+  }
+
   return (
-    <Stack>
-      <Accordion>
-        <Accordion.Item value="addUsers">
-          <Accordion.Control>Add users</Accordion.Control>
-          <Accordion.Panel>
-            <form id="addUser" onSubmit={handleSubmit(onAddUser)}>
-              <TextInput
-                {...register('email')}
-                label="Email"
-                placeholder="some@email.com"
-                type="email"
-              />
-              <TextInput
-                {...register('first name')}
-                label="First name"
-                placeholder="Enter first name"
-                type="text"
-              />
-              <TextInput
-                {...register('last name')}
-                label="Last name"
-                placeholder="Enter last name"
-                type="text"
-              />
-            </form>
+    <Stack spacing={24}>
+      <SegmentedControl
+        value={toggle}
+        data={[
+          { label: 'Email', value: 'email' },
+          { label: 'Import list', value: 'import list' },
+        ]}
+        onChange={setToggle}
+        color="primary"
+        radius={8}
+        sx={{ backgroundColor: '#F1EDF8' }}
+      />
 
-          </Accordion.Panel>
-        </Accordion.Item>
+      <Box sx={{ width: '100%' }}>
+        <Text size="sm" inline weight={500}>
+          Please follow this format in the table
+        </Text>
+        <Table
+          fontSize="xs"
+          verticalSpacing="xs"
+          withColumnBorders
+          className={classes.fileFormat}
+        >
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>First name</th>
+              <th>Last name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td />
+              <td />
+              <td />
+            </tr>
+          </tbody>
+        </Table>
+      </Box>
+      <Box sx={{ width: '100%' }}>
+        <Text size="sm" inline sx={{ paddingBottom: 8 }} weight={500}>
+          Upload import list
+        </Text>
+        {matches ? (
+          <>
+            {fileCSV && (
+            <Group
+              position="center"
+              spacing="xl"
+              style={{
+                paddingTop: 16,
+                minHeight: 36,
+                width: '100%',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Group spacing={6} sx={(theme) => ({ '& svg': { color: theme.colors.primary[4], strokeWidth: 3 } })}>
+                <IconCheck size={16} />
+                <Text size="sm" inline>
+                  {fileCSV?.name}
+                </Text>
+              </Group>
+              <Group spacing={7}>
+                <Text size="sm" inline>
+                  {`${fileCSV?.size} kb`}
+                </Text>
+                <ActionIcon size="sx" onClick={handleDeleteFile}><DeleteAlt /></ActionIcon>
+              </Group>
 
-        <Accordion.Item value="addUsersList">
-          <Accordion.Control>Import users list</Accordion.Control>
-          <Accordion.Panel>
+            </Group>
+            )}
+            <FileButton
+              onChange={(files) => readFile(files)}
+              accept="text/csv"
+              sx={{ marginTop: 16, width: '100%' }}
+            >
+              {(props) => <Button variant="light" {...props}>Upload .csv</Button>}
+            </FileButton>
+          </>
+
+        ) : (
+          <Group className={classes.uploadZone}>
             <Dropzone
               onDrop={(files) => readFile(files[0])}
               onReject={() => rejected()}
               maxFiles={1}
               maxSize={3 * 1024 ** 2}
               accept={['text/csv']}
+              className={classes.dropZone}
             >
-              {fileCSV ? (
-                <Group position="center" spacing="xl" style={{ minHeight: 30, pointerEvents: 'none' }}>
-                  <div>
-                    <Text size="md" inline>
-                      {fileCSV.name}
-                    </Text>
-                  </div>
-                </Group>
-              ) : (
-                <Group position="center" spacing="xl" style={{ minHeight: 50, pointerEvents: 'none' }}>
-                  <Dropzone.Accept>
-                    <IconUpload
-                      size={50}
-                      stroke={1.5}
-                      color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
-                    />
-                  </Dropzone.Accept>
-                  <Dropzone.Reject>
-                    <IconX
-                      size={50}
-                      stroke={1.5}
-                      color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
-                    />
-                  </Dropzone.Reject>
-                  <Dropzone.Idle>
-                    <IconPhoto size={50} stroke={1.5} />
-                  </Dropzone.Idle>
+              <Group position="center" spacing="md" style={{ minHeight: 50, pointerEvents: 'none' }}>
+                <Dropzone.Accept>
+                  <IconUpload
+                    size={50}
+                    stroke={1.5}
+                    color={theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Accept>
+                <Dropzone.Reject>
+                  <IconX
+                    size={50}
+                    stroke={1.5}
+                    color={theme.colors.red[theme.colorScheme === 'dark' ? 4 : 6]}
+                  />
+                </Dropzone.Reject>
+                <Dropzone.Idle>
+                  <UploadCSV />
+                </Dropzone.Idle>
 
-                  <Box sx={{ width: '100%' }}>
-                    <Text size="sm" inline>
-                      Drag or click to select cvs file in format
-                    </Text>
-                    <Table
-                      fontSize="xs"
-                      verticalSpacing="xs"
-                      withColumnBorders
-                      sx={{ lineHeight: '10px' }}
-                    >
-                      <thead>
-                        <tr>
-                          <th>email</th>
-                          <th>first name</th>
-                          <th>last name</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>some@email.com</td>
-                          <td>John</td>
-                          <td>Smith</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </Box>
-                </Group>
-              )}
-
+                <Box sx={{ width: '100%' }}>
+                  <Text size="sm" inline align="center">
+                    Drop files here or
+                    {' '}
+                    <Text span color="primary" inherit>click</Text>
+                    {' '}
+                    to upload .csv file
+                  </Text>
+                  <Text size="xs" inline align="center">
+                    Max file size 5 mb.
+                  </Text>
+                </Box>
+              </Group>
             </Dropzone>
-          </Accordion.Panel>
-        </Accordion.Item>
+            {fileCSV && (
+            <Group
+              position="center"
+              spacing="xl"
+              style={{
+                paddingTop: 15,
+                minHeight: 36,
+                width: '100%',
+                justifyContent: 'space-between',
+                borderTop: '1px solid #D4D8DD',
+              }}
+            >
+              <Group spacing={6} sx={(theme) => ({ '& svg': { color: theme.colors.primary[4], strokeWidth: 3 } })}>
+                <IconCheck size={16} />
+                <Text size="sm" inline>
+                  {fileCSV?.name}
+                </Text>
+              </Group>
+              <Group spacing={7}>
+                <Text size="sm" inline>
+                  {`${fileCSV?.size} kb`}
+                </Text>
+                <ActionIcon size="sx" onClick={handleDeleteFile}><DeleteAlt /></ActionIcon>
+              </Group>
 
-      </Accordion>
-      <Group position="apart">
+            </Group>
+            )}
+          </Group>
+        )}
+      </Box>
+
+      <Group position="apart" sx={{ justifyContent: matches ? 'space-between' : 'flex-end' }}>
         <Button variant="subtle" onClick={() => context.closeModal(id)}>
           Cancel
         </Button>
-        <Button form="addUser" type="submit">
+        <Button variant="light" onClick={onAddUsersList}>
           Save
         </Button>
       </Group>

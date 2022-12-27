@@ -9,9 +9,10 @@ export const useStyles = createStyles(({ colors }) => ({
   logoGroup: {
     width: 255,
     marginBottom: 45,
-    marginTop: 29,
+    marginTop: 25,
     marginLeft: 31,
     '@media (max-width: 768px)': {
+      flexWrap: 'nowrap',
       '& svg': {
         height: 24,
         maxWidth: 140,

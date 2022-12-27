@@ -47,12 +47,18 @@ const Sequence = (props) => {
         </Group>
         <SequenceProgressBar total={sequence.total} dropped={sequence.dropped} />
         {sequence.trigger && (
-        <Card shadow="sm" p="sm" radius="sm" withBorder mt={16} sx={{ borderRadius: 12 }}>
+        <Card shadow="sm" p="sm" radius="sm" withBorder mt={!matches && 16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>
             <Group position="apart">
               <Text size={matches ? 16 : 'lg'} weight="bold">{sequence.trigger?.name}</Text>
               <Menu withinPortal>
-                <Menu.Target onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}>
+                <Menu.Target onClick={() => openContextModal({
+                  modal: 'triggerSelection',
+                  size: 696,
+                  innerProps: { sequence },
+                  fullScreen: matches,
+                })}
+                >
                   <ActionIcon><IconEdit size={24} color="gray" /></ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown>
@@ -76,6 +82,7 @@ const Sequence = (props) => {
             ))}
           </Stack>
           <Stack>
+            {!sequence.trigger && (
             <Button
               className={classes.addButton}
               variant="light"
@@ -83,14 +90,26 @@ const Sequence = (props) => {
                 modal: 'triggerSelection',
                 title: 'Add trigger',
                 innerProps: { pipelineId: sequence.pipelineId, sequence },
+                size: 696,
+                fullScreen: matches,
+                styles: { title: { fontSize: 20, fontWeight: 600 } },
               })}
             >
               + Add trigger
             </Button>
+            )}
+
             <Button
               className={classes.addButton}
               variant="light"
-              onClick={() => openContextModal({ modal: 'sequenceEmail', size: 800, innerProps: { sequenceId: sequence?._id } })}
+              onClick={() => openContextModal({
+                modal: 'sequenceEmail',
+                size: 800,
+                fullScreen: matches,
+                title: 'Add email',
+                innerProps: { sequenceId: sequence?._id },
+                styles: { title: { fontSize: 20, fontWeight: 600 } },
+              })}
             >
               + Add email
             </Button>

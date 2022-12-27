@@ -79,8 +79,8 @@ const FeatureFlag = () => {
 
       {feature ? (
         <Stack spacing="sm">
-          <Group>
-            <Breadcrumbs>{breadcrumbItems}</Breadcrumbs>
+          <Group pt={24}>
+            <Breadcrumbs sx={{ '& a': { color: 'black' } }}>{breadcrumbItems}</Breadcrumbs>
             <Switch
               label={
                 <Text span size="lg" weight={600}>{`Feature ${feature?.enabled ? 'enabled' : 'disabled'}`}</Text>

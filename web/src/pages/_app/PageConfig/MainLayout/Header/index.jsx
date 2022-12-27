@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { memo } from 'react';
 import {
   Header as LayoutHeader,
@@ -15,7 +14,7 @@ import CallToActionBanner from './components/CallToActionBanner';
 
 import { useStyles } from './styles';
 
-const Header = ({ menu }) => {
+const Header = () => {
   const growthFlags = useGrowthFlags();
 
   const isSubscriptionsOn = growthFlags && growthFlags.isOn('subscriptions');
@@ -33,26 +32,18 @@ const Header = ({ menu }) => {
         className={classes.main}
       >
         <Group spacing="lg" sx={{ marginLeft: matches ? 'auto' : 86 }} className={classes.menu}>
-
-          {menu && (
-            <EnvSelect />
-          )}
           {matches && (
-            <AdminMenu />
+            <>
+              <EnvSelect />
+              <AdminMenu />
+            </>
+
           )}
         </Group>
       </LayoutHeader>
       {statistics?.limitReached && <CallToActionBanner />}
     </>
   );
-};
-
-Header.propTypes = {
-  menu: PropTypes.bool,
-};
-
-Header.defaultProps = {
-  menu: false,
 };
 
 export default memo(Header);

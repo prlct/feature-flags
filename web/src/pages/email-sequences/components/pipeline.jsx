@@ -60,6 +60,9 @@ const Pipeline = ({ id }) => {
                     modal: 'triggerSelection',
                     title: 'Add trigger',
                     innerProps: { pipelineId: id },
+                    size: 696,
+                    fullScreen: matches,
+                    styles: { title: { fontSize: 20, fontWeight: 600 } },
                   })}
                 >
                   + Add trigger
@@ -67,7 +70,13 @@ const Pipeline = ({ id }) => {
                 <Button
                   className={classes.addButton}
                   variant="light"
-                  onClick={() => openContextModal({ modal: 'sequenceEmail', title: 'Create email', innerProps: {} })}
+                  onClick={() => openContextModal({
+                    modal: 'sequenceEmail',
+                    title: 'Create email',
+                    innerProps: {},
+                    fullScreen: matches,
+                    styles: { title: { fontSize: 20, fontWeight: 600 } },
+                  })}
                 >
                   + Add email
                 </Button>

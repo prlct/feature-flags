@@ -69,4 +69,14 @@ export const useStyles = createStyles(({ colors }) => ({
       fontSize: 10,
     },
   },
+  addButton: {
+    fontWeight: 600,
+    fontSize: 16,
+    lineHeight: '19px',
+    width: '100%',
+    textAlign: 'center',
+    '@media (max-width: 768px)': {
+      fontSize: 15,
+    },
+  },
 }));

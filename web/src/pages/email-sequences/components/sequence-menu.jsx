@@ -43,13 +43,27 @@ const SequenceMenu = ({ sequence }) => {
         <Menu.Dropdown>
           <Menu.Item
             icon={!matches && addOrEditIcon}
-            onClick={() => openContextModal({ modal: 'addUsers', innerProps: { sequence } })}
+            onClick={() => openContextModal({
+              modal: 'addUsers',
+              size: 464,
+              fullScreen: matches,
+              innerProps: { sequence },
+              title: 'Add subscribers',
+              styles: { title: { fontSize: 20, fontWeight: 600 } },
+            })}
           >
             Add users
           </Menu.Item>
           <Menu.Item
             icon={!matches && addOrEditIcon}
-            onClick={() => openContextModal({ modal: 'triggerSelection', size: 600, innerProps: { sequence } })}
+            onClick={() => openContextModal({
+              modal: 'triggerSelection',
+              size: 696,
+              fullScreen: matches,
+              innerProps: { sequence },
+              title: 'Trigger',
+              styles: { title: { fontSize: 20, fontWeight: 600 } },
+            })}
           >
             {`${addOrEditText} trigger`}
           </Menu.Item>

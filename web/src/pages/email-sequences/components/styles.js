@@ -23,4 +23,28 @@ export const useStyles = createStyles((theme) => ({
     width: '100%',
     textAlign: 'center',
   },
+  fileFormat: {
+    lineHeight: '10px',
+    width: 230,
+    margin: '24px auto 15px',
+    '& thead tr th': {
+      fontSize: 10,
+      fontWeight: 500,
+      textAlign: 'center',
+    },
+  },
+  uploadZone: {
+    padding: 20,
+    border: `1px dashed ${theme.colors.gray[2]}`,
+    background: '#FAFAFA',
+    borderRadius: 6,
+  },
+  dropZone: {
+    border: 'none',
+    background: 'none',
+    padding: 0,
+    '&:hover': {
+      background: 'none',
+    },
+  },
 }));

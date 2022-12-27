@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Text } from '@mantine/core';
+import { Stack, Table, Text } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 import { useAmplitude } from 'contexts/amplitude-context';
 import { useGetFeatureHistory } from 'resources/feature-flag/feature-flag.api';
@@ -39,6 +40,7 @@ const getActionMessage = (data) => {
 
 const History = ({ featureId, env }) => {
   const { data: history } = useGetFeatureHistory(featureId, env);
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const amplitude = useAmplitude();
 
@@ -51,6 +53,20 @@ const History = ({ featureId, env }) => {
 
   if (!history?.length) {
     return <Text mt={20}>There is no history yet.</Text>;
+  }
+
+  if (matches) {
+    return (
+      <Stack pt={16}>
+        { history?.map((historyRecord) => (
+          <Stack sx={{ border: '1px solid #DDDD', padding: 16, borderRadius: 10 }}>
+            <Text size={matches && 14}>{getActionMessage(historyRecord.data)}</Text>
+            <Text size={matches && 14}>{historyRecord.admin.email}</Text>
+            <Text size={matches && 14}>{getDate(historyRecord.changedOn.toString())}</Text>
+          </Stack>
+        ))}
+      </Stack>
+    );
   }
 
   return (

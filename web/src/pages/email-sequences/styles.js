@@ -38,18 +38,10 @@ export const useStyles = createStyles(({ colors }) => ({
       '& h2': {
         fontSize: 18,
       },
-      '& button': {
-        borderRadius: 8,
-        padding: 8,
-        width: 128,
-        height: 40,
-        fontSize: 16,
-      },
     },
   },
   inactiveTabItem: {
-    paddingBottom: 24,
-    paddingLeft: 24,
+    padding: 24,
     width: 363,
     height: 180,
     borderRadius: 20,
@@ -59,8 +51,13 @@ export const useStyles = createStyles(({ colors }) => ({
     alignItems: 'self-end',
     justifyContent: 'start',
     opacity: 0.8,
-    backgroundImage: 'url(https://email.uplers.com/blog/wp-content/uploads/2020/11/Points-to-keep-in-mind-while-creating-promotional-email-campaigns-with-SFMC.jpg)',
     backgroundSize: 'cover',
+    '& .mantine-Tabs-tabLabel': {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      height: '100%',
+    },
     '&:hover': {
       borderColor: colors.primary[4],
       '&:after': {
@@ -73,7 +70,7 @@ export const useStyles = createStyles(({ colors }) => ({
         top: 0,
         background: 'transparent',
         opacity: 0.6,
-        backgroundImage: 'linear-gradient(to right, rgba(255,0,0,0), #FFFFFF)',
+        backgroundImage: 'linear-gradient(to right, rgba(255,0,0,0), rgba(115, 74, 183, 0.15))',
       },
     },
     '@media (max-width: 768px)': {
@@ -101,6 +98,16 @@ export const useStyles = createStyles(({ colors }) => ({
         },
       },
     },
+  },
+  addButton: {
+    padding: '8px 24px',
+    fontWeight: 600,
+    fontSize: 16,
+    lineHeight: '19px',
+    textAlign: 'center',
+    borderRadius: 8,
+    width: 174,
+    height: 40,
   },
 }));
 
