@@ -8,6 +8,7 @@ import createSequence from './actions/create-sequence';
 import createSequenceEmail from './actions/create-sequence-email';
 import addPipelineUsers from './actions/add-pipeline-users';
 import addPipelineUsersList from './actions/add-pipeline-users-list';
+import addPipelinesToUser from './actions/add-pipelines-to-user';
 import getEvents from './actions/get-events';
 import createEvent from './actions/create-event';
 import addGmail from './actions/add-gmail';
@@ -24,6 +25,7 @@ const privateRoutes = routeUtil.getRoutes([
   getFeatures,
   addPipelineUsers,
   addPipelineUsersList,
+  addPipelinesToUser,
   getEvents,
   createEvent,
   addGmail,

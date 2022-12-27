@@ -51,10 +51,10 @@ const SignIn = () => {
   return (
     <>
       <Head>
-        <title>Sign in</title>
+        <title>Log in</title>
       </Head>
       <Stack sx={{ width: '328px' }}>
-        <Title order={2}>Sign In</Title>
+        <Title order={2}>Log In</Title>
         <form onSubmit={handleSubmit(handleLoginWithEmail)}>
           <Stack>
             <TextInput
@@ -69,7 +69,7 @@ const SignIn = () => {
               type="submit"
               fullWidth
             >
-              Sign In
+              Log In
             </Button>
             <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
             <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>

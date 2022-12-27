@@ -48,11 +48,11 @@ const SequenceMenu = ({ sequence }) => {
               size: 464,
               fullScreen: matches,
               innerProps: { sequence },
-              title: 'Add subscribers',
+              title: 'Add subscribers to pipeline',
               styles: { title: { fontSize: 20, fontWeight: 600 } },
             })}
           >
-            Add users
+            Add subscribers
           </Menu.Item>
           <Menu.Item
             icon={!matches && addOrEditIcon}

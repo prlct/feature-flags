@@ -36,7 +36,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
 
   const sequence = await sequenceService.findOne({ _id: sequenceId, applicationId, deletedOn: { $exists: false } });
-
+ 
   if (!sequence) {
     ctx.throwClientError({ sequence: 'Sequence not found' });
     return;
@@ -104,6 +104,10 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       _id: pipeline._id,
       name: pipeline.name,
     },
+    pipelines: [{
+      _id: pipeline._id,
+      name: pipeline.name,
+    }],
     sequence: {
       _id: sequence._id,
       name: sequence.name,

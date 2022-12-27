@@ -38,6 +38,7 @@ export const useStyles = createStyles((theme) => ({
     border: `1px dashed ${theme.colors.gray[2]}`,
     background: '#FAFAFA',
     borderRadius: 6,
+    justifyContent: 'center',
   },
   dropZone: {
     border: 'none',

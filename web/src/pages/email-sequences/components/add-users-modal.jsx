@@ -82,12 +82,15 @@ const AddUsersModal = ({ context, id, innerProps }) => {
   };
 
   const onAddUser = (data) => {
-    addUsersList({ data, sequenceId });
+    const users = Array(1).fill(data);
+    if (data.email) {
+      addUsersList({ usersList: users, sequenceId });
+    }
   };
 
   const onAddUsersList = () => {
     if (users.length) {
-      addUsersList({ users, sequenceId });
+      addUsersList({ usersList: users, sequenceId });
     } else {
       showNotification({
         title: 'File is empty',
