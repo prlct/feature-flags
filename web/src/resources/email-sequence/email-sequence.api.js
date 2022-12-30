@@ -302,6 +302,27 @@ export function useAddPipelinesToUser() {
   });
 }
 
+export const useUpdateUser = (userId) => {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const updateUser = async (data) => apiService.put(
+    `${pipelineUsersResource}/${userId}`,
+    { ...data, applicationId },
+  );
+
+  return useMutation(updateUser, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Subscriber updated',
+        message: 'Subscriber updated',
+        color: 'green',
+      });
+      queryClient.invalidateQueries([pipelineUsersResource]);
+    },
+  });
+};
+
 export function useRemoveUser() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
@@ -337,6 +358,18 @@ export function useGetApplicationEvents() {
   const getEvents = () => apiService.get(`/applications/${applicationId}/events`);
 
   return useQuery(['pipeline-events'], getEvents);
+}
+
+export function useDeleteEvent() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const deleteFeature = (event) => apiService.delete(`/applications/${applicationId}/events`, event);
+  return useMutation(deleteFeature, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pipeline-events']);
+    },
+  });
 }
 
 export function useAddApplicationEvent() {

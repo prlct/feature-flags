@@ -14,6 +14,7 @@ import shipTheme from 'theme/ship-theme';
 import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
 import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 
+import UpdateUserModal from 'pages/pipeline-users/components/update-user-modal';
 import TriggerSelectionModal from '../email-sequences/components/trigger-selection-modal';
 import EditEmailModal from '../email-sequences/components/edit-email-modal';
 import RenameSequenceModal from '../email-sequences/components/rename-sequence-modal';
@@ -33,6 +34,7 @@ const App = ({ Component, pageProps }) => {
     renameSequence: RenameSequenceModal,
     addUsers: AddUsersModal,
     sendTestEmail: SendTestEmailModal,
+    updateUser: UpdateUserModal,
   }), []);
 
   return (
