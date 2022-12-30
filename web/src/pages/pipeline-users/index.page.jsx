@@ -1,54 +1,24 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Table, Text, UnstyledButton, TextInput, MultiSelect, createStyles, Title, Stack, LoadingOverlay } from '@mantine/core';
-import { useLocalStorage, useDebouncedValue } from '@mantine/hooks';
-import { IconSearch, IconTrash, IconX } from '@tabler/icons';
+import { Table, Text, UnstyledButton, TextInput, MultiSelect, Title, Stack, LoadingOverlay, Menu, ActionIcon, Group } from '@mantine/core';
+import { useLocalStorage, useDebouncedValue, useMediaQuery } from '@mantine/hooks';
+import { openContextModal } from '@mantine/modals';
+import { IconArrowDown, IconArrowUp, IconSearch, IconSettings, IconTrash, IconX } from '@tabler/icons';
 import _filter from 'lodash/filter';
+import _orderBy from 'lodash/orderBy';
 
 import { useGetUsers, useRemoveUser, useAddPipelinesToUser } from 'resources/email-sequence/email-sequence.api';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 import { showNotification } from '@mantine/notifications';
+import CardSettingsButton from 'pages/email-sequences/components/card-settings-button';
 
-const useStyles = createStyles(({ colors }) => ({
-  headerGroup: {
-    width: '100%',
-    '@media (max-width: 768px)': {
-      paddingTop: 16,
-      '& h2': {
-        fontSize: 18,
-      },
-    },
-  },
-  search: {
-    width: 568,
-    '& input': {
-      border: `1px solid ${colors.gray[2]}`,
-      borderRadius: 8,
-      '@media (max-width: 768px)': {
-        width: '100%',
-      },
-    },
-  },
-  table: {
-    borderRadius: 8,
-    '& thead tr th': {
-      color: colors.gray[4],
-      fontWeight: 400,
-      padding: '8px 24px',
-      lineHeight: '24px',
-    },
-    '& thead tr th:nth-child(4)': {
-      width: '30%',
-    },
-  },
-  multiSelect: {
-    padding: 0,
-  },
-}));
+import { useStyles } from './styles';
 
 const UsersList = () => {
   const { classes } = useStyles();
   const { data } = useGetUsers();
+
+  const matches = useMediaQuery('(max-width: 768px)');
 
   const [env] = useLocalStorage({
     key: LOCAL_STORAGE_ENV_KEY,
@@ -70,6 +40,7 @@ const UsersList = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebouncedValue(search, 500);
   const [filteredSubscribers, setFilteredSubscribers] = useState([]);
+  const [filters, setFilters] = useState({});
 
   const addPipelinesList = ({ pipelinesList, userId, userEmail }) => {
     handleAddUsersList({ pipelinesList, userId }, {
@@ -109,6 +80,32 @@ const UsersList = () => {
     setFilteredSubscribers(subscribers || []);
   }, [users, debouncedSearch]);
 
+  useEffect(() => {
+    if (Object.keys(filters).length) {
+      const [key, value] = Object.entries(filters)[0];
+      const subscribersSorted = _orderBy(
+        users,
+        (item) => item[key],
+        [value],
+      );
+      setFilteredSubscribers(subscribersSorted || []);
+    } else {
+      setFilteredSubscribers(users || []);
+    }
+  }, [users, filters]);
+
+  const handleSort = (sortField) => {
+    if (filters[sortField] === 'asc') {
+      setFilters({ [sortField]: 'desc' });
+      return;
+    }
+    if (filters[sortField] === 'desc') {
+      setFilters({});
+    } else {
+      setFilters({ [sortField]: 'asc' });
+    }
+  };
+
   const rows = filteredSubscribers.length > 0 ? filteredSubscribers.map((user) => (
     <tr key={user._id}>
       <td>{user.email}</td>
@@ -120,19 +117,50 @@ const UsersList = () => {
           defaultValue={[user.pipeline._id]}
           clearButtonLabel="Clear selection"
           onChange={(value) => handlePipelinesList(value, user._id, user.email)}
+          size="sm"
           styles={{
-            root: { '& .mantine-Input-rightSection': { width: 0 } },
+            wrapper: { maxWidth: 'max-content' },
             input: { border: 'none', padding: 0 },
             defaultValue: { paddingLeft: 0 },
-            rightSection: { pointerEvents: 'none' } }}
+          }}
         />
       </td>
       <td>
-        <UnstyledButton
-          onClick={() => removeUserHandler(user._id)}
-        >
-          <IconTrash color="red" />
-        </UnstyledButton>
+        <Menu position="bottom-end">
+          <Menu.Target>
+            <ActionIcon
+              title="Settings"
+              variant="transparent"
+              sx={{ width: '100%', justifyContent: 'flex-end' }}
+            >
+              <CardSettingsButton />
+            </ActionIcon>
+          </Menu.Target>
+          <Menu.Dropdown sx={{ width: '192px !important', height: 112 }}>
+            <Menu.Item
+              icon={<IconSettings size={14} />}
+              onClick={() => openContextModal({
+                modal: 'updateUser',
+                size: 800,
+                fullScreen: matches,
+                title: 'Edit user',
+                innerProps: { user, pipelines },
+                styles: { title: { fontSize: 20, fontWeight: 600 } },
+              })}
+              sx={{ padding: '14px 13px' }}
+            >
+              Settings
+            </Menu.Item>
+            <Menu.Item
+              icon={<IconTrash size={14} />}
+              color="red"
+              onClick={() => removeUserHandler(user._id)}
+              sx={{ padding: '14px 13px' }}
+            >
+              Delete
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </td>
     </tr>
   )) : <Text mt={16}>No subscribers found</Text>;
@@ -161,11 +189,56 @@ const UsersList = () => {
       <Table verticalSpacing="xs" horizontalSpacing="xs">
         <thead>
           <tr>
-            <th>Email</th>
-            <th>First name</th>
-            <th>Last name</th>
+            <th>
+              <Group spacing={3}>
+                <ActionIcon
+                  onClick={() => handleSort('email')}
+                  className={classes.tableTitle}
+                >
+                  Email
+                  {filters.email === 'desc' && (
+                  <IconArrowDown size={16} />
+                  )}
+                  {filters.email === 'asc' && (
+                  <IconArrowUp size={16} />
+                  )}
+                </ActionIcon>
+              </Group>
+            </th>
+            <th>
+              <Group spacing={3}>
+                <ActionIcon
+                  onClick={() => handleSort('firstName')}
+                  className={classes.tableTitle}
+                >
+                  First name
+                  {filters.firstName === 'desc' && (
+                  <IconArrowDown size={16} />
+                  )}
+                  {filters.firstName === 'asc' && (
+                  <IconArrowUp size={16} />
+                  )}
+                </ActionIcon>
+              </Group>
+            </th>
+            <th>
+              <Group spacing={3}>
+                <ActionIcon
+                  onClick={() => handleSort('lastName')}
+                  className={classes.tableTitle}
+                >
+                  Last name
+                  {filters.lastName === 'desc' && (
+                  <IconArrowDown size={16} />
+                  )}
+                  {filters.lastName === 'asc' && (
+                  <IconArrowUp size={16} />
+                  )}
+                </ActionIcon>
+              </Group>
+            </th>
             <th>Pipeline</th>
-            <th>Actions</th>
+            <th />
           </tr>
         </thead>
         <tbody>
