@@ -42,8 +42,8 @@ const UsersList = () => {
   const [filteredSubscribers, setFilteredSubscribers] = useState([]);
   const [filters, setFilters] = useState({});
 
-  const addPipelinesList = ({ pipelinesList, userId, userEmail }) => {
-    handleAddUsersList({ pipelinesList, userId }, {
+  const addPipelinesList = ({ pipelineIds, userId, userEmail }) => {
+    handleAddUsersList({ pipelineIds, userId }, {
       onSuccess: () => {
         showNotification({
           title: 'Changed the list of pipelines',
@@ -55,8 +55,10 @@ const UsersList = () => {
   };
 
   const handlePipelinesList = (selectedPipelines, userId, userEmail) => {
-    const pipelinesList = pipelines.filter((pipeline) => selectedPipelines.includes(pipeline._id));
-    addPipelinesList({ pipelinesList, userId, userEmail });
+    const pipelineIds = pipelines
+      .filter((pipeline) => selectedPipelines.includes(pipeline._id))
+      .map((p) => p._id);
+    addPipelinesList({ pipelineIds, userId, userEmail });
   };
 
   const getPipelinesList = (pipelines) => pipelines
@@ -115,6 +117,7 @@ const UsersList = () => {
         <MultiSelect
           data={getPipelinesList(pipelines)}
           defaultValue={[user.pipeline._id]}
+          value={user.pipelines.map((p) => p._id)}
           clearButtonLabel="Clear selection"
           onChange={(value) => handlePipelinesList(value, user._id, user.email)}
           size="sm"
@@ -141,7 +144,7 @@ const UsersList = () => {
               icon={<IconSettings size={14} />}
               onClick={() => openContextModal({
                 modal: 'updateUser',
-                size: 800,
+                size: 400,
                 fullScreen: matches,
                 title: 'Edit user',
                 innerProps: { user, pipelines },

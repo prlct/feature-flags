@@ -3,47 +3,42 @@ import Joi from 'joi';
 import { validateMiddleware } from 'middlewares';
 
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import pipelineService from 'resources/pipeline/pipeline.service';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
 
 const schema = Joi.object({
   userId: Joi.string().required(),
-  pipelinesList: Joi.array().required(),
+  pipelineIds: Joi.array().items(Joi.string().trim()).required(),
 });
-
-type ValidatedListItem = {
-  _id: string,
-  applicationId: string,
-  createdOn: string,
-  updatedOn: string,
-  env: string,
-  name:string,
-};
 
 type ValidatedData = {
   userId: string,
-  pipelinesList: ValidatedListItem[],
+  pipelineIds: string[],
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
-  const { userId, pipelinesList } = ctx.validatedData;
+  const { userId, pipelineIds } = ctx.validatedData;
   const { applicationId } = ctx.params;
 
-  const pipelinesArray = pipelinesList.map((pipeline) => ({ _id: pipeline._id, name: pipeline.name }));
+  const { results: pipelinesArray } = await pipelineService.find({
+    applicationId,
+    _id: { $in: pipelineIds },
+    deletedOn: { $exists: false },
+  }, {
+    projection: { _id: 1, name: 1 },
+  });
 
-  const updateUser = await pipelineUserService.atomic.updateOne(
-    { 
+  ctx.body = await pipelineUserService.updateOne(
+    {
       _id: userId,
       applicationId,
-    }, 
-    { 
-      $set: { 
-        pipelines: pipelinesArray, 
-      }, 
+    },
+    (user) => {
+      user.pipelines = pipelinesArray;
+      return user;
     },
   );
-
-  ctx.body = updateUser;
 };
 
 
