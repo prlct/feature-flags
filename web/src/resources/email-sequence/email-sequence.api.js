@@ -283,14 +283,14 @@ export function useAddPipelinesToUser() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];
 
-  const addPipelinesList = ({ pipelinesList, userId }) => apiService.post(
+  const addPipelinesList = ({ pipelineIds, userId }) => apiService.post(
     `/applications/${applicationId}/pipelines-to-user`,
-    { pipelinesList, userId },
+    { pipelineIds, userId },
   );
 
   return useMutation(addPipelinesList, {
     onSuccess: () => {
-      queryClient.invalidateQueries([sequencesResource]);
+      queryClient.invalidateQueries([pipelineUsersResource]);
     },
     onError() {
       showNotification({

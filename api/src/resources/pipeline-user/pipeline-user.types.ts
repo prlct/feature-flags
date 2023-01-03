@@ -18,6 +18,10 @@ export type PipelineUser = {
   sequenceHistory?: {
     [key in string]: Date;
   },
+  pipelines: {
+    _id: string,
+    name: string,
+  }[],
 
   createdOn?: Date;
   updatedOn?: Date;

@@ -10,7 +10,7 @@ const UpdateUserModal = ({ context, id, innerProps }) => {
   const [email, setEmailName] = useState(user?.email || '');
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
-  const [pipelineList, setPipelineList] = useState([user?.pipeline._id] || []);
+  const [pipelineList, setPipelineList] = useState(user.pipelines || []);
 
   const {
     mutate: handleUserUpdate,
@@ -53,10 +53,11 @@ const UpdateUserModal = ({ context, id, innerProps }) => {
         onChange={(e) => setLastName(e.target.value)}
       />
       <MultiSelect
-        label="Pipeline"
+        label="Pipelines"
         data={getPipelinesList(pipelines)}
-        defaultValue={[pipelineList]}
+        defaultValue={[]}
         clearButtonLabel="Clear selection"
+        value={pipelineList.map(p => p._id)}
         onChange={(value) => handlePipelinesList(value)}
         size="sm"
         styles={{
@@ -85,6 +86,10 @@ UpdateUserModal.propTypes = {
       pipeline: PropTypes.shape({
         _id: PropTypes.string,
       }),
+      pipelines: PropTypes.arrayOf(PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      })),
     }),
     pipelines: PropTypes.arrayOf(PropTypes.shape({
       _id: PropTypes.string,
