@@ -13,7 +13,10 @@ const schema = Joi.object({
   email: Joi.string().email(),
   firstName: Joi.string().empty(null).allow('').default(''),
   lastName: Joi.string().empty(null).allow('').default(''),
-  pipelines: Joi.array().empty(null).default([]),
+  pipelines: Joi.array().items(Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+  })).empty(null).default([]),
 });
 
 type ValidatedData = {
@@ -21,25 +24,21 @@ type ValidatedData = {
   email: string,
   firstName?:string,
   lastName?: string,
-  pipelines: string[],
+  pipelines: {
+    _id: string,
+    name: string,
+  }[],
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { userId } = ctx.params;
-  const { email, firstName, lastName, pipelines, applicationId } = ctx.validatedData;
+  const { email, firstName, lastName, pipelines } = ctx.validatedData;
 
-  const { results: pipelinesArray } = await pipelineService.find({
-    applicationId,
-    _id: { $in: pipelines },
-    deletedOn: { $exists: false },
-  }, {
-    projection: { _id: 1, name: 1 },
-  });
 
   ctx.body = await pipelineUserService.updateOne({
     _id: userId,
   },  (user) => {
-    return { ...user, email, firstName, lastName, pipelines: pipelinesArray };
+    return { ...user, email, firstName, lastName, pipelines };
   });
 };
 
