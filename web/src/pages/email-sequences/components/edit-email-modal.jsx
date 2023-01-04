@@ -59,7 +59,14 @@ const EditEmailModal = ({ context, id, innerProps }) => {
         errors={errors}
       />
       <Group position="apart" mt={16}>
-        <Button variant="subtle" onClick={() => context.closeModal(id)}>Cancel</Button>
+        <Button
+          variant="subtle"
+          color="black"
+          onClick={() => context.closeModal(id)}
+          sx={{ fontWeight: 600 }}
+        >
+          Cancel
+        </Button>
         <Button onClick={onSave}>Save</Button>
       </Group>
     </Stack>

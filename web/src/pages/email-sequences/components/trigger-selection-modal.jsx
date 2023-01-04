@@ -391,8 +391,19 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
             <Text size="sm">days to repeat workflow</Text>
           </Group>
         )}
-        <Group position="apart" sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="subtle" color="black" onClick={() => context.closeModal(id)}>
+        <Group
+          position="apart"
+          sx={{
+            justifyContent: matches ? 'space-between' : 'flex-end',
+            paddingBottom: matches && 45,
+          }}
+        >
+          <Button
+            variant="subtle"
+            color="black"
+            onClick={() => context.closeModal(id)}
+            sx={{ fontWeight: 600 }}
+          >
             Cancel
           </Button>
           <Button onClick={handleTriggerSave}>

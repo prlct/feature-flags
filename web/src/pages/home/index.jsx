@@ -203,7 +203,7 @@ const Home = () => {
                     usersViewedCount,
                     env }) => (
                       <Stack key={_id} spacing={14} className={classes.itemBlock}>
-                        <Stack spacing={0}>
+                        <Stack spacing={8}>
                           <Group sx={{ justifyContent: 'space-between' }}>
                             <Text size="md" weight={700} sx={{ height: 18 }}>
                               {name}
