@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import _ from 'lodash';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
@@ -24,9 +25,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const application = await applicationService.find({
     _id: applicationId,
     'events.value': { $ne: value },
-    'events.label': { $ne: label },
+    'events.label': { $ne: `/${_.escapeRegExp(label)}/i` },
   });
-  console.log(application);
 
   if (!application.count) {
     ctx.throwClientError({ event: 'Name and key must be unique' });
