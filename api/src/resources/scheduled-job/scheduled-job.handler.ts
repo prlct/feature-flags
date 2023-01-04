@@ -88,16 +88,16 @@ const getHandler = (job: ScheduledJob) => {
           const userFinishedSequence = !nextEmail;
 
           const userUpdates = {
-            'sequence._id': nextSequence ? nextSequence._id : sequence._id,
-            'sequence.name': nextSequence ? nextSequence.name : sequence.name,
-            'sequence.lastEmailId': job.data.emailId,
-            'sequence.pendingEmailId': nextEmail?._id || null,
-            finished: userFinishedSequence,
+            'sequences.$._id': nextSequence ? nextSequence._id : sequence._id,
+            'sequences.$.name': nextSequence ? nextSequence.name : sequence.name,
+            'sequences.$.lastEmailId': job.data.emailId,
+            'sequences.$.pendingEmailId': nextEmail?._id || null,
+            'sequences.$.finished': userFinishedSequence,
           };
 
           await pipelineUserService.atomic.updateOne({
-            'pipeline._id': job.data.pipelineId,
-            'sequence._id': sequence._id,
+            'pipelines._id': job.data.pipelineId,
+            'sequences._id': sequence._id,
             deletedOn: { $exists: false },
           }, {
             $set: userUpdates,

@@ -230,27 +230,6 @@ export function useGetUsers() {
   return useQuery([pipelineUsersResource], getUsers);
 }
 
-export function useAddUsers() {
-  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
-
-  const addUsers = ({ email, sequenceId }) => apiService.post(
-    `/applications/${applicationId}/pipeline-users`,
-    { email, sequenceId },
-  );
-
-  return useMutation(addUsers, {
-    onSuccess: () => {
-      showNotification({
-        title: 'Added users to sequence',
-        message: 'Added users to sequence',
-        color: 'green',
-      });
-      queryClient.invalidateQueries([sequencesResource]);
-    },
-  });
-}
-
 export function useAddUsersList() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.applicationIds[0];

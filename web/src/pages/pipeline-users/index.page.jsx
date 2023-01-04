@@ -116,7 +116,7 @@ const UsersList = () => {
       <td>
         <MultiSelect
           data={getPipelinesList(pipelines)}
-          defaultValue={[user.pipeline._id]}
+          defaultValue={[user?.pipeline?._id]}
           value={user.pipelines.map((p) => p._id)}
           clearButtonLabel="Clear selection"
           onChange={(value) => handlePipelinesList(value, user._id, user.email)}
@@ -241,7 +241,7 @@ const UsersList = () => {
               </Group>
             </th>
             <th>Pipeline</th>
-            <th />
+            <th>&nbsp;</th>
           </tr>
         </thead>
         <tbody>

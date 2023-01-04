@@ -101,8 +101,8 @@ const TargetingRules = ({ rules, onChange, disabled, sx }) => {
       </Text>
 
       {shownRules.map(({ attribute, operator, value, description }, index) => (
-        // eslint-disable-next-line react/no-array-index-key
         <Group
+          // eslint-disable-next-line react/no-array-index-key
           key={index}
           align="start"
           gap={16}

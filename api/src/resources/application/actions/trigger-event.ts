@@ -86,16 +86,16 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       lastName,
       email,
       applicationId: pipeline.applicationId,
-      pipeline: {
+      pipelines: [{
         _id: pipeline._id,
         name: pipeline.name,
-      },
-      sequence: {
+      }],
+      sequences: [{
         _id: sequence._id,
         name: sequence.name,
-        lastEmailId: null,
-        pendingEmailId: sequenceEmail._id,
-      },
+        pipelineId: pipeline._id,
+        pendingEmail: sequenceEmail._id,
+      }],
     });
 
     await scheduledJobService.scheduleSequenceEmail(sequenceEmail, email);
