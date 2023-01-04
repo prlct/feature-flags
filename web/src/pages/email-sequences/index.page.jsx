@@ -135,29 +135,14 @@ const EmailSequences = () => {
           )}
 
         </Tabs.List>
-        {matches ? (
-          <Tabs.List style={{ alignItems: 'center', color: 'black', justifyContent: 'space-between', marginBottom: 16 }}>
-            <Text sx={{ fontSize: 16, fontWeight: 700 }}>{openedPipelineName}</Text>
-            <Tabs.Tab
-              value="remove-current"
-              onClick={() => handleRemovePipeline(openedPipeline)}
-              className={classes.tabItem}
-              style={{ color: 'black', height: 24 }}
-            >
-              <Text>Delete pipeline</Text>
-            </Tabs.Tab>
-          </Tabs.List>
-        ) : (
-          <Tabs.Tab
-            value="remove-current"
-            onClick={() => handleRemovePipeline(openedPipeline)}
-            className={classes.tabItem}
-            style={{ position: 'absolute', right: 0, top: 0 }}
-          >
-            <Text>Delete pipeline</Text>
-          </Tabs.Tab>
-        )}
-
+        <Tabs.Tab
+          value="remove-current"
+          onClick={() => handleRemovePipeline(openedPipeline)}
+          className={classes.tabItem}
+          style={{ position: 'absolute', right: 0, top: 0 }}
+        >
+          <Text>Delete pipeline</Text>
+        </Tabs.Tab>
         {pipelines.map((pipeline) => (
           <Tabs.Panel key={pipeline._id} value={pipeline._id}>
             <Pipeline id={pipeline._id} />

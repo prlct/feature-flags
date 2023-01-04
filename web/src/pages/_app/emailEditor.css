@@ -4,5 +4,15 @@
 }
 .ql-container {
   border: none !important;
-  min-height: 300px !important;
+  min-height: 300px !important;  
+}
+
+@media (max-width: 768px) {
+  .quill {
+    min-height: 150px !important
+  }
+
+  .ql-container {
+    min-height: 150px !important;    
+  }
 }

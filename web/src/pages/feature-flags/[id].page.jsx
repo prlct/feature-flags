@@ -79,7 +79,7 @@ const FeatureFlag = () => {
       </Head>
 
       {feature ? (
-        <Stack spacing="sm">
+        <Stack spacing="sm" sx={{ paddingBottom: 20 }}>
           <Group pt={24}>
             <Breadcrumbs sx={{
               '& a': {

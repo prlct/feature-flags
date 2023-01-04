@@ -108,6 +108,11 @@ export const useStyles = createStyles(({ colors }) => ({
     borderRadius: 8,
     width: 174,
     height: 40,
+    '@media (max-width: 768px)': {
+      padding: '8px 12px',
+      fontSize: 15,
+      width: 129,
+    },
   },
 }));
 

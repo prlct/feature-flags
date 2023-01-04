@@ -387,6 +387,38 @@ export function useAddApplicationEvent() {
       });
       queryClient.invalidateQueries(['pipeline-events']);
     },
+    onError: () => {
+      showNotification({
+        title: 'Error',
+        message: 'Event name and key must be unique',
+        color: 'red',
+      });
+    },
+  });
+}
+
+export function useUpdateApplicationEvent() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const updateEvent = ({ updatedEvent, event }) => apiService.put(`/applications/${applicationId}/events`, { updatedEvent, event });
+
+  return useMutation(updateEvent, {
+    onSuccess: () => {
+      showNotification({
+        title: 'Update',
+        message: 'Event was updated',
+        color: 'green',
+      });
+      queryClient.invalidateQueries(['pipeline-events']);
+    },
+    onError: () => {
+      showNotification({
+        title: 'Error',
+        message: 'Event name and key must be unique',
+        color: 'red',
+      });
+    },
   });
 }
 

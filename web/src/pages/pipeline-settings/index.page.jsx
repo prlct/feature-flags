@@ -5,12 +5,15 @@ import config from 'config';
 import queryClient from 'query-client';
 import CardSettingsButton from 'pages/email-sequences/components/card-settings-button';
 import { IconSettings, IconTrash } from '@tabler/icons';
-import { useModals } from '@mantine/modals';
+import { openContextModal, useModals } from '@mantine/modals';
+import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import EventCreateModal from './components/event-create-modal';
 
 const PipelineSettings = () => {
   const modals = useModals();
+  const matches = useMediaQuery('(max-width: 768px)');
+
   const { data: emails = [], isLoading } = useGetSenderEmails();
   const { data: fetchedEvents } = useGetApplicationEvents();
   const deleteEventMutation = useDeleteEvent();
@@ -59,6 +62,17 @@ const PipelineSettings = () => {
     });
   };
 
+  const handleEventSetting = (event) => {
+    openContextModal({
+      modal: 'updateEvent',
+      size: 800,
+      fullScreen: matches,
+      title: 'Edit event',
+      innerProps: { ...event },
+      styles: { title: { fontSize: 20, fontWeight: 600 } },
+    });
+  };
+
   const emailsRows = emails.map((email) => (
     <tr key={email}>
       <td>{email.value}</td>
@@ -83,6 +97,7 @@ const PipelineSettings = () => {
           <Menu.Dropdown sx={{ width: '192px !important', height: 112 }}>
             <Menu.Item
               icon={<IconSettings size={14} />}
+              onClick={() => handleEventSetting(event)}
               sx={{ padding: '14px 13px' }}
             >
               Settings
@@ -151,7 +166,6 @@ const PipelineSettings = () => {
         opened={isEventCreateModalOpened}
         onClose={() => setIsEventCreateModalOpened(false)}
       />
-
     </Box>
   );
 };

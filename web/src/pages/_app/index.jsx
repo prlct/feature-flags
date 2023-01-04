@@ -15,6 +15,7 @@ import { GrowthFlagsContextProvider } from 'contexts/growth-flags-context';
 import { AmplitudeContextProvider } from 'contexts/amplitude-context';
 
 import UpdateUserModal from 'pages/pipeline-users/components/update-user-modal';
+import EventSettingModal from 'pages/pipeline-settings/components/event-setting-modal';
 import TriggerSelectionModal from '../email-sequences/components/trigger-selection-modal';
 import EditEmailModal from '../email-sequences/components/edit-email-modal';
 import RenameSequenceModal from '../email-sequences/components/rename-sequence-modal';
@@ -35,6 +36,7 @@ const App = ({ Component, pageProps }) => {
     addUsers: AddUsersModal,
     sendTestEmail: SendTestEmailModal,
     updateUser: UpdateUserModal,
+    updateEvent: EventSettingModal,
   }), []);
 
   return (
