@@ -57,7 +57,7 @@ const UpdateUserModal = ({ context, id, innerProps }) => {
         data={getPipelinesList(pipelines)}
         defaultValue={[]}
         clearButtonLabel="Clear selection"
-        value={pipelineList.map(p => p._id)}
+        value={pipelineList.map((p) => p._id)}
         onChange={(value) => handlePipelinesList(value)}
         size="sm"
         styles={{

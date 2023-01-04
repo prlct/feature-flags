@@ -7,25 +7,22 @@ const schema = Joi.object({
   firstName: Joi.string().trim().allow(''),
   lastName: Joi.string().trim().allow(''),
   email: Joi.string().email().required(),
-  pipeline: Joi.object({
-    _id: Joi.string().required(),
-    name: Joi.string().required(),
-  }).default(null),
+
   pipelines: Joi.array().items(Joi.object({
     _id: Joi.string().required(),
     name: Joi.string().required(),
+    droppedOn: Joi.date().allow(null),
   })).default(null),
-  sequence: Joi.object({
-    _id: Joi.string().required(),
-    name: Joi.string().required(),
-    lastEmailId: Joi.string().allow(null),
-    pendingEmailId: Joi.string().allow(null),
-  }).default(null),
-  finished: Joi.bool().empty(null).default(false),
-  sequenceHistory: Joi.object({})
-    .pattern(Joi.string().required(), Joi.date().required())
-    .empty(null)
-    .default({}),
+
+  sequences: Joi.array().items(Joi.object({
+    _id: Joi.string(),
+    name: Joi.string(),
+    pipelineId: Joi.string(),
+    finishedOn: Joi.date().allow(null),
+    droppedOn: Joi.date().allow(null),
+    pendingEmail: Joi.string().allow(null),
+    lastEmail: Joi.string().allow(null),
+  })),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

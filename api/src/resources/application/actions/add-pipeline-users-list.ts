@@ -36,7 +36,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
 
   const sequence = await sequenceService.findOne({ _id: sequenceId, applicationId, deletedOn: { $exists: false } });
- 
+
   if (!sequence) {
     ctx.throwClientError({ sequence: 'Sequence not found' });
     return;
@@ -100,20 +100,16 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     firstName: item.firstName,
     lastName: item.lastName,
     applicationId,
-    pipeline: {
-      _id: pipeline._id,
-      name: pipeline.name,
-    },
     pipelines: [{
       _id: pipeline._id,
       name: pipeline.name,
     }],
-    sequence: {
+    sequences: [{
       _id: sequence._id,
       name: sequence.name,
-      lastEmailId: null,
-      pendingEmailId: firstEmail?._id,
-    },
+      pipelineId: pipeline._id,
+      pendingEmail: firstEmail?._id,
+    }],
   }));
 
   const createdUser = await pipelineUserService.insertMany(newUserList);
