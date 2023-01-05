@@ -21,8 +21,10 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { stopEventKey } = ctx.params;
   const { email } = ctx.validatedData;
+  const { _id: applicationId } = ctx.state.application;
 
   const sequence = await sequenceService.findOne({
+    applicationId,
     'trigger.stopEventKey': stopEventKey, deletedOn: { $exists: false },
   });
 
@@ -33,11 +35,11 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   await pipelineUserService.atomic.updateOne({
     email,
-    'sequence._id': sequence._id,
+    'sequences._id': sequence._id,
     deletedOn: { $exists: false },
   }, {
     $set: {
-      deletedOn: new Date(),
+      'sequences.$.finishedOn': new Date(),
     },
   });
 
