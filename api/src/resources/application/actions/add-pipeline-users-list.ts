@@ -1,5 +1,6 @@
 import { AppKoaContext, AppRouter } from 'types';
 import Joi from 'joi';
+import _ from 'lodash';
 
 import { validateMiddleware } from 'middlewares';
 
@@ -10,6 +11,7 @@ import sequenceEmailService from 'resources/sequence-email/sequence-email.servic
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
+import { generateId } from '@paralect/node-mongo';
 
 const schema = Joi.object({
   sequenceId: Joi.string().required(),
@@ -53,73 +55,70 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
-  const emailArray = usersList.map((user) => user.email);
-
-  const [ existingUsers ] = await pipelineUserService.aggregate([
+  const { results: existingUsers } = await pipelineUserService.find(
     {
-      $match: {
-        'email': { $in: emailArray },
-        applicationId,
-        'pipeline._id': pipeline._id,
-        'sequence._id': sequence._id,
-        finished: false,
-        deletedOn: { $exists: false },
-      },
+      applicationId,
+      deletedOn: { $exists: false },
+      'pipelines._id': pipeline._id,
+      'sequences._id': sequence._id,
     },
-    { $group: {
-      _id: null,
-      emails: {
-        $push: '$email',
-      },
+    {
+      projection: { _id: 1, email: 1 },
     },
-    },
-    { $project: {
-      _id: 0,
-      emails: 1,
-    },
-    },
-  ]);
-
-  const newUsers = existingUsers ? usersList.filter((item) => !existingUsers.emails.includes(item.email)) : usersList;
-
-  if (!newUsers.length) {
-    ctx.throwClientError({ usersList: 'Users already in an active pipeline' });
-  }
+  );
 
   const { results: [firstEmail] } = await sequenceEmailService.find({
     sequenceId,
     deletedOn: { $exists: false },
     enabled: true,
   }, {
-    sort: {  index: -1 },
+    sort: { index: -1 },
     limit: 1,
   });
 
-  const newUserList = newUsers.map((item) => ({
-    email: item.email,
-    firstName: item.firstName,
-    lastName: item.lastName,
-    applicationId,
-    pipelines: [{
-      _id: pipeline._id,
-      name: pipeline.name,
-    }],
-    sequences: [{
-      _id: sequence._id,
-      name: sequence.name,
-      pipelineId: pipeline._id,
-      pendingEmail: firstEmail?._id,
-    }],
+  const [usersToUpsert] = _.partition(usersList, (nUser) => !existingUsers.find((u) => u.email === nUser.email));
+
+  const newUserList = usersToUpsert.map((user) => ({
+    updateOne: {
+      filter: {
+        email: user.email,
+        applicationId,
+        deletedOn: { $exists: false },
+      },
+      update: {
+        $set: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        $setOnInsert: {
+          _id: generateId(),
+        },
+        $addToSet: {
+          pipelines: {
+            _id: pipeline._id,
+            name: pipeline.name,
+          },
+          sequences: {
+            _id: sequence._id,
+            name: sequence.name,
+            pipelineId: pipeline._id,
+            pendingEmail: firstEmail?._id,
+          },
+        },
+      },
+      upsert: true,
+    },
   }));
 
-  const createdUser = await pipelineUserService.insertMany(newUserList);
-
-  const extraDelayMillis = 100;
-  for (const [i, user] of Object.entries(newUserList)) {
-    await scheduledJobService.scheduleSequenceEmail(firstEmail, user.email, +i * extraDelayMillis);
+  if (newUserList.length > 0) {
+    await pipelineUserService.atomic.bulkWrite(newUserList);
+    const extraDelayMillis = 100;
+    for (const [i, user] of Object.entries(newUserList)) {
+      await scheduledJobService.scheduleSequenceEmail(firstEmail, user.updateOne.filter.email, +i * extraDelayMillis);
+    }
   }
 
-  ctx.body = createdUser;
+  ctx.body = { usersAdded: newUserList.length };
 };
 
 

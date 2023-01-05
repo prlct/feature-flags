@@ -53,9 +53,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   }
 
   const pipelineUser = await pipelineUserService.findOne({
-    'pipeline._id': sequence.pipelineId,
+    'pipelines._id': sequence.pipelineId,
+    'sequences._id': sequence._id,
     email: email,
-    finished: { $ne: true },
     deletedOn: { $exists: false },
   });
 
