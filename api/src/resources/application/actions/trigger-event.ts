@@ -81,22 +81,30 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   }
 
   if (!pipelineUser) {
-    await pipelineUserService.insertOne({
-      firstName,
-      lastName,
+    await pipelineUserService.atomic.updateOne({
+      applicationId: application._id,
       email,
-      applicationId: pipeline.applicationId,
-      pipelines: [{
-        _id: pipeline._id,
-        name: pipeline.name,
-      }],
-      sequences: [{
-        _id: sequence._id,
-        name: sequence.name,
-        pipelineId: pipeline._id,
-        pendingEmail: sequenceEmail._id,
-      }],
-    });
+      deletedOn: { $exists: false },
+    }, {
+      $set: {
+        firstName,
+        lastName,
+        email,
+        applicationId: pipeline.applicationId,
+      },
+      $addToSet: {
+        pipelines: {
+          _id: pipeline._id,
+          name: pipeline.name,
+        },
+        sequences: {
+          _id: sequence._id,
+          name: sequence.name,
+          pipelineId: pipeline._id,
+          pendingEmail: sequenceEmail._id,
+        },
+      },
+    }, { upsert: true });
 
     await scheduledJobService.scheduleSequenceEmail(sequenceEmail, email);
   }
