@@ -48,6 +48,16 @@ const getHandler = (job: ScheduledJob) => {
             deletedOn: { $exists: false },
           });
 
+          const user = await pipelineUserService.findOne({
+            'sequences._id': email.sequenceId,
+            'pipelines._id': sequence?.pipelineId,
+            deletedOn: { $exists: false },
+          });
+
+          if (!user) {
+            return await failJob(job._id, 'User not found or was removed from pipeline');
+          }
+
           if (!sequence) {
             return await failJob(job._id, 'Sequence not found or was removed');
           }
@@ -85,14 +95,11 @@ const getHandler = (job: ScheduledJob) => {
             }
           }
 
-          const userFinishedSequence = !nextEmail;
-
           const userUpdates = {
             'sequences.$._id': nextSequence ? nextSequence._id : sequence._id,
             'sequences.$.name': nextSequence ? nextSequence.name : sequence.name,
-            'sequences.$.lastEmailId': job.data.emailId,
-            'sequences.$.pendingEmailId': nextEmail?._id || null,
-            'sequences.$.finished': userFinishedSequence,
+            'sequences.$.lastEmail': job.data.emailId,
+            'sequences.$.pendingEmail': nextEmail?._id || null,
           };
 
           await pipelineUserService.atomic.updateOne({
