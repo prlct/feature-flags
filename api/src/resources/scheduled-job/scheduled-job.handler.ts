@@ -48,18 +48,19 @@ const getHandler = (job: ScheduledJob) => {
             deletedOn: { $exists: false },
           });
 
+          if (!sequence) {
+            return await failJob(job._id, 'Sequence not found or was removed');
+          }
+
           const user = await pipelineUserService.findOne({
             'sequences._id': email.sequenceId,
             'pipelines._id': sequence?.pipelineId,
+            email: job.data.targetEmail,
             deletedOn: { $exists: false },
           });
 
-          if (!user) {
+          if (!user || user.sequences.find((seq) => seq._id === email.sequenceId)?.finishedOn) {
             return await failJob(job._id, 'User not found or was removed from pipeline');
-          }
-
-          if (!sequence) {
-            return await failJob(job._id, 'Sequence not found or was removed');
           }
 
           const app = await applicationService.findOne({ _id: job.applicationId });
