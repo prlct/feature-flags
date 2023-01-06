@@ -17,7 +17,7 @@ const schema = Joi.object({
     .default('month')
     .messages({
 
-    })
+    }),
 });
 
 type ValidatedData = {

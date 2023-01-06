@@ -117,7 +117,7 @@ const UsersList = () => {
         <MultiSelect
           data={getPipelinesList(pipelines)}
           defaultValue={[user?.pipeline?._id]}
-          value={user.pipelines.map((p) => p._id)}
+          value={user?.pipelines?.map((p) => p._id)}
           clearButtonLabel="Clear selection"
           onChange={(value) => handlePipelinesList(value, user._id, user.email)}
           size="sm"
