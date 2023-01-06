@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { generateId } from '@paralect/node-mongo';
 
 import sequenceService from '../sequence.service';
 import { AppKoaContext, AppRouter } from 'types';
@@ -68,22 +69,28 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const [firstEmail] = sequenceEmails;
 
   if (!pipelineUser) {
-    await pipelineUserService.insertOne({
+    await pipelineUserService.atomic.updateOne({
+      email,
+      applicationId: pipeline.applicationId,
+    }, { $set: {
       firstName,
       lastName,
       email,
       applicationId: pipeline.applicationId,
-      pipelines: [{
+    }, $addToSet: {
+      pipelines: {
         _id: pipeline._id,
         name: pipeline.name,
-      }],
-      sequences: [{
+      },
+      sequences: {
         _id: sequence._id,
         name: sequence.name,
         pipelineId: pipeline._id,
         pendingEmail: firstEmail._id,
-      }],
-    });
+      },
+    }, $setOnInsert: {
+      _id: generateId(),
+    } }, { upsert: true });
 
     await scheduledJobService.scheduleSequenceEmail(firstEmail, email);
 
