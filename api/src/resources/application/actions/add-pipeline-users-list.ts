@@ -72,7 +72,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     deletedOn: { $exists: false },
     enabled: true,
   }, {
-    sort: { index: -1 },
+    sort: { index: 1 },
     limit: 1,
   });
 
