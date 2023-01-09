@@ -16,6 +16,7 @@ import getSenderEmails from './actions/get-sender-emails';
 import triggerEvent from './actions/trigger-event';
 import deleteTriggerEvent from './actions/delete-event';
 import updateTriggerEvent from './actions/update-event';
+import removeGmail from './actions/remove-gmail';
 
 const privateRoutes = routeUtil.getRoutes([
   createFeature,
@@ -32,6 +33,7 @@ const privateRoutes = routeUtil.getRoutes([
   getSenderEmails,
   deleteTriggerEvent,
   updateTriggerEvent,
+  removeGmail,
 ]);
 
 const publicRoutes = routeUtil.getRoutes([

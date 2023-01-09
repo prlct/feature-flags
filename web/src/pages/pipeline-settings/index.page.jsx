@@ -1,6 +1,23 @@
 import { useState } from 'react';
-import { useGetSenderEmails, useGetApplicationEvents, useDeleteEvent } from 'resources/email-sequence/email-sequence.api';
-import { Box, Button, Group, LoadingOverlay, Space, Table, Text, Menu, ActionIcon, Title } from '@mantine/core';
+import {
+  useGetSenderEmails,
+  useGetApplicationEvents,
+  useDeleteEvent,
+  useRemoveSenderEmail,
+} from 'resources/email-sequence/email-sequence.api';
+import {
+  Box,
+  Button,
+  Group,
+  LoadingOverlay,
+  Space,
+  Table,
+  Text,
+  Menu,
+  ActionIcon,
+  Title,
+  UnstyledButton,
+} from '@mantine/core';
 import config from 'config';
 import queryClient from 'query-client';
 import CardSettingsButton from 'pages/email-sequences/components/card-settings-button';
@@ -73,9 +90,32 @@ const PipelineSettings = () => {
     });
   };
 
+  const { mutate: removeEmail } = useRemoveSenderEmail();
+
+  const removeEmailHandler = async (email) => {
+    modals.openConfirmModal({
+      title: (<Title order={3}>Delete email</Title>),
+      centered: true,
+      children: (
+        <Text>
+          {`Email ${email} will be deleted. Are you sure?`}
+        </Text>
+      ),
+      labels: { confirm: 'Delete', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      onConfirm: () => removeEmail(email),
+    });
+  };
+
   const emailsRows = emails.map((email) => (
     <tr key={email}>
       <td>{email.value}</td>
+      <td>
+        <UnstyledButton onClick={() => removeEmailHandler(email.value)}>
+          <IconTrash color="red" icon={<IconTrash />} />
+        </UnstyledButton>
+      </td>
     </tr>
   ));
 
@@ -133,6 +173,7 @@ const PipelineSettings = () => {
         <thead>
           <tr>
             <th>Email</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
