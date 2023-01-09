@@ -13,14 +13,10 @@ const privateRoutes = routeUtil.getRoutes([
   triggerUpdate,
   removeSequence,
   toggleSequenceEnabled,
-]);
-
-const publicRoutes = routeUtil.getRoutes([
   startWebhook,
   stopWebhook,
 ]);
 
 export default {
   privateRoutes,
-  publicRoutes,
 };

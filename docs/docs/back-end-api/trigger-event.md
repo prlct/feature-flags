@@ -9,10 +9,19 @@ sidebar_position: 2
 
 ### Params:
 
- - `eventKey` - `event` which is set in email sequence to be triggered
- - `userId` - user id to find user's email
- - `firstName` - user first name to be injected into sequence emails
- - `lastName` - user last name to be injected into sequence emails
+ - `eventKey` - `event` which is set in email sequence to be triggered. **Required**.
+ - `userId` - user id to find user's email. **Required**.
+ - `firstName` - user first name to be injected into sequence emails. **Optional**.
+ - `lastName` - user last name to be injected into sequence emails. **Optional**.
+
+### Authentication
+
+ - `publicApiKey` - `apiKey` which is specified in the `/api-key` tab
+
+Type: Bearer
+```
+Authorization: Bearer <your publicApiKey>
+```
 
 ### Response:
  - 200 - ok
