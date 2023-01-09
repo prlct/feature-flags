@@ -57,6 +57,7 @@ const EmailCard = (props) => {
                   onClick={() => openContextModal({
                     modal: 'sequenceEmail',
                     innerProps: { email },
+                    size: 800,
                     fullScreen: matches,
                     styles: { title: { fontSize: 20, fontWeight: 600 } },
                   })}
