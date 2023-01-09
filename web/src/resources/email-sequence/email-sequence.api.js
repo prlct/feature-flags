@@ -423,3 +423,16 @@ export function useGetSenderEmails() {
 
   return useQuery(['sender-emails'], getSenderEmails);
 }
+
+export function useRemoveSenderEmail() {
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const applicationId = currentAdmin.applicationIds[0];
+
+  const removeSenderEmail = (email) => apiService.delete(`/applications/${applicationId}/sender-emails`, { email });
+
+  return useMutation(removeSenderEmail, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['sender-emails']);
+    },
+  });
+}
