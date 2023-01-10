@@ -13,7 +13,8 @@ import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { accountApi } from 'resources/account';
 import { useAmplitude } from 'contexts/amplitude-context';
-import { ButtonGoogleLight } from 'public/icons';
+import GoogleButton from 'components/google-button/google-button';
+
 import { useStyles } from './styles';
 
 const schema = yup.object().shape({
@@ -75,17 +76,11 @@ const SignIn = () => {
               Log In
             </Button>
             <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
-            <UnstyledButton
-              component="a"
+            <GoogleButton
               href={`${config.apiUrl}/account/sign-in/google/auth`}
             >
-              <Group px="8dp" className={classes.googleButton}>
-                <ButtonGoogleLight />
-                <Text>
-                  Sign in with Google
-                </Text>
-              </Group>
-            </UnstyledButton>
+              Sign in with Google
+            </GoogleButton>
             <UnstyledButton
               component="a"
               href={`${config.apiUrl}/account/sign-in/github/auth`}

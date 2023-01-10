@@ -1,15 +1,15 @@
 import { createStyles } from '@mantine/core';
 
 export const useStyles = createStyles({
-  githubButton: {
+  googleButton: {
     display: 'flex',
     flexDirection: 'row',
     alignContent: 'center',
-    paddingLeft: '8px',
+    paddingLeft: '0',
     paddingRight: '8px',
     border: 'thin solid #888',
     borderRadius: '6px',
-    gap: '21px',
+    gap: '8px',
     height: '40px',
   },
 });
