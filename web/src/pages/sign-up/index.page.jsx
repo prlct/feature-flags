@@ -14,12 +14,14 @@ import {
   TextInput,
   Group,
   Title,
-  Text,
+  Text, UnstyledButton,
 } from '@mantine/core';
-import { IconBrandGithub, IconBrandGoogle } from '@tabler/icons';
+import { IconBrandGithub } from '@tabler/icons';
 
 import { accountApi } from 'resources/account';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { ButtonGoogleLight } from 'public/icons';
+import { useStyles } from '../sign-in/styles';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
@@ -36,7 +38,7 @@ const SignUp = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-
+  const { classes } = useStyles();
   const { mutate: signIn } = accountApi.useSignIn();
 
   const amplitude = useAmplitude();
@@ -114,12 +116,26 @@ const SignUp = () => {
           </Text>
         </Text>
         <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
-        <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
-          Continue with Google
-        </Button>
-        <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
-          Continue with GitHub
-        </Button>
+        <UnstyledButton
+          component="a"
+          href={`${config.apiUrl}/account/sign-in/google/auth`}
+        >
+          <Group px="8dp" className={classes.googleButton}>
+            <ButtonGoogleLight />
+            <Text>
+              Sign up with Google
+            </Text>
+          </Group>
+        </UnstyledButton>
+        <UnstyledButton
+          component="a"
+          href={`${config.apiUrl}/account/sign-in/github/auth`}
+        >
+          <Group px="8dp" className={classes.githubButton}>
+            <IconBrandGithub />
+            <Text>Continue with GitHub</Text>
+          </Group>
+        </UnstyledButton>
         <Group sx={{ fontSize: '14px' }}>
           Have an account?
           <Link
