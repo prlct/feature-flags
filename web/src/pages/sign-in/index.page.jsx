@@ -103,6 +103,7 @@ const SignIn = () => {
             </Group>
           </Stack>
         </form>
+        <Text size={10}>Growthflags is a product of Paralect © 2023</Text>
       </Stack>
     </>
   );
