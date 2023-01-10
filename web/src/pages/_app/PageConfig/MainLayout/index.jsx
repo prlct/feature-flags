@@ -96,6 +96,19 @@ const MainLayout = ({ children }) => {
     signOut();
   }, [amplitude, signOut]);
 
+  const copyright = (
+    <Stack mt="auto" mb={16} spacing={0} pl={24}>
+      <Text size={10}>Growthflags @ 2023</Text>
+      <Text size={10}>Paralect’s product</Text>
+      <UnstyledButton component="a" href="https://growthflags.com/terms">
+        <Text size={10} underline>Terms of Use</Text>
+      </UnstyledButton>
+      <UnstyledButton component="a" href="https://growthflags.com/privacy-policy">
+        <Text size={10} underline>Privacy Policy</Text>
+      </UnstyledButton>
+    </Stack>
+  );
+
   return (
     <AppShell
       header={<Header />}
@@ -196,18 +209,9 @@ const MainLayout = ({ children }) => {
                 </Link>
               </Group>
               <NavbarItems navbarTabs={navbarTabsFiltered} />
+              {copyright}
             </>
           )}
-          <Stack mt="auto" mb={16} spacing={0} pl={24}>
-            <Text size={10}>Growthflags @ 2023</Text>
-            <Text size={10}>Paralect’s product</Text>
-            <UnstyledButton component="a" href="https://growthflags.com/terms">
-              <Text size={10} underline>Terms of Use</Text>
-            </UnstyledButton>
-            <UnstyledButton component="a" href="https://growthflags.com/privacy-policy">
-              <Text size={10} underline>Privacy Policy</Text>
-            </UnstyledButton>
-          </Stack>
         </Navbar>
       )}
       fixed
