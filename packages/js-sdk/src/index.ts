@@ -10,8 +10,8 @@ const consoleLogPrefix = '@growthflags/js-sdk error:';
 export interface Constructor {
   publicApiKey: string;
   env: string;
-  defaultFeatures: { [key: string]: boolean };
-  isDevelopmentApi: boolean,
+  defaultFeatures?: { [key: string]: boolean };
+  isDevelopmentApi?: boolean,
 }
 
 export enum UserEventType {
