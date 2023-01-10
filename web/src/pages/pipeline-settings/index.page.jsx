@@ -26,6 +26,7 @@ import { openContextModal, useModals } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import EventCreateModal from './components/event-create-modal';
+import GoogleButton from '../../components/google-button/google-button';
 
 const PipelineSettings = () => {
   const modals = useModals();
@@ -161,12 +162,11 @@ const PipelineSettings = () => {
       <LoadingOverlay visible={isLoading} />
       <Group sx={{ justifyContent: 'space-between' }}>
         <Text my={8}>Application emails</Text>
-        <Button
-          component="a"
+        <GoogleButton
           href={`${config.apiUrl}/applications/${applicationId}/add-gmail`}
         >
-          + Add email
-        </Button>
+          Add Google email
+        </GoogleButton>
       </Group>
 
       <Table verticalSpacing="xs" horizontalSpacing="xs" striped>

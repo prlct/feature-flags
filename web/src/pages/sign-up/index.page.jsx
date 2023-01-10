@@ -20,8 +20,9 @@ import { IconBrandGithub } from '@tabler/icons';
 
 import { accountApi } from 'resources/account';
 import { useAmplitude } from 'contexts/amplitude-context';
-import { ButtonGoogleLight } from 'public/icons';
-import { useStyles } from '../sign-in/styles';
+import GoogleButton from 'components/google-button/google-button';
+
+import { useStyles } from './styles';
 
 const schema = yup.object().shape({
   firstName: yup.string().max(100).required('Field is required.'),
@@ -116,17 +117,11 @@ const SignUp = () => {
           </Text>
         </Text>
         <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
-        <UnstyledButton
-          component="a"
+        <GoogleButton
           href={`${config.apiUrl}/account/sign-in/google/auth`}
         >
-          <Group px="8dp" className={classes.googleButton}>
-            <ButtonGoogleLight />
-            <Text>
-              Sign up with Google
-            </Text>
-          </Group>
-        </UnstyledButton>
+          Sign up with Google
+        </GoogleButton>
         <UnstyledButton
           component="a"
           href={`${config.apiUrl}/account/sign-in/github/auth`}
