@@ -10,5 +10,5 @@ describe('SDK instance creation', () => {
     const instance = create({ publicApiKey: 'someKey', env: 'production' });
 
     expect(instance.apiClient._api.defaults.baseURL).toBe('https://api.growthflags.com')
-  })
+  });
 });
