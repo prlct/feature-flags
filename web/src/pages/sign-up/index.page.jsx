@@ -115,6 +115,18 @@ const SignUp = () => {
           >
             the Privacy Policy
           </Text>
+          {' '}
+          and
+          {' '}
+          <Text
+            variant="link"
+            component="a"
+            href="https://growthflags.com/terms"
+            target="_blank"
+            inherit
+          >
+            Terms of Use
+          </Text>
         </Text>
         <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
         <GoogleButton
@@ -142,6 +154,7 @@ const SignUp = () => {
             Sign In
           </Link>
         </Group>
+        <Text size={10}>Growthflags is a product of Paralect © 2023</Text>
       </Stack>
     </>
   );
