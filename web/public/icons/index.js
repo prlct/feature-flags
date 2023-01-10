@@ -33,6 +33,7 @@ import PriceIcon from './price.svg';
 import UploadHTML from './upload-html.svg';
 import UploadCSV from './upload-csv.svg';
 import DeleteAlt from './delete-alt.svg';
+import ButtonGoogleLight from './btn_google_light_pressed_ios.svg';
 
 export {
   ArrowDownIcon,
@@ -68,5 +69,6 @@ export {
   PriceIcon,
   UploadHTML,
   UploadCSV,
-  DeleteAlt
+  DeleteAlt,
+  ButtonGoogleLight,
 };

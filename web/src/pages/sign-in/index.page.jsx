@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { TextInput, Button, Stack, Title, Group } from '@mantine/core';
-import { IconBrandGoogle, IconBrandGithub } from '@tabler/icons';
+import { Text, TextInput, Button, Stack, Title, Group, UnstyledButton } from '@mantine/core';
+import { IconBrandGithub } from '@tabler/icons';
 
 import { magic } from 'libs/magic';
 import config from 'config';
@@ -13,12 +13,15 @@ import * as routes from 'routes';
 import { handleError } from 'helpers';
 import { accountApi } from 'resources/account';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { ButtonGoogleLight } from 'public/icons';
+import { useStyles } from './styles';
 
 const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.').required('Field is required.'),
 });
 
 const SignIn = () => {
+  const { classes } = useStyles();
   const router = useRouter();
   const { email } = router.query;
   const {
@@ -72,12 +75,26 @@ const SignIn = () => {
               Log In
             </Button>
             <Title align="center" sx={{ fontSize: '14px', fontWeight: 500 }}>OR</Title>
-            <Button component="a" leftIcon={<IconBrandGoogle />} href={`${config.apiUrl}/account/sign-in/google/auth`}>
-              Continue with Google
-            </Button>
-            <Button component="a" leftIcon={<IconBrandGithub />} href={`${config.apiUrl}/account/sign-in/github/auth`}>
-              Continue with GitHub
-            </Button>
+            <UnstyledButton
+              component="a"
+              href={`${config.apiUrl}/account/sign-in/google/auth`}
+            >
+              <Group px="8dp" className={classes.googleButton}>
+                <ButtonGoogleLight />
+                <Text>
+                  Sign in with Google
+                </Text>
+              </Group>
+            </UnstyledButton>
+            <UnstyledButton
+              component="a"
+              href={`${config.apiUrl}/account/sign-in/github/auth`}
+            >
+              <Group px="8dp" className={classes.githubButton}>
+                <IconBrandGithub />
+                <Text>Continue with GitHub</Text>
+              </Group>
+            </UnstyledButton>
             <Group sx={{ fontSize: '14px' }}>
               Don’t have an account?
               <Link
