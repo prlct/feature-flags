@@ -1,3 +1,4 @@
+import queryClient from 'query-client';
 import { useMutation, useQuery } from 'react-query';
 import { apiService } from 'services';
 
@@ -28,6 +29,7 @@ export const useUpgradeSubscription = () => {
 
   return useMutation(upgrade, {
     onSuccess: (data) => {
+      queryClient.refetchQueries();
       console.clear();
       console.log(data);
     },

@@ -1,18 +1,13 @@
 import { createStyles } from '@mantine/core';
 
-export const useStyles = createStyles((theme) => ({
+export const useStyles = createStyles(() => ({
   container: {
-    position: 'sticky',
-    top: '72px',
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    height: '64px',
-    padding: '0 32px',
-    background: `linear-gradient(0deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), ${theme.colors.blue[6]}`,
-    zIndex: 100,
+    flexWrap: 'nowrap',
+    '@media (max-width: 768px)': {
+      flexWrap: 'wrap',
+    },
   },
-  icon: {
-    color: theme.colors.orange[6],
+  alert: {
+    paddingRight: 35,
   },
 }));

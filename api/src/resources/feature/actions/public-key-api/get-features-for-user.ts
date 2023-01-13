@@ -9,6 +9,7 @@ import { publicTokenAuth, extractTokenFromQuery } from 'resources/application';
 import { userService } from 'resources/user';
 import  { amplitudeService } from 'services';
 import { calculateABTestsForUser, calculateFlagsForUser, featuresToConfigsForUser } from './helpers';
+import { companyService } from 'resources/company';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -43,6 +44,13 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   if (!application.sdkInstalled) {
     await applicationService.atomic.updateOne({ _id: application._id }, { $set: { sdkInstalled: true } });
     amplitudeService.trackEvent(undefined, 'Install SDK');
+  }
+
+  const company = await companyService.findOne({ applicationIds: application._id });
+
+  if (company?.freeLimitUsed) {
+    ctx.body = { features: {}, configs: {}, variants: {} };
+    return;
   }
 
   const features = await featureService.getFeaturesForEnv(application._id, env);

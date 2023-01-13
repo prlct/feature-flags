@@ -7,6 +7,8 @@ import { adminService } from 'resources/admin';
 import { invitationService } from 'resources/invitation';
 import { emailService } from 'services';
 import companyAuth from '../middlewares/company-auth.middleware';
+import companyService from '../company.service';
+import { subscriptionService } from 'resources/subscription';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -40,6 +42,25 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { companyId } = ctx.params;
   const { admin } = ctx.state;
   const { email } = ctx.validatedData;
+  const [applicationId] = admin.applicationIds;
+
+  let monthlyActiveUsersLimit = config.MONTHLY_USERS_LIMIT;
+
+  const company = await companyService.findOne({ applicationIds: applicationId });
+  const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+
+  if (subscription) {
+    monthlyActiveUsersLimit = subscription.subscriptionLimits.users || 0;  
+  }
+
+  if (company && monthlyActiveUsersLimit) {
+    const { results: invitationsList } = await invitationService.find({ companyId: company._id });
+    const isMembersLength = (company?.adminIds?.length + invitationsList.length) >= monthlyActiveUsersLimit;
+
+    ctx.assertClientError(!isMembersLength, {
+      global: 'Members limit exceeded',
+    }); 
+  }
 
   const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId: admin._id });
   try {
@@ -56,7 +77,6 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       global: 'Failed to send invitation email',
     });
   }
-
 
   ctx.body = {};
 }

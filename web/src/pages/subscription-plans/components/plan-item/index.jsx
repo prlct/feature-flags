@@ -11,6 +11,7 @@ import {
   Stack,
   Text,
   Title,
+  Tooltip,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { IconCheck } from '@tabler/icons';
@@ -25,10 +26,11 @@ const PlanItem = (props) => {
     currentSubscription,
     planIds,
     price,
-    features,
+    chapters,
     interval,
     title,
     onPreviewUpgrade,
+    isOwnerCompany,
   } = props;
   const { classes, cx } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
@@ -87,10 +89,11 @@ const PlanItem = (props) => {
 
   /* eslint-disable react/no-array-index-key */
   const renderFeatureList = useCallback(
-    () => features.map((item, index) => (
-      <Container
+    () => chapters.map((chapter, index) => (
+      <Stack
         key={index}
         fluid
+        spacing={10}
         sx={{
           display: 'flex',
           justifyContent: 'flex-start',
@@ -99,12 +102,28 @@ const PlanItem = (props) => {
           padding: 0,
         }}
       >
-        <IconCheck size={16} className={classes.icon} />
-        <Space w={8} />
-        {item}
-      </Container>
+        <Text sx={{ width: '100%' }}>{chapter.chapterTitle[0]}</Text>
+        {chapter.chaptersList.map((item, index) => (
+          <Container
+            key={index}
+            fluid
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
+              width: '100%',
+              padding: 0,
+            }}
+          >
+            <IconCheck size={16} className={classes.icon} />
+            <Space w={8} />
+            {item}
+          </Container>
+        ))}
+      </Stack>
+
     )),
-    [classes.icon, features],
+    [classes.icon, chapters],
   );
 
   return (
@@ -148,14 +167,16 @@ const PlanItem = (props) => {
         <Space h={matches ? 24 : 64} />
 
         {!isCurrentSubscription && (
-          <Button
-            fullWidth
-            onClick={onClick}
-          >
-            Get
-            {' '}
-            {title}
-          </Button>
+          <Tooltip label="Only available for admin" events={{ hover: !isOwnerCompany }}>
+            <Button
+              fullWidth
+              onClick={onClick}
+            >
+              Get
+              {' '}
+              {title}
+            </Button>
+          </Tooltip>
         )}
       </Card>
     </MediaQuery>
@@ -178,14 +199,16 @@ PlanItem.propTypes = {
     month: PropTypes.number.isRequired,
     year: PropTypes.number.isRequired,
   }).isRequired,
-  features: PropTypes.arrayOf(PropTypes.node),
+  chapters: PropTypes.arrayOf(PropTypes.node),
   interval: PropTypes.oneOf(['month', 'year']).isRequired,
   onPreviewUpgrade: PropTypes.func.isRequired,
+  isOwnerCompany: PropTypes.bool,
 };
 
 PlanItem.defaultProps = {
   currentSubscription: null,
-  features: [],
+  chapters: [],
+  isOwnerCompany: true,
 };
 
 export default memo(PlanItem);

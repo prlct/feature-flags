@@ -123,7 +123,6 @@ const MainLayout = ({ children }) => {
             top: 0,
             '@media (max-width: 768px)': {
               height: '72px',
-              background: 'transparent',
             },
           }}
         >
@@ -214,7 +213,6 @@ const MainLayout = ({ children }) => {
           )}
         </Navbar>
       )}
-      fixed
       padding={0}
       styles={(theme) => ({
         root: {
@@ -222,11 +220,6 @@ const MainLayout = ({ children }) => {
           flexDirection: 'column',
           minHeight: '100vh',
           backgroundColor: theme.white,
-          '@media (max-width: 768px)': {
-            '& .mantine-AppShell-main': {
-              paddingTop: 82,
-            },
-          },
         },
         main: {
           width: '99vw',

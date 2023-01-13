@@ -4,10 +4,9 @@ import { Container, Group, LoadingOverlay, Tabs, Text, Title, Button } from '@ma
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
-import { subscriptionApi } from 'resources/subscription';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
-import { showNotification } from '@mantine/notifications';
+import { handleError } from 'helpers';
 import Pipeline from './components/pipeline';
 
 import { useStyles, tabListStyles } from './styles';
@@ -25,7 +24,6 @@ const EmailSequences = () => {
     isLoading,
     isFetching,
   } = emailSequencesApi.useGetPipelines(env);
-  const { data: currentSubscription } = subscriptionApi.useGetCurrent();
 
   const pipelines = useMemo(() => data?.results || [], [data]);
   const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || 'activation-pipelines');
@@ -51,14 +49,8 @@ const EmailSequences = () => {
   } = emailSequencesApi.useAddPipeline(env);
 
   const handleAddPipeline = () => {
-    if (currentSubscription || pipelines.length < 5) {
-      addPipeline();
-      return;
-    }
-    showNotification({
-      title: 'Limit is exceeded',
-      message: 'To increase the limit, you need to upgrade the plan',
-      color: 'red',
+    addPipeline({
+      oonError: (e) => handleError(e),
     });
   };
 

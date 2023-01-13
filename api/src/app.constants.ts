@@ -14,6 +14,8 @@ const DATABASE_DOCUMENTS = {
   SEQUENCE_EMAILS: 'sequence-emails',
   PIPELINE_USERS: 'pipeline-users',
   SCHEDULED_JOBS: 'scheduled-jobs',
+  EMAILS_SENDING_ANALYTICS: 'emails-sending-analytics',
+  ADDITIONAL_PACKAGE: 'additional-package',
 };
 
 const COOKIES = {

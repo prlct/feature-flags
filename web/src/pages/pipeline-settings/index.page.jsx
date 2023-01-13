@@ -112,11 +112,13 @@ const PipelineSettings = () => {
   const emailsRows = emails.map((email) => (
     <tr key={email}>
       <td>{email.value}</td>
-      <td>
-        <UnstyledButton onClick={() => removeEmailHandler(email.value)}>
-          <IconTrash color="red" icon={<IconTrash />} />
-        </UnstyledButton>
-      </td>
+      {currentAdmin?.ownCompanyId && (
+        <td>
+          <UnstyledButton onClick={() => removeEmailHandler(email.value)}>
+            <IconTrash color="red" icon={<IconTrash />} />
+          </UnstyledButton>
+        </td>
+      )}
     </tr>
   ));
 
@@ -162,18 +164,22 @@ const PipelineSettings = () => {
       <LoadingOverlay visible={isLoading} />
       <Group sx={{ justifyContent: 'space-between' }}>
         <Text my={8}>Application emails</Text>
-        <GoogleButton
-          href={`${config.apiUrl}/applications/${applicationId}/add-gmail`}
-        >
-          Add Google email
-        </GoogleButton>
+        {currentAdmin?.ownCompanyId && (
+          <GoogleButton
+            href={`${config.apiUrl}/applications/${applicationId}/add-gmail`}
+          >
+            Add Google email
+          </GoogleButton>
+        )}
       </Group>
 
       <Table verticalSpacing="xs" horizontalSpacing="xs" striped>
         <thead>
           <tr>
             <th>Email</th>
-            <th>Actions</th>
+            {currentAdmin?.ownCompanyId && (
+              <th>Actions</th>
+            )}
           </tr>
         </thead>
         <tbody>

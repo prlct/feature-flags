@@ -1,5 +1,12 @@
 import Joi from 'joi';
 
+const SubscriptionLimitsSchema = {
+  emails: Joi.number().allow(null).default(null),
+  mau: Joi.number().required(),
+  pipelines: Joi.number().allow(null).default(null),
+  users: Joi.number().allow(null).default(null),
+};
+
 const schema = Joi.object({
   _id: Joi.string().required(),
   subscriptionId: Joi.string().required(),
@@ -7,6 +14,8 @@ const schema = Joi.object({
   productId: Joi.string().required(),
   customer: Joi.string().required(),
   status: Joi.string().required(),
+  subscriptionLimits: SubscriptionLimitsSchema,
+  name: Joi.string().allow('').default(''),
   interval: Joi.string().required(),
   startDate: Joi.date().required(),
   endDate: Joi.date().required(),

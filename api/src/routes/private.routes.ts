@@ -14,6 +14,8 @@ import pipelines from 'resources/pipeline/pipeline.routes';
 import sequences from 'resources/sequence/sequence.routes';
 import sequenceEmails from 'resources/sequence-email/sequence-email.routes';
 import pipelineUserRoutes from 'resources/pipeline-user/pipeline-user.routes';
+import pipelineUsersListRoutes from 'resources/pipeline-user/pipeline-user.routes';
+import emailsSendingAnalyticsRoutes from 'resources/emails-sending-analytics/emails-sending-analytics.routes';
 
 import auth from './middlewares/auth.middleware';
 
@@ -27,8 +29,11 @@ export default (app: AppKoa) => {
   app.use(mount('/user-events', userEvents.externalRoutes));
   app.use(mount('/subscriptions', compose([auth, subscription.privateRoutes])));
   app.use(mount('/statistics', compose([auth, statistics.privateRoutes])));
+  app.use(mount('/email-sequences', sequences.privateRoutes));
   app.use(mount('/pipelines', compose([auth, pipelines.privateRoutes])));
   app.use(mount('/sequences', compose([auth, sequences.privateRoutes])));
   app.use(mount('/sequence-emails', compose([auth, sequenceEmails.privateRoutes])));
   app.use(mount('/pipeline-users', compose([auth, pipelineUserRoutes.privateRoutes])));
+  app.use(mount('/pipeline-users-list', compose([auth, pipelineUsersListRoutes.privateRoutes])));
+  app.use(mount('/emails-sending-analytics', compose([auth, emailsSendingAnalyticsRoutes.privateRoutes])));
 };

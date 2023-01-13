@@ -2,12 +2,13 @@ import { createStyles } from '@mantine/core';
 
 export const useStyles = createStyles((theme) => ({
   main: {
-    minHeight: '72px',
+    position: 'static',
+    minHeight: '82px',
     backgroundColor: theme.white,
     display: 'flex',
     alignItems: 'center',
     flex: '0 1 auto',
-    borderBottom: 'transparent',
+    borderBottom: `solid 1px ${theme.colors.gray[2]}`,
     '&:after': {
       content: '""',
       position: 'absolute',
@@ -16,6 +17,9 @@ export const useStyles = createStyles((theme) => ({
       height: 1,
       width: 'calc(100% - 255px)',
       backgroundColor: 'rgba(9, 30, 66, 0.02)',
+    },
+    '@media (max-width: 768px)': {
+      paddingTop: 50,
     },
   },
   logoGroup: {

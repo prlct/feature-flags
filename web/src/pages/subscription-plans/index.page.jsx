@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import dayjs from 'dayjs';
+import queryClient from 'query-client';
 
 import { subscriptionApi } from 'resources/subscription';
 
@@ -22,7 +23,7 @@ import subscriptionList from './subscription-list';
 
 const SubscriptionPlans = () => {
   const { data: currentSubscription, refetch } = subscriptionApi.useGetCurrent();
-
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const [interval, setInterval] = useState('year');
   const [selectedUpgradePlan, setSelectedUpgradePlan] = useState();
 
@@ -30,12 +31,13 @@ const SubscriptionPlans = () => {
 
   const endSubscriptionDate = currentSubscription && dayjs(new Date(currentSubscription.endDate * 1000)).format('MMM DD, YYYY');
 
-  const renderItems = () => subscriptionList.map((item) => (
+  const renderItems = (isOwnerCompany) => subscriptionList.map((item) => (
     <PlanItem
       key={item.planIds[interval]}
       currentSubscription={currentSubscription}
       interval={interval}
       onPreviewUpgrade={setSelectedUpgradePlan}
+      isOwnerCompany={isOwnerCompany}
       {...item}
     />
   ));
@@ -94,22 +96,24 @@ const SubscriptionPlans = () => {
           },
         }}
       >
-        {renderItems()}
+        {renderItems(!!currentAdmin?.ownCompanyId)}
       </Group>
 
       <Space h={24} />
 
-      <Text align="center" sx={(theme) => ({ color: theme.colors.dark[3] })}>
-        You can change your plan or cancel any time
-      </Text>
+      {currentAdmin?.ownCompanyId && (
+        <>
+          <Text align="center" sx={(theme) => ({ color: theme.colors.dark[3] })}>
+            You can change your plan or cancel any time
+          </Text>
 
-      <Space h={32} />
+          <Space h={32} />
 
-      <Group
-        component="section"
-        sx={{ maxWidth: '1280px', margin: '0 auto' }}
-      >
-        {currentSubscription
+          <Group
+            component="section"
+            sx={{ maxWidth: '1280px', margin: '0 auto' }}
+          >
+            {currentSubscription
               && currentSubscription.cancelAtPeriodEnd
               && (
               <Text>
@@ -117,7 +121,7 @@ const SubscriptionPlans = () => {
               </Text>
               )}
 
-        {currentSubscription
+            {currentSubscription
           && !currentSubscription.cancelAtPeriodEnd
           && (
           <CurrentSubscriptionBlock
@@ -125,9 +129,11 @@ const SubscriptionPlans = () => {
             currentSubscription={currentSubscription}
           />
           )}
-      </Group>
+          </Group>
+        </>
+      )}
 
-      {selectedUpgradePlan && (
+      {currentAdmin?.ownCompanyId && selectedUpgradePlan && (
         <UpgradeModal
           plan={selectedUpgradePlan}
           interval={interval}

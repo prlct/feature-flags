@@ -39,4 +39,16 @@ const scheduleSequenceEmail = async (sequenceEmail: SequenceEmail, email: string
   await service.insertOne(job);
 };
 
-export default Object.assign({ scheduleSequenceEmail }, service);
+const rescheduleSendingSequenceEmail = async (_id: string, scheduled: Date, extraDelay = 0) => {
+  const newScheduledDate = moment(scheduled)
+    .add(extraDelay, 'day')
+    .toDate();
+
+  await service.atomic.updateOne({
+    _id,
+  }, {
+    $set: { scheduledDate: newScheduledDate },    
+  });
+};
+
+export default Object.assign({ scheduleSequenceEmail, rescheduleSendingSequenceEmail }, service);

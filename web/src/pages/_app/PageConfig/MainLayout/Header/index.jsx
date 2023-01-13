@@ -1,12 +1,13 @@
-import { memo } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import {
   Header as LayoutHeader,
   Group,
+  Stack,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
-import { useGrowthFlags } from 'contexts/growth-flags-context';
 import { statisticsApi } from 'resources/statistics';
+import queryClient from 'query-client';
 
 import AdminMenu from './components/AdminMenu';
 import EnvSelect from './components/EnvSelect';
@@ -15,23 +16,44 @@ import CallToActionBanner from './components/CallToActionBanner';
 import { useStyles } from './styles';
 
 const Header = () => {
-  const growthFlags = useGrowthFlags();
+  const admin = queryClient.getQueryData(['currentAdmin']);
+  const companyId = admin.companyIds[0];
 
-  const isSubscriptionsOn = growthFlags && growthFlags.isOn('subscriptions');
-  const { data: statistics } = statisticsApi.useGetStatistics(!!isSubscriptionsOn);
+  const { data: mauStatistics } = statisticsApi.useGetStatistics();
+  const { data: emailsStatistics } = statisticsApi.useGetEmailStatistics({ companyId });
+
+  const [isMauLimit, setIsMauLimit] = useState(false);
+  const [isEmailsLimit, setIsEmailsLimit] = useState(false);
+
+  useEffect(() => {
+    if (mauStatistics && mauStatistics?.usagePercentage >= 90) {
+      setIsMauLimit(true);
+    }
+    if (emailsStatistics && emailsStatistics?.usagePercentage >= 100) {
+      setIsEmailsLimit(true);
+    }
+  }, [emailsStatistics, mauStatistics]);
+
+  const handleCloseAlert = useCallback((type) => {
+    if (type === 'email') {
+      setIsEmailsLimit(false);
+    }
+    if (type === 'mau') {
+      setIsMauLimit(false);
+    }
+  }, []);
 
   const { classes } = useStyles();
   const matches = useMediaQuery('(min-width: 768px)');
 
   return (
-    <>
-      <LayoutHeader
-        component="header"
-        height={72}
-        p="sm"
-        className={classes.main}
-      >
-        <Group spacing="lg" sx={{ marginLeft: matches ? 'auto' : 86 }} className={classes.menu}>
+    <LayoutHeader
+      component="header"
+      p="sm"
+      className={classes.main}
+    >
+      <Stack sx={{ marginLeft: matches ? 'auto' : 0, width: matches && 'calc(100% - 254px)' }}>
+        <Group spacing="lg" sx={{ marginLeft: matches ? 'auto' : 0 }} className={classes.menu}>
           {matches && (
             <>
               <EnvSelect />
@@ -39,10 +61,29 @@ const Header = () => {
             </>
 
           )}
+
         </Group>
-      </LayoutHeader>
-      {statistics?.limitReached && <CallToActionBanner />}
-    </>
+        {isMauLimit
+          && (
+          <CallToActionBanner
+            limitType="mau"
+            currentPlan={mauStatistics?.currentPlan}
+            usagePercentage={mauStatistics?.usagePercentage}
+            handleClose={handleCloseAlert}
+          />
+          )}
+        {isEmailsLimit
+          && (
+          <CallToActionBanner
+            limitType="email"
+            currentPlan={mauStatistics?.currentPlan}
+            limit={emailsStatistics?.dailyEmailsLimit}
+            handleClose={handleCloseAlert}
+          />
+          )}
+      </Stack>
+
+    </LayoutHeader>
   );
 };
 
