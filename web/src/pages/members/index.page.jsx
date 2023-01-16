@@ -16,7 +16,7 @@ import {
   Badge,
   Paper,
   ScrollArea,
-  Table,
+  Table, Checkbox,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
@@ -27,7 +27,7 @@ import { useQueryClient } from 'react-query';
 import { handleError } from 'helpers';
 import { companyApi } from 'resources/company';
 import { useAmplitude } from 'contexts/amplitude-context';
-import DeleteMenu from './components/delete-menu';
+import MemberMenu from './components/delete-menu';
 
 import { useStyles } from './styles';
 
@@ -35,13 +35,14 @@ const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
 });
 
-const columns = ['Email', 'First name', 'Last name', ''];
+const columns = ['Email', 'First name', 'Last name', 'Permissions', ''];
 
 const Members = () => {
   const { classes } = useStyles();
   const modals = useModals();
   const queryClient = useQueryClient();
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const companyId = currentAdmin.currentCompany._id;
   const { data, isLoading } = companyApi.useGetMembers();
 
   const amplitude = useAmplitude();
@@ -115,6 +116,10 @@ const Members = () => {
   };
 
   const removeMemberMutation = companyApi.useRemoveMember();
+  const {
+    mutate: changeMemberPermissions,
+    isLoading: isPermissionsLoading,
+  } = companyApi.useChangeMemberPermissions(companyId);
 
   const handleMemberRemove = useCallback((_id, email) => () => {
     modals.openConfirmModal({
@@ -140,6 +145,14 @@ const Members = () => {
       }),
     });
   }, [removeMemberMutation, setError, modals]);
+
+  const getMemberPermissions = useCallback((permissions) => Object.entries(permissions[companyId])
+    .filter(([, enabled]) => !!enabled)
+    .map((obj) => obj[0]), [companyId]);
+
+  const onPermissionChanged = (memberId) => (enabledPermissions) => {
+    changeMemberPermissions({ memberId, enabledPermissions });
+  };
 
   if (matches) {
     return (
@@ -186,21 +199,21 @@ const Members = () => {
                             && currentAdmin?.ownCompanyId
                             && _id !== currentAdmin?._id
                             && (
-                              <DeleteMenu
-                                mainAction={handleMemberRemove(_id, email)}
+                              <MemberMenu
+                                onDelete={handleMemberRemove(_id, email)}
+                                onTogglePermission={() => null}
                                 loading={removeMemberMutation.isLoading}
                               />
                             )
                           }
-                          {isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && (
-                            <DeleteMenu
-                              mainAction={handleCancelInvitation(email)}
+                          {isInvitation && (
+                            <MemberMenu
+                              onDelete={handleCancelInvitation(email)}
+                              onTogglePermission={() => null}
                               loading={cancelInvitationMutation.isLoading}
                             />
 
-                            )}
+                          )}
                         </Group>
                       </Group>
                       <Group>
@@ -224,6 +237,7 @@ const Members = () => {
       </>
     );
   }
+
   return (
     <>
       <Head>
@@ -267,54 +281,80 @@ const Members = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
-                    <tr key={_id}>
-                      <td>
-                        <Group>
-                          <Text size="sm" weight={600}>
-                            {email}
-                          </Text>
-                          {isInvitation
+                  {membersList.map(
+                    ({ _id, email, firstName, lastName, isInvitation, permissions }) => (
+                      <tr key={_id}>
+                        <td>
+                          <Group>
+                            <Text size="sm" weight={600}>
+                              {email}
+                            </Text>
+                            {isInvitation
                             && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
-                          { currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                            { currentAdmin?.ownCompanyId && _id === currentAdmin?._id
                             && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
-                        </Group>
-                      </td>
-                      <td>
-                        <Text size="sm" weight={600}>
-                          {firstName}
-                        </Text>
-                      </td>
-                      <td>
-                        <Text size="sm" weight={600}>
-                          {lastName}
-                        </Text>
-                      </td>
-                      <td>
-                        <Group sx={{ justifyContent: 'flex-end' }}>
-                          {
+                          </Group>
+                        </td>
+                        <td>
+                          <Text size="sm" weight={600}>
+                            {firstName}
+                          </Text>
+                        </td>
+                        <td>
+                          <Text size="sm" weight={600}>
+                            {lastName}
+                          </Text>
+                        </td>
+                        <td>
+                          { currentAdmin?.ownCompanyId && _id !== currentAdmin?._id && !isInvitation
+                          && (
+                          <Checkbox.Group
+                            value={getMemberPermissions(permissions)}
+                            onChange={onPermissionChanged(_id)}
+                          >
+                            <Checkbox
+                              value="manageSenderEmails"
+                              label="Emails"
+                              disabled={isPermissionsLoading}
+                            />
+                            <Checkbox
+                              value="manageMembers"
+                              label="Members"
+                              disabled={isPermissionsLoading}
+                            />
+                            <Checkbox
+                              value="managePayments"
+                              label="Payments"
+                              disabled={isPermissionsLoading}
+                            />
+                          </Checkbox.Group>
+                          )}
+                        </td>
+                        <td>
+                          <Group sx={{ justifyContent: 'flex-end' }}>
+                            {
                             !isInvitation
                             && currentAdmin?.ownCompanyId
                             && _id !== currentAdmin?._id
                             && (
-                              <DeleteMenu
+                              <MemberMenu
                                 mainAction={handleMemberRemove(_id, email)}
                                 loading={removeMemberMutation.isLoading}
                               />
                             )
                           }
-                          { isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && (
-                            <DeleteMenu
+                            { isInvitation && (
+                            <MemberMenu
                               mainAction={handleCancelInvitation(email)}
                               loading={cancelInvitationMutation.isLoading}
                             />
+
                             )}
-                        </Group>
-                      </td>
-                    </tr>
-                  ))}
+                          </Group>
+                        </td>
+                      </tr>
+                    ),
+                  )}
                 </tbody>
               </Table>
             </ScrollArea>

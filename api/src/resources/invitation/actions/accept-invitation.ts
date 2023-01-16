@@ -72,13 +72,24 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     firstName,
     lastName,
     companyIds: [company._id],
+    currentCompany: {
+      _id: company._id,
+      name: company.name,
+    },
+    permissions: {
+      [company._id]: {
+        manageMembers: false,
+        managePayments: false,
+        manageSenderEmails: false,
+      },
+    },
     applicationIds: [company.applicationIds[0]],
     isEmailVerified: true,
   });
 
   const updateCompanyP = companyService.updateOne({ _id: company._id }, (doc) => {
     doc.adminIds = [...doc.adminIds, admin._id];
-    
+
     return doc;
   });
 

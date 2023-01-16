@@ -13,7 +13,7 @@ async function handler(ctx: AppKoaContext) {
 
   const membersP = adminService.aggregate([
     { $match: { _id: { $in: company.adminIds } } },
-    { $project: { _id: 1, firstName: 1, lastName: 1, email: 1, createdOn: 1 } },
+    { $project: { _id: 1, firstName: 1, lastName: 1, email: 1, createdOn: 1, [`permissions.${company._id}`]: 1 } },
     { $sort: { createdOn: -1 } },
   ]);
 

@@ -52,6 +52,13 @@ const createAdmin = async (ctx: AppKoaContext) => {
           ownCompanyId: companyId,
           companyIds: [companyId],
           applicationIds: [applicationId],
+          permissions: {
+            companyId: {
+              manageMembers: true,
+              managePayments: true,
+              manageSenderEmails: true,
+            },
+          },
         }, { session });
 
         await companyService.insertOne({
@@ -59,6 +66,7 @@ const createAdmin = async (ctx: AppKoaContext) => {
           ownerId: adminId,
           applicationIds: [applicationId],
           adminIds: [adminId],
+          name: authAdminData.email,
         }, { session });
 
         await applicationService.insertOne({

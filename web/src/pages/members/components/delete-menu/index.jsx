@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 
 import { useStyles } from '../../styles';
 
-const DeleteMenu = (props) => {
-  const { mainAction, loading } = props;
+const MemberMenu = (props) => {
+  const { onDelete, onTogglePermission, loading } = props;
 
   const { classes } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
@@ -28,7 +28,7 @@ const DeleteMenu = (props) => {
         <Menu.Item
           icon={!matches && <IconTrash size={14} />}
           color="red"
-          onClick={mainAction}
+          onClick={onDelete}
           sx={{ padding: '16px 13px' }}
         >
           Delete
@@ -38,14 +38,14 @@ const DeleteMenu = (props) => {
   );
 };
 
-DeleteMenu.propTypes = {
+MemberMenu.propTypes = {
   loading: PropTypes.bool,
-  mainAction: PropTypes.func,
+  onDelete: PropTypes.func.isRequired,
+  onTogglePermission: PropTypes.func.isRequired,
 };
 
-DeleteMenu.defaultProps = {
+MemberMenu.defaultProps = {
   loading: false,
-  mainAction: null,
 };
 
-export default DeleteMenu;
+export default MemberMenu;

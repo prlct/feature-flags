@@ -14,16 +14,28 @@ const schema = Joi.object({
   applicationIds: Joi.array().items(Joi.string()).max(1).unique(),
   stripeId: Joi.string().allow(null),
 
+  oauth: Joi.object().keys({
+    google: Joi.boolean().default(false),
+    github: Joi.boolean().default(false),
+  }),
+
+  currentCompany: Joi.object({
+    _id: Joi.string().trim().required(),
+    name: Joi.string().trim().required(),
+  }).required(),
+
+  permissions: Joi.object({}).pattern(Joi.string().trim(), {
+    manageSenderEmails: Joi.boolean(),
+    manageMembers: Joi.boolean(),
+    managePayments: Joi.boolean(),
+  }).required(),
+
   lastRequestOn: Joi.date(),
   lastLoginOn: Joi.date(),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),
-  oauth: Joi.object().keys({
-    google: Joi.boolean().default(false),
-    github: Joi.boolean().default(false),
-  }),
 });
 
 export default schema;

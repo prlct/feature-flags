@@ -5,6 +5,8 @@ export type Company = {
   adminIds: string[];
   stripeId: string | null;
   freeLimitUsed: boolean | null;
+  name: string,
+
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;

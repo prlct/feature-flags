@@ -38,6 +38,8 @@ export type ValidationErrors = {
   [name: string]: string[] | string;
 };
 
+export type Permission = 'manageMembers' | 'manageSenderEmails' | 'managePayments';
+
 export {
   Next,
 };

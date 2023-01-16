@@ -43,8 +43,21 @@ export function useRemoveMember() {
 
 export function useGetMembers() {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
   const getMembers = () => apiService.get(`${resource}/${companyId}/members`);
 
   return useQuery(['companyMembers'], getMembers);
+}
+
+export function useChangeMemberPermissions(companyId) {
+  const changePermissions = ({ memberId, enabledPermissions }) => apiService.put(
+    `${resource}/${companyId}/members/${memberId}/permissions`,
+    { enabledPermissions },
+  );
+
+  return useMutation(changePermissions, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['companyMembers']);
+    },
+  });
 }
