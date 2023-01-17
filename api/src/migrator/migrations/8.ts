@@ -1,4 +1,3 @@
-import { promiseUtil } from 'utils';
 import { Migration } from 'migrator/types';
 import { companyService } from 'resources/company';
 import moment from 'moment';
