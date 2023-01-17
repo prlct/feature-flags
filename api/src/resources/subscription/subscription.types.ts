@@ -7,6 +7,7 @@ type SubscriptionLimits = {
 
 export type Subscription = {
   _id: string;
+  companyId: string,
   subscriptionId: string,
   planId: string
   productId: string,
@@ -15,8 +16,8 @@ export type Subscription = {
   subscriptionLimits: SubscriptionLimits,
   name: string,
   interval: string,
-  startDate: Date,
-  endDate: Date,
+  startDate: number,
+  endDate: number,
   cancelAtPeriodEnd: boolean,
   createdOn: Date,
   updatedOn: Date,

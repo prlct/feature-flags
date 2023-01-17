@@ -29,8 +29,8 @@ const base = {
     redirectUri: process.env.GMAIL_REDIRECT_URI || '',
   },
   subscriptions: {
-    starter: env === 'development' ? local.STARTER_SUBSCRIPTION_ID : process.env.STARTER_SUBSCRIPTION_ID,
-    pro: env === 'development' ? local.PRO_SUBSCRIPTION_ID : process.env.PRO_SUBSCRIPTION_ID,
+    starter: process.env.STARTER_SUBSCRIPTION_ID,
+    pro: process.env.PRO_SUBSCRIPTION_ID,
   },
   apiUrl: '',
   webUrl: '',
@@ -44,8 +44,8 @@ const base = {
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
   MONTHLY_ACTIVE_USERS_LIMIT: process.env.MONTHLY_ACTIVE_USERS_LIMIT || 2000,
   MONTHLY_EMAILS_LIMIT: process.env.MONTHLY_EMAILS_LIMIT || 15000,
-  MONTHLY_PIPELINES_LIMIT: process.env.MONTHLY_PIPELINES_LIMIT || 3,
-  MONTHLY_USERS_LIMIT: process.env.MONTHLY_USERS_LIMIT || 3,
+  PIPELINES_LIMIT: process.env.PIPELINES_LIMIT || 3,
+  USERS_LIMIT: process.env.USERS_LIMIT || 3,
   AMPLITUDE_API_KEY: process.env.AMPLITUDE_API_KEY || '',
 };
 

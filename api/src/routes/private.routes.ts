@@ -29,7 +29,6 @@ export default (app: AppKoa) => {
   app.use(mount('/user-events', userEvents.externalRoutes));
   app.use(mount('/subscriptions', compose([auth, subscription.privateRoutes])));
   app.use(mount('/statistics', compose([auth, statistics.privateRoutes])));
-  app.use(mount('/email-sequences', sequences.privateRoutes));
   app.use(mount('/pipelines', compose([auth, pipelines.privateRoutes])));
   app.use(mount('/sequences', compose([auth, sequences.privateRoutes])));
   app.use(mount('/sequence-emails', compose([auth, sequenceEmails.privateRoutes])));

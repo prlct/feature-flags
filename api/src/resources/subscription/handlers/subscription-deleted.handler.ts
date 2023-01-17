@@ -17,7 +17,7 @@ eventBus.on(`${SUBSCRIPTIONS}.deleted`, async (data: InMemoryEvent<Subscription>
   companyService.atomic.updateOne(
     { stripeId: subscription.customer },
     {
-      $set: { freeLimitUsed: limits.limitReached },    
+      $set: { freeLimitUsed: limits.limitReached || false },    
     },
   );
 });

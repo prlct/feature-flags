@@ -39,7 +39,7 @@ const scheduleSequenceEmail = async (sequenceEmail: SequenceEmail, email: string
   await service.insertOne(job);
 };
 
-const rescheduleSendingSequenceEmail = async (_id: string, scheduled: Date, extraDelay = 0) => {
+const rescheduleSendingSequenceEmail = async (_id: string, scheduled: Date, extraDelay: number) => {
   const newScheduledDate = moment(scheduled)
     .add(extraDelay, 'day')
     .toDate();

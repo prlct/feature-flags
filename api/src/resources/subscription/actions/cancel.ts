@@ -3,12 +3,15 @@ import stripe from 'services/stripe/stripe.service';
 import { subscriptionService } from 'resources/subscription';
 
 import { AppKoaContext, AppRouter } from 'types';
+import { companyService } from 'resources/company';
 
 async function handler(ctx: AppKoaContext) {
   const { admin } = ctx.state;
 
-  const currentSubscription = await subscriptionService.findOne({ customer: admin.stripeId || undefined });
+  const company = await companyService.findOne({ _id: admin.companyIds[0] });
 
+  const currentSubscription = company && await subscriptionService.findOne({ companyId: company._id || undefined });
+ 
   if (!currentSubscription) {
     ctx.status = 400;
     ctx.message = 'Subscription does not exist';
@@ -20,7 +23,7 @@ async function handler(ctx: AppKoaContext) {
     cancel_at_period_end: true,
   });
 
-  ctx.body = { };
+  ctx.body = currentSubscription;
 }
 
 export default (router: AppRouter) => {

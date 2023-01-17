@@ -24,6 +24,8 @@ const updateSubscription = async (data: any) => {
     emailService.sendSuccessfulSubscription(data);
   }
 
+  const company = await companyService.findOne({ stripeId: data.customer });
+
   const stripeProduct = await stripe.products.retrieve(data.plan.product);
   const subscriptionLimits = stripeProduct.metadata || {};
   const {
@@ -34,8 +36,6 @@ const updateSubscription = async (data: any) => {
   } = subscriptionLimits;
 
   const productName = stripeProduct.name.toLocaleLowerCase() || '';
-    
-  
 
   if (subscription?._id) {
     service.updateOne(
@@ -62,6 +62,7 @@ const updateSubscription = async (data: any) => {
   }
 
   service.insertOne({
+    companyId: company?._id,
     customer: data.customer,
     subscriptionId: data.id,
     planId: data.plan.id,
@@ -91,7 +92,7 @@ const getMauUsageLimit = async (applicationId: string) => {
     applicationIds: { $elemMatch: { $eq: applicationId } },
     deletedOn: { $exists: false },
   });
-  const subscription = company?.stripeId && await service.findOne({ customer: company.stripeId });
+  const subscription = company && await service.findOne({ companyId: company._id });
 
   const endDate = new Date;
   const startDate = moment().startOf('month').toDate();

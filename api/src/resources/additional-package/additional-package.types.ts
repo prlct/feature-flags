@@ -1,4 +1,4 @@
-export type Subscription = {
+export type AdditionalPackage = {
   _id: string;
   customer: string,
   status: string,

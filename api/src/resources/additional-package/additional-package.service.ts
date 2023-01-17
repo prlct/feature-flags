@@ -3,15 +3,15 @@ import db from 'db';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import schema from './additional-package.schema';
-import { Subscription } from './additional-package.types';
+import { AdditionalPackage } from './additional-package.types';
 import moment from 'moment';
 import stripe from 'services/stripe/stripe.service';
 
-const service = db.createService<Subscription>(DATABASE_DOCUMENTS.ADDITIONAL_PACKAGE, { schema });
+const service = db.createService<AdditionalPackage>(DATABASE_DOCUMENTS.ADDITIONAL_PACKAGE, { schema });
 
-const createPaymentIntent = async (company: any) => {
+const createPaymentForAdditionalPackage = async (company: any) => {
   const activePackage = await service.findOne({ 
-    customer: company.stripeId || undefined,
+    customer: company.stripeId as string,
     unusedMau: { $gt: 0 },
     periodEnd: { $gte: moment().toDate() }, 
   });
@@ -63,6 +63,6 @@ const paymentIntent = async (data: any) => {
 };
 
 export default Object.assign(service, {
-  createPaymentIntent,
+  createPaymentForAdditionalPackage,
   paymentIntent,
 });

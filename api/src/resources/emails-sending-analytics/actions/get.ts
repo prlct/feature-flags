@@ -19,11 +19,11 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { companyId } = ctx.validatedData;
 
-  const today = (moment().format('YYYY/MM/DD'));
+  const today = moment().format('YYYY/MM/DD');
   const daysInMonth = moment().daysInMonth();
 
   const company = await companyService.findOne({ _id: companyId });
-  const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+  const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   const sendingEmails = await emailsSendingAnalyticsService.findOne({ 
     companyId, 

@@ -11,10 +11,10 @@ interface CreateEmailsSendingAnalytics {
 }
 
 const service = db.createService<EmailsSendingAnalytics>(DATABASE_DOCUMENTS.EMAILS_SENDING_ANALYTICS, { schema });
-
-const today = (moment().format('YYYY/MM/DD'));
+service.createIndex({ expirationOn: 1 }, { expireAfterSeconds: 3600 });
 
 const createEmailsSendingAnalytics = async ({ applicationId }: CreateEmailsSendingAnalytics) => {
+  const today = moment().format('YYYY/MM/DD');
 
   const company = await companyService.findOne({
     applicationIds: { $elemMatch: { $eq: applicationId } },

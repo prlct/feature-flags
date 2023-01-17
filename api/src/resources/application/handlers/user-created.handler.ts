@@ -1,6 +1,5 @@
 import { eventBus, InMemoryEvent } from '@paralect/node-mongo';
 
-import ioEmitter from 'io-emitter';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import { User } from 'resources/user';
@@ -23,7 +22,7 @@ export const checkMauLimits = async (event: string, data: InMemoryEvent<User>) =
   const statistics = await subscriptionService.getMauUsageLimit(data.doc.applicationId);
 
   const company = await companyService.findOne({ applicationIds: data.doc.applicationId });
-  const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+  const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   const monthlyActiveUsersLimit = subscription 
     ? subscription.subscriptionLimits.mau : Number(config.MONTHLY_ACTIVE_USERS_LIMIT); 
@@ -32,7 +31,7 @@ export const checkMauLimits = async (event: string, data: InMemoryEvent<User>) =
 
     const activePackage = await additionalPackageService.atomic.findOneAndUpdate(
       { 
-        customer: company?.stripeId || undefined,
+        customer: company.stripeId as string,
         unusedMau: { $gt: 0 },
         periodEnd: { $gte: moment().toDate() }, 
       },
@@ -40,7 +39,7 @@ export const checkMauLimits = async (event: string, data: InMemoryEvent<User>) =
     );
 
     if (!activePackage?.value || activePackage?.value?.unusedMau <= 1) {
-      await additionalPackageService.createPaymentIntent(company);
+      await additionalPackageService.createPaymentForAdditionalPackage(company);
     }
   } 
 

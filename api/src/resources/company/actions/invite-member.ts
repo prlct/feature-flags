@@ -44,18 +44,18 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { email } = ctx.validatedData;
   const [applicationId] = admin.applicationIds;
 
-  let monthlyActiveUsersLimit = config.MONTHLY_USERS_LIMIT;
+  let usersLimit = config.USERS_LIMIT;
 
   const company = await companyService.findOne({ applicationIds: applicationId });
-  const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+  const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   if (subscription) {
-    monthlyActiveUsersLimit = subscription.subscriptionLimits.users || 0;  
+    usersLimit = subscription.subscriptionLimits.users || 0;  
   }
 
-  if (company && monthlyActiveUsersLimit) {
+  if (company && usersLimit) {
     const { results: invitationsList } = await invitationService.find({ companyId: company._id });
-    const isMembersLength = (company?.adminIds?.length + invitationsList.length) >= monthlyActiveUsersLimit;
+    const isMembersLength = (company?.adminIds?.length + invitationsList.length) >= usersLimit;
 
     ctx.assertClientError(!isMembersLength, {
       global: 'Members limit exceeded',

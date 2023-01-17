@@ -44,7 +44,7 @@ const PaymentSuccessModal = () => {
     () => activeSubscriptionPlan.chapters.map((chapter, index) => (
       <Stack
         key={index}
-        fluid
+        fluid="true"
         spacing={10}
         sx={{
           display: 'flex',
@@ -54,15 +54,14 @@ const PaymentSuccessModal = () => {
           padding: 0,
         }}
       >
-        <Text sx={{ width: '100%' }}>{chapter.chapterTitle[0]}</Text>
         {chapter.chaptersList.map((item, index) => (
           <Container
             key={index}
-            fluid
+            fluid="true"
             sx={{
               display: 'flex',
               justifyContent: 'flex-start',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               width: '100%',
               padding: 0,
             }}

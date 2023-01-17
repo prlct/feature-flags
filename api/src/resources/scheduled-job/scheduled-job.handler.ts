@@ -36,8 +36,6 @@ const getHandler = (job: ScheduledJob) => {
 
       return async () => {
         try {
-
-
           const email = await sequenceEmailService.findOne({
             _id: job.data.emailId,
             enabled: true,
@@ -82,9 +80,9 @@ const getHandler = (job: ScheduledJob) => {
           }
 
           const company = await companyService.findOne({ applicationIds: job.applicationId });
-          const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+          const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
-          const today = (moment().format('YYYY/MM/DD'));
+          const today = moment().format('YYYY/MM/DD');
           const daysInMonth = moment().daysInMonth();
 
           let dailyEmailsLimit = Math.floor(Number(config.MONTHLY_EMAILS_LIMIT) / daysInMonth);

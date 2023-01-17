@@ -29,19 +29,19 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     deletedOn: { $exists: false },
   }, { projection: { index: 1 }, sort: { index: -1 }, limit: 1 });
 
-  let monthlyPipelinesLimit = config.MONTHLY_PIPELINES_LIMIT;
+  let pipelinesLimit = config.PIPELINES_LIMIT;
 
   const company = await companyService.findOne({ adminIds: ctx.state.admin._id });
 
-  const subscription = company?.stripeId && await subscriptionService.findOne({ customer: company.stripeId });
+  const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   if (subscription) {
-    monthlyPipelinesLimit = subscription.subscriptionLimits.pipelines || 0;  
+    pipelinesLimit = subscription.subscriptionLimits.pipelines || 0;  
   }  
 
-  if (company && monthlyPipelinesLimit) {
+  if (company && pipelinesLimit) {
     const { results: pipelineList } = await pipelineService.find({ applicationId: ctx.state.admin.applicationIds[0] });
-    const isPipelinesLength = pipelineList.length >= monthlyPipelinesLimit;
+    const isPipelinesLength = pipelineList.length >= pipelinesLimit;
 
     ctx.assertClientError(!isPipelinesLength, {
       global: 'Pipelines limit exceeded',

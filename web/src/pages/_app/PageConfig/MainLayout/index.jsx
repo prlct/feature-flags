@@ -226,7 +226,7 @@ const MainLayout = ({ children }) => {
         },
       })}
     >
-      <Container fluid size="xl" className={classes.container}>
+      <Container fluid="true" size="xl" className={classes.container}>
         {children}
       </Container>
     </AppShell>

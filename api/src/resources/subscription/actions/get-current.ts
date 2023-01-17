@@ -7,8 +7,8 @@ async function handler(ctx: AppKoaContext) {
 
   const company = await companyService.findOne({ _id: companyIds[0] });
 
-  if (company?.stripeId) {
-    const subscription = await subscriptionService.findOne({ customer: company?.stripeId });
+  if (company?._id) {
+    const subscription = await subscriptionService.findOne({ companyId: company._id });
     ctx.body = subscription;
 
     return;

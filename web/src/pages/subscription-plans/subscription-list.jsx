@@ -1,3 +1,4 @@
+/* eslint-disable react/style-prop-object */
 import config from 'config';
 
 export default [
@@ -11,52 +12,42 @@ export default [
       month: 0,
       year: 0,
     },
-    limitEmails: 100,
+    limitUsers: 3,
+    limitPipelines: 3,
     chapters: [
       {
-        chapterTitle: [
-          <span>
-            <b>Feature flags</b>
-          </span>,
-        ],
         chaptersList: [
+          <span>Onboarding</span>,
           <span>Unlimited feature flags</span>,
-          <span>Unlimited feature targeting rules</span>,
           <span>Unlimited A/B tests</span>,
-          <span>Remove config</span>,
           <span>
-            <b>Up to 2K </b>
-            <span>MAU</span>
+            <b>15000 </b>
+            <span>
+              monthly emails
+              {' '}
+              <br />
+              <span>
+                No more than 500 per day
+              </span>
+            </span>
+
           </span>,
         ],
       },
       {
-        chapterTitle: [
-          <span>
-            <b>Activation pipelines</b>
-          </span>,
-        ],
         chaptersList: [
-          <span>Unlimited subscribers</span>,
-          <span>Unlimited email sequences</span>,
           <span>
-            <b>Up to 3 </b>
+            <b>3 </b>
             <span>pipelines</span>
           </span>,
-          <span>
-            <b>Up to 15000 </b>
-            <span>monthly emails</span>
-          </span>,
-        ],
-      },
-      {
-        chapterTitle: [<span />],
-        chaptersList: [
           <span>
             <b>Up to 3 </b>
             <span>product users</span>
           </span>,
-          <span>Onboarding and Live chat</span>,
+          <span>
+            <b>Up to 2K </b>
+            <span>MAU</span>
+          </span>,
         ],
       },
     ],
@@ -71,52 +62,37 @@ export default [
       month: 49,
       year: 510,
     },
-    limitEmails: 1000,
     chapters: [
       {
-        chapterTitle: [
-          <span>
-            <b>Feature flags</b>
-          </span>,
-        ],
         chaptersList: [
+          <span>Onboarding</span>,
           <span>Unlimited feature flags</span>,
-          <span>Unlimited feature targeting rules</span>,
           <span>Unlimited A/B tests</span>,
-          <span>Remove config</span>,
           <span>
-            <b>Up to 10K </b>
-            <span>MAU</span>
+            <b>30000 </b>
+            <span>monthly emails</span>
+            {' '}
+            <br />
+            <span>
+              No more than 1000 per day
+            </span>
           </span>,
         ],
       },
       {
-        chapterTitle: [
-          <span>
-            <b>Activation pipelines</b>
-          </span>,
-        ],
         chaptersList: [
-          <span>Unlimited subscribers</span>,
-          <span>Unlimited email sequences</span>,
           <span>
-            <b>Up to 10 </b>
+            <b>10 </b>
             <span>pipelines</span>
           </span>,
-          <span>
-            <b>Up to 30000 </b>
-            <span>monthly emails</span>
-          </span>,
-        ],
-      },
-      {
-        chapterTitle: [<span />],
-        chaptersList: [
           <span>
             <b>Up to 10 </b>
             <span>product users</span>
           </span>,
-          <span>Onboarding and Live chat</span>,
+          <span>
+            <b>Up to 10K </b>
+            <span>MAU</span>
+          </span>,
         ],
       },
     ],
@@ -131,52 +107,37 @@ export default [
       month: 99,
       year: 1020,
     },
-    limitEmails: 2000,
     chapters: [
       {
-        chapterTitle: [
-          <span>
-            <b>Feature flags</b>
-          </span>,
-        ],
         chaptersList: [
+          <span>Onboarding</span>,
           <span>Unlimited feature flags</span>,
-          <span>Unlimited feature targeting rules</span>,
           <span>Unlimited A/B tests</span>,
-          <span>Remove config</span>,
           <span>
-            <b>Up to 100K </b>
-            <span>MAU</span>
+            <b>60000 </b>
+            <span>monthly emails</span>
+            {' '}
+            <br />
+            <span>
+              No more than 2000 per day
+            </span>
           </span>,
         ],
       },
       {
-        chapterTitle: [
-          <span>
-            <b>Activation pipelines</b>
-          </span>,
-        ],
         chaptersList: [
-          <span>Unlimited subscribers</span>,
-          <span>Unlimited email sequences</span>,
           <span>
             <b>Unlimited </b>
             <span>pipelines</span>
           </span>,
           <span>
-            <b>Up to 60000 </b>
-            <span>monthly emails</span>
-          </span>,
-        ],
-      },
-      {
-        chapterTitle: <span />,
-        chaptersList: [
-          <span>
             <b>Unlimited </b>
             <span>product users</span>
           </span>,
-          <span>Onboarding and Live chat</span>,
+          <span>
+            <b>Up to 100K </b>
+            <span>MAU</span>
+          </span>,
         ],
       },
     ],
