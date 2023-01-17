@@ -24,6 +24,8 @@ const schema = Joi.object({
     name: Joi.string().trim().required(),
   }).required(),
 
+  currentApplicationId: Joi.string().required(),
+
   permissions: Joi.object({}).pattern(Joi.string().trim(), {
     manageSenderEmails: Joi.boolean(),
     manageMembers: Joi.boolean(),

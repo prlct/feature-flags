@@ -15,6 +15,7 @@ export type Admin = {
     _id: string,
     name: string,
   };
+  currentApplicationId: string,
   permissions: {
     [key in string]: { // companyId
       manageSenderEmails: boolean,

@@ -1,11 +1,5 @@
 import { useState } from 'react';
 import {
-  useGetSenderEmails,
-  useGetApplicationEvents,
-  useDeleteEvent,
-  useRemoveSenderEmail,
-} from 'resources/email-sequence/email-sequence.api';
-import {
   Box,
   Button,
   Group,
@@ -20,13 +14,20 @@ import {
 } from '@mantine/core';
 import config from 'config';
 import queryClient from 'query-client';
-import CardSettingsButton from 'pages/email-sequences/components/card-settings-button';
 import { IconSettings, IconTrash } from '@tabler/icons';
 import { openContextModal, useModals } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
+
+import CardSettingsButton from 'pages/email-sequences/components/card-settings-button';
+import {
+  useGetSenderEmails,
+  useGetApplicationEvents,
+  useDeleteEvent,
+  useRemoveSenderEmail,
+} from 'resources/email-sequence/email-sequence.api';
+import GoogleButton from 'components/google-button/google-button';
 import EventCreateModal from './components/event-create-modal';
-import GoogleButton from '../../components/google-button/google-button';
 
 const PipelineSettings = () => {
   const modals = useModals();
@@ -37,7 +38,7 @@ const PipelineSettings = () => {
   const deleteEventMutation = useDeleteEvent();
 
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin?.applicationIds[0];
+  const applicationId = currentAdmin?.currentApplicationId;
 
   const [isEventCreateModalOpened, setIsEventCreateModalOpened] = useState(false);
 
@@ -123,7 +124,7 @@ const PipelineSettings = () => {
   ));
 
   const eventsRows = fetchedEvents?.events?.map((event) => (
-    <tr key={event}>
+    <tr key={event.label}>
       <td>{event.label}</td>
       <td>{event.value}</td>
       <td>

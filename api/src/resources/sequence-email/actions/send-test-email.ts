@@ -18,7 +18,7 @@ type ValidatedData = {
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { sequenceEmailId } = ctx.params;
   const { email } = ctx.validatedData;
-  const applicationId = ctx.state.admin.applicationIds[0];
+  const applicationId = ctx.state.admin.currentApplicationId;
 
   const sequenceEmail = await sequenceEmailService.findOne({ _id: sequenceEmailId });
 

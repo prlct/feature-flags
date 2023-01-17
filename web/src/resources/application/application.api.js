@@ -7,7 +7,7 @@ const resource = '/applications';
 
 export function useCreateFeatureFlag() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
   const createFeatureFlag = (data) => apiService.post(`${resource}/${applicationId}/features`, data);
 
   return useMutation(createFeatureFlag, {
@@ -19,7 +19,7 @@ export function useCreateFeatureFlag() {
 
 export const useGetApplication = () => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
   const getApplication = () => apiService.get(`${resource}/${applicationId}`);
 
   return useQuery(['account'], getApplication);
@@ -27,7 +27,7 @@ export const useGetApplication = () => {
 
 export const useGetFeaturesList = (env) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
   const getFeaturesList = () => apiService.get(`${resource}/${applicationId}/features/${env}`);
 
   return useQuery(['featureFlags'], getFeaturesList);

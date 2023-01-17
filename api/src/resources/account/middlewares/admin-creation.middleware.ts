@@ -52,6 +52,11 @@ const createAdmin = async (ctx: AppKoaContext) => {
           ownCompanyId: companyId,
           companyIds: [companyId],
           applicationIds: [applicationId],
+          currentCompany: {
+            _id: companyId,
+            name: authAdminData.email,
+          },
+          currentApplicationId: applicationId,
           permissions: {
             companyId: {
               manageMembers: true,

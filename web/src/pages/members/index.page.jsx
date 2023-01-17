@@ -194,7 +194,14 @@ const Members = () => {
             <Paper radius="sm">
               <ScrollArea pb={20}>
                 <Stack spacing={8}>
-                  {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
+                  {membersList.map(({
+                    _id,
+                    email,
+                    firstName,
+                    lastName,
+                    isInvitation,
+                    permissions,
+                  }) => (
                     <Stack key={_id} className={classes.itemBlock}>
                       <Group sx={{ justifyContent: 'space-between' }}>
                         <Text size="sm" weight={600}>
@@ -206,10 +213,17 @@ const Members = () => {
                             && currentAdmin?.ownCompanyId
                             && _id !== currentAdmin?._id
                             && (
-                              <MemberMenu
-                                onDelete={handleMemberRemove(_id, email)}
-                                loading={removeMemberMutation.isLoading}
-                              />
+                              <>
+                                <MemberMenu
+                                  onDelete={handleMemberRemove(_id, email)}
+                                  loading={removeMemberMutation.isLoading}
+                                />
+                                <PermissionsMenu
+                                  onPermissionChanged={onPermissionChanged(_id)}
+                                  disabled={isPermissionsLoading}
+                                  permissions={getMemberPermissions(permissions)}
+                                />
+                              </>
                             )
                           }
                           {isInvitation && (

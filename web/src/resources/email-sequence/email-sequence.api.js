@@ -10,7 +10,7 @@ const pipelineUsersResource = '/pipeline-users';
 
 export const useGetPipelines = (env) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
   const getPipelines = async () => apiService.get(pipelinesResource, { env, applicationId });
 
   return useQuery([pipelinesResource, env], getPipelines);
@@ -18,7 +18,7 @@ export const useGetPipelines = (env) => {
 
 export function useAddPipeline(env) {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const data = queryClient.getQueryData([pipelinesResource]);
   const currentPipelines = data?.results || [];
@@ -80,7 +80,7 @@ export function useGetSequences(pipelineId) {
 
 export function useAddSequence(pipelineId) {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const addSequence = async ({ name, trigger = null }) => apiService.post(
     `/applications/${applicationId}/sequences`,
@@ -181,7 +181,7 @@ export function useEmailUpdate(emailId) {
 
 export function useEmailCreate() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
   const updateEmail = async (data) => apiService.post(`/applications/${applicationId}${sequenceEmailResource}`, data);
 
   return useMutation(updateEmail, {
@@ -223,7 +223,7 @@ export function useEmailRemove(emailId) {
 
 export function useGetUsers() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const getUsers = () => apiService.get(`${pipelineUsersResource}`, { applicationId });
 
@@ -232,7 +232,7 @@ export function useGetUsers() {
 
 export function useAddUsersList() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const addUsersList = ({ usersList, sequenceId }) => apiService.post(
     `/applications/${applicationId}/pipeline-users-list`,
@@ -260,7 +260,7 @@ export function useAddUsersList() {
 
 export function useAddPipelinesToUser() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const addPipelinesList = ({ pipelineIds, userId }) => apiService.post(
     `/applications/${applicationId}/pipelines-to-user`,
@@ -283,7 +283,7 @@ export function useAddPipelinesToUser() {
 
 export const useUpdateUser = (userId) => {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const updateUser = async (data) => apiService.put(
     `${pipelineUsersResource}/${userId}`,
@@ -304,7 +304,7 @@ export const useUpdateUser = (userId) => {
 
 export function useRemoveUser() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const removeUser = (userId) => apiService.delete(
     `${pipelineUsersResource}/${userId}`,
@@ -332,7 +332,7 @@ export function useRemoveUser() {
 
 export function useGetApplicationEvents() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const getEvents = () => apiService.get(`/applications/${applicationId}/events`);
 
@@ -341,7 +341,7 @@ export function useGetApplicationEvents() {
 
 export function useDeleteEvent() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const deleteFeature = (event) => apiService.delete(`/applications/${applicationId}/events`, event);
   return useMutation(deleteFeature, {
@@ -353,7 +353,7 @@ export function useDeleteEvent() {
 
 export function useAddApplicationEvent() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const addEvent = (event) => apiService.post(`/applications/${applicationId}/events`, event);
 
@@ -378,7 +378,7 @@ export function useAddApplicationEvent() {
 
 export function useUpdateApplicationEvent() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const updateEvent = ({ updatedEvent, event }) => apiService.put(`/applications/${applicationId}/events`, { updatedEvent, event });
 
@@ -417,7 +417,7 @@ export function useSendTestEmail(id) {
 
 export function useGetSenderEmails() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const getSenderEmails = () => apiService.get(`/applications/${applicationId}/sender-emails`);
 
@@ -426,7 +426,7 @@ export function useGetSenderEmails() {
 
 export function useRemoveSenderEmail() {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
-  const applicationId = currentAdmin.applicationIds[0];
+  const applicationId = currentAdmin.currentApplicationId;
 
   const removeSenderEmail = (email) => apiService.delete(`/applications/${applicationId}/sender-emails`, { email });
 
