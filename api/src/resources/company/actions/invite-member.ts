@@ -9,6 +9,7 @@ import { emailService } from 'services';
 import companyAuth from '../middlewares/company-auth.middleware';
 import companyService from '../company.service';
 import { subscriptionService } from 'resources/subscription';
+import { permissionsMiddleware } from '../../application';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -50,7 +51,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   if (subscription) {
-    usersLimit = subscription.subscriptionLimits.users || 0;  
+    usersLimit = subscription.subscriptionLimits.users || 0;
   }
 
   if (company && usersLimit) {
@@ -59,7 +60,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
     ctx.assertClientError(!isMembersLength, {
       global: 'Members limit exceeded',
-    }); 
+    });
   }
 
   const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId: admin._id });
@@ -82,5 +83,12 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/:companyId/invitations', companyAuth, validateMiddleware(schema), validator, handler);
+  router.post(
+    '/:companyId/invitations',
+    companyAuth,
+    permissionsMiddleware(['manageMembers']),
+    validateMiddleware(schema),
+    validator,
+    handler,
+  );
 };

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import applicationService from 'resources/application/application.service';
 
 
-const permissionsMiddlewareMiddleware = (permissions: Permission[]) => async (ctx: AppKoaContext, next: Next) => {
+const permissionsMiddleware = (permissions: Permission[]) => async (ctx: AppKoaContext, next: Next) => {
   const { admin } = ctx.state;
 
   if (admin.ownCompanyId === admin.currentCompany._id) {
@@ -24,4 +24,4 @@ const permissionsMiddlewareMiddleware = (permissions: Permission[]) => async (ct
   ctx.throwClientError({ permissions: 'Access Denied' }, 403);
 };
 
-export default permissionsMiddlewareMiddleware;
+export default permissionsMiddleware;

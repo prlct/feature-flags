@@ -4,6 +4,7 @@ import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { invitationService } from 'resources/invitation';
 import companyAuth from '../middlewares/company-auth.middleware';
+import { permissionsMiddleware } from '../../application';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -38,5 +39,12 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.delete('/:companyId/invitations', companyAuth, validateMiddleware(schema), validator, handler);
+  router.delete(
+    '/:companyId/invitations',
+    companyAuth,
+    permissionsMiddleware(['manageMembers']),
+    validateMiddleware(schema),
+    validator,
+    handler,
+  );
 };

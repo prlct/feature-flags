@@ -16,7 +16,7 @@ import {
   Badge,
   Paper,
   ScrollArea,
-  Table, Checkbox,
+  Table,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
@@ -28,6 +28,7 @@ import { handleError } from 'helpers';
 import { companyApi } from 'resources/company';
 import { useAmplitude } from 'contexts/amplitude-context';
 import MemberMenu from './components/delete-menu';
+import PermissionsMenu from './components/permissions-menu';
 
 import { useStyles } from './styles';
 
@@ -35,7 +36,13 @@ const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
 });
 
-const columns = ['Email', 'First name', 'Last name', 'Permissions', ''];
+const columns = [
+  { title: 'Email', sx: { maxWidth: '180px', width: '180px' } },
+  { title: 'First name' },
+  { title: 'Last name' },
+  { title: 'Permissions' },
+  { title: '' },
+];
 
 const Members = () => {
   const { classes } = useStyles();
@@ -201,7 +208,6 @@ const Members = () => {
                             && (
                               <MemberMenu
                                 onDelete={handleMemberRemove(_id, email)}
-                                onTogglePermission={() => null}
                                 loading={removeMemberMutation.isLoading}
                               />
                             )
@@ -209,10 +215,8 @@ const Members = () => {
                           {isInvitation && (
                             <MemberMenu
                               onDelete={handleCancelInvitation(email)}
-                              onTogglePermission={() => null}
                               loading={cancelInvitationMutation.isLoading}
                             />
-
                           )}
                         </Group>
                       </Group>
@@ -275,85 +279,81 @@ const Members = () => {
               >
                 <thead>
                   <tr>
-                    {columns.map((title) => (
-                      <th key={title}>{title}</th>
+                    {columns.map(({ title, sx }) => (
+                      <th key={title} style={sx}>{title}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {membersList.map(
-                    ({ _id, email, firstName, lastName, isInvitation, permissions }) => (
-                      <tr key={_id}>
-                        <td>
-                          <Group>
-                            <Text size="sm" weight={600}>
-                              {email}
-                            </Text>
-                            {isInvitation
-                            && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
-                            { currentAdmin?.ownCompanyId && _id === currentAdmin?._id
-                            && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
-                          </Group>
-                        </td>
-                        <td>
-                          <Text size="sm" weight={600}>
-                            {firstName}
-                          </Text>
-                        </td>
-                        <td>
-                          <Text size="sm" weight={600}>
-                            {lastName}
-                          </Text>
-                        </td>
-                        <td>
-                          { currentAdmin?.ownCompanyId && _id !== currentAdmin?._id && !isInvitation
-                          && (
-                          <Checkbox.Group
-                            value={getMemberPermissions(permissions)}
-                            onChange={onPermissionChanged(_id)}
-                          >
-                            <Checkbox
-                              value="manageSenderEmails"
-                              label="Emails"
-                              disabled={isPermissionsLoading}
-                            />
-                            <Checkbox
-                              value="manageMembers"
-                              label="Members"
-                              disabled={isPermissionsLoading}
-                            />
-                            <Checkbox
-                              value="managePayments"
-                              label="Payments"
-                              disabled={isPermissionsLoading}
-                            />
-                          </Checkbox.Group>
-                          )}
-                        </td>
-                        <td>
-                          <Group sx={{ justifyContent: 'flex-end' }}>
-                            {
-                            !isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && _id !== currentAdmin?._id
-                            && (
-                              <MemberMenu
-                                mainAction={handleMemberRemove(_id, email)}
-                                loading={removeMemberMutation.isLoading}
-                              />
-                            )
-                          }
-                            { isInvitation && (
-                            <MemberMenu
-                              mainAction={handleCancelInvitation(email)}
-                              loading={cancelInvitationMutation.isLoading}
-                            />
+                    ({
+                      _id,
+                      email,
+                      firstName,
+                      lastName,
+                      isInvitation,
+                      permissions,
+                      ownCompanyId,
+                    }) => {
+                      const isAdminCompanyOwner = ownCompanyId === companyId;
+                      const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers;
 
+                      return (
+                        <tr key={_id}>
+                          <td>
+                            <Group>
+                              <Text size="sm" weight={600}>
+                                {email}
+                              </Text>
+                              {isInvitation
+                                && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
+                              {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                                && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
+                            </Group>
+                          </td>
+                          <td>
+                            <Text size="sm" weight={600}>
+                              {firstName}
+                            </Text>
+                          </td>
+                          <td>
+                            <Text size="sm" weight={600}>
+                              {lastName}
+                            </Text>
+                          </td>
+                          <td>
+                            {!isAdminCompanyOwner && (
+                            <PermissionsMenu
+                              onPermissionChanged={onPermissionChanged(_id)}
+                              disabled={isPermissionsLoading}
+                              permissions={getMemberPermissions(permissions)}
+                            />
                             )}
-                          </Group>
-                        </td>
-                      </tr>
-                    ),
+                          </td>
+                          <td>
+                            <Group sx={{ justifyContent: 'flex-end' }}>
+                              {
+                                !isInvitation
+                                && isHavePermission
+                                && _id !== currentAdmin?._id
+                                && (
+                                  <MemberMenu
+                                    onDelete={handleMemberRemove(_id, email)}
+                                    loading={removeMemberMutation.isLoading}
+                                  />
+                                )
+                              }
+                              {isInvitation && (
+                                <MemberMenu
+                                  onDelete={handleCancelInvitation(email)}
+                                  loading={cancelInvitationMutation.isLoading}
+                                />
+                              )}
+                            </Group>
+                          </td>
+                        </tr>
+                      );
+                    },
                   )}
                 </tbody>
               </Table>

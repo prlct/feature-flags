@@ -4,6 +4,7 @@ import { subscriptionService } from 'resources/subscription';
 
 import { AppKoaContext, AppRouter } from 'types';
 import { companyService } from 'resources/company';
+import { permissionsMiddleware } from '../../application';
 
 async function handler(ctx: AppKoaContext) {
   const { admin } = ctx.state;
@@ -11,7 +12,7 @@ async function handler(ctx: AppKoaContext) {
   const company = await companyService.findOne({ _id: admin.companyIds[0] });
 
   const currentSubscription = company && await subscriptionService.findOne({ companyId: company._id || undefined });
- 
+
   if (!currentSubscription) {
     ctx.status = 400;
     ctx.message = 'Subscription does not exist';
@@ -27,5 +28,5 @@ async function handler(ctx: AppKoaContext) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/cancel-subscription', handler);
+  router.post('/cancel-subscription', permissionsMiddleware(['managePayments']), handler);
 };

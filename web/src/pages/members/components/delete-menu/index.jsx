@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { useStyles } from '../../styles';
 
 const MemberMenu = (props) => {
-  const { onDelete, onTogglePermission, loading } = props;
+  const { onDelete, loading } = props;
 
   const { classes } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
@@ -41,7 +41,6 @@ const MemberMenu = (props) => {
 MemberMenu.propTypes = {
   loading: PropTypes.bool,
   onDelete: PropTypes.func.isRequired,
-  onTogglePermission: PropTypes.func.isRequired,
 };
 
 MemberMenu.defaultProps = {

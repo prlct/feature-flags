@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { adminService } from 'resources/admin';
 import { validateMiddleware } from 'middlewares';
-import { permissionsMiddlewareMiddleware } from 'resources/application/middlewares';
+import { permissionsMiddleware } from 'resources/application/middlewares';
 
 import companyAuth from '../middlewares/company-auth.middleware';
 
@@ -56,7 +56,7 @@ export default (router: AppRouter) => {
   router.put(
     '/:companyId/members/:memberId/permissions',
     companyAuth,
-    permissionsMiddlewareMiddleware(['manageMembers']),
+    permissionsMiddleware(['manageMembers']),
     validateMiddleware(schema),
     validator,
     handler,
