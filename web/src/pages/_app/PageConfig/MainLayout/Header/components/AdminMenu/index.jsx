@@ -14,6 +14,7 @@ const AdminMenu = () => {
   const { data: currentAdmin } = adminApi.useGetCurrent();
 
   const amplitude = useAmplitude();
+  const isHaveMultipleCompanies = currentAdmin?.companyIds?.length > 1;
 
   const onClickSignOut = useCallback(() => {
     amplitude.track('Admin log out');
@@ -46,6 +47,12 @@ const AdminMenu = () => {
         <MenuToggle />
       </Menu.Target>
       <Menu.Dropdown>
+        {isHaveMultipleCompanies && currentAdmin.companies.map((company) => (
+          <Menu.Item key={company._id}>
+            <Text>{company.name}</Text>
+            <Text>{company._id === currentAdmin.ownCompanyId ? 'Owner' : 'Member'}</Text>
+          </Menu.Item>
+        ))}
         <Menu.Item
           onClick={onClickSignOut}
           icon={<IconLogout size={16} />}

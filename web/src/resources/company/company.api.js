@@ -7,7 +7,7 @@ const resource = '/companies';
 
 export function useInviteMember() {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
   const inviteMember = (data) => apiService.post(`${resource}/${companyId}/invitations`, data);
 
   return useMutation(inviteMember, {
@@ -19,7 +19,7 @@ export function useInviteMember() {
 
 export function useCancelInvitation() {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
   const cancelInvitation = (data) => apiService.delete(`${resource}/${companyId}/invitations`, data);
 
   return useMutation(cancelInvitation, {
@@ -31,7 +31,7 @@ export function useCancelInvitation() {
 
 export function useRemoveMember() {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
   const removeMember = ({ _id }) => apiService.delete(`${resource}/${companyId}/members/${_id}`);
 
   return useMutation(removeMember, {

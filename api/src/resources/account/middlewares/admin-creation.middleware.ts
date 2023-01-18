@@ -58,7 +58,7 @@ const createAdmin = async (ctx: AppKoaContext) => {
           },
           currentApplicationId: applicationId,
           permissions: {
-            companyId: {
+            [companyId]: {
               manageMembers: true,
               managePayments: true,
               manageSenderEmails: true,

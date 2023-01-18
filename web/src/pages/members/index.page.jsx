@@ -201,52 +201,61 @@ const Members = () => {
                     lastName,
                     isInvitation,
                     permissions,
-                  }) => (
-                    <Stack key={_id} className={classes.itemBlock}>
-                      <Group sx={{ justifyContent: 'space-between' }}>
-                        <Text size="sm" weight={600}>
-                          {email}
-                        </Text>
-                        <Group sx={{ justifyContent: 'flex-end' }}>
-                          {
-                            !isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && _id !== currentAdmin?._id
-                            && (
-                              <>
-                                <MemberMenu
-                                  onDelete={handleMemberRemove(_id, email)}
-                                  loading={removeMemberMutation.isLoading}
-                                />
-                                <PermissionsMenu
-                                  onPermissionChanged={onPermissionChanged(_id)}
-                                  disabled={isPermissionsLoading}
-                                  permissions={getMemberPermissions(permissions)}
-                                />
-                              </>
-                            )
-                          }
-                          {isInvitation && (
-                            <MemberMenu
-                              onDelete={handleCancelInvitation(email)}
-                              loading={cancelInvitationMutation.isLoading}
-                            />
-                          )}
+                    ownCompanyId,
+                  }) => {
+                    const isAdminCompanyOwner = ownCompanyId === companyId;
+                    const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers;
+
+                    return (
+                      <Stack key={_id} className={classes.itemBlock}>
+                        <Group sx={{ justifyContent: 'space-between' }}>
+                          <Text size="sm" weight={600}>
+                            {email}
+                          </Text>
+                          <Group sx={{ justifyContent: 'flex-end' }}>
+                            {
+                              !isInvitation
+                              && isHavePermission
+                              && !isAdminCompanyOwner
+                              && (
+                                <>
+                                  <MemberMenu
+                                    onDelete={handleMemberRemove(_id, email)}
+                                    loading={removeMemberMutation.isLoading}
+                                  />
+                                  {!isInvitation
+                                  && (
+                                  <PermissionsMenu
+                                    onPermissionChanged={onPermissionChanged(_id)}
+                                    disabled={isPermissionsLoading}
+                                    permissions={getMemberPermissions(permissions)}
+                                  />
+                                  )}
+                                </>
+                              )
+                            }
+                            {isInvitation && (
+                              <MemberMenu
+                                onDelete={handleCancelInvitation(email)}
+                                loading={cancelInvitationMutation.isLoading}
+                              />
+                            )}
+                          </Group>
                         </Group>
-                      </Group>
-                      <Group>
-                        {isInvitation
-                          && <Badge className={classes.badge} variant="light">Pending invitation</Badge>}
-                        {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
-                          && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
-                      </Group>
-                      {firstName && (
-                        <Text size="sm" weight={600}>
-                          {`${firstName} ${lastName}`}
-                        </Text>
-                      )}
-                    </Stack>
-                  ))}
+                        <Group>
+                          {isInvitation
+                            && <Badge className={classes.badge} variant="light">Pending invitation</Badge>}
+                          {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                            && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
+                        </Group>
+                        {firstName && (
+                          <Text size="sm" weight={600}>
+                            {`${firstName} ${lastName}`}
+                          </Text>
+                        )}
+                      </Stack>
+                    );
+                  })}
                 </Stack>
               </ScrollArea>
             </Paper>
@@ -336,13 +345,14 @@ const Members = () => {
                             </Text>
                           </td>
                           <td>
-                            {!isAdminCompanyOwner && (
-                            <PermissionsMenu
-                              onPermissionChanged={onPermissionChanged(_id)}
-                              disabled={isPermissionsLoading}
-                              permissions={getMemberPermissions(permissions)}
-                            />
-                            )}
+                            {!isAdminCompanyOwner && !isInvitation
+                              && (
+                              <PermissionsMenu
+                                onPermissionChanged={onPermissionChanged(_id)}
+                                disabled={isPermissionsLoading}
+                                permissions={getMemberPermissions(permissions)}
+                              />
+                              )}
                           </td>
                           <td>
                             <Group sx={{ justifyContent: 'flex-end' }}>

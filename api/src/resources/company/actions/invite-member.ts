@@ -28,17 +28,6 @@ type ValidatedData = {
   email: string;
 };
 
-async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
-  const { email } = ctx.validatedData;
-
-  const isAdminExists = await adminService.exists({ email });
-  ctx.assertClientError(!isAdminExists, {
-    email: 'User already has a company',
-  });
-
-  await next();
-}
-
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { companyId } = ctx.params;
   const { admin } = ctx.state;
@@ -88,7 +77,6 @@ export default (router: AppRouter) => {
     companyAuth,
     permissionsMiddleware(['manageMembers']),
     validateMiddleware(schema),
-    validator,
     handler,
   );
 };
