@@ -4,8 +4,8 @@ sidebar_position: 3
 
 # Email sequence webhooks
 
-- Start - `POST: https://api.growthflags.com/email-sequences/webhook/start/:eventKey`
-- Stop - `POST: https://api.growthflags.com/email-sequences/webhook/stop/:eventKey`
+- Start - `POST: https://api.growthflags.com/sequences/webhook/start/:eventKey`
+- Stop - `POST: https://api.growthflags.com/sequences/webhook/stop/:eventKey`
 
 ### Query params
 

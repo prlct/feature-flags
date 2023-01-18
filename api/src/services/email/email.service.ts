@@ -16,7 +16,6 @@ const emailService = new EmailService({
   },
 });
 
-
 const sender = {
   email: 'evgeniy@growthflags.com',
   name: 'Evgeniy Sergeiev (GrowthFlags)',

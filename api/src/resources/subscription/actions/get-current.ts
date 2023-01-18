@@ -1,11 +1,14 @@
 import { AppKoaContext, AppRouter } from 'types';
 import { subscriptionService } from 'resources/subscription';
+import { companyService } from 'resources/company';
 
 async function handler(ctx: AppKoaContext) {
-  const { admin } = ctx.state;
+  const { companyIds } = ctx.state.admin;
 
-  if (admin.stripeId) {
-    const subscription = await subscriptionService.findOne({ customer: admin.stripeId });
+  const company = await companyService.findOne({ _id: companyIds[0] });
+
+  if (company?._id) {
+    const subscription = await subscriptionService.findOne({ companyId: company._id });
     ctx.body = subscription;
 
     return;

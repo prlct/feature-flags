@@ -1,3 +1,4 @@
+import queryClient from 'query-client';
 import { useMutation, useQuery } from 'react-query';
 import { apiService } from 'services';
 
@@ -27,9 +28,10 @@ export const useUpgradeSubscription = () => {
   const upgrade = ({ priceId }) => apiService.post('subscriptions/upgrade-subscription', { priceId });
 
   return useMutation(upgrade, {
-    onSuccess: (data) => {
-      console.clear();
-      console.log(data);
+    onSuccess: () => {
+      queryClient.invalidateQueries(['subscription']);
+      queryClient.invalidateQueries(['emails-sending-analytics']);
+      queryClient.invalidateQueries(['statistics']);
     },
   });
 };
@@ -37,5 +39,11 @@ export const useUpgradeSubscription = () => {
 export const useCancelMutation = () => {
   const cancel = () => apiService.post('subscriptions/cancel-subscription');
 
-  return useMutation(cancel);
+  return useMutation(cancel, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['subscription']);
+      queryClient.invalidateQueries(['emails-sending-analytics']);
+      queryClient.invalidateQueries(['statistics']);
+    },
+  });
 };

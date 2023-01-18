@@ -3,6 +3,8 @@ export type Company = {
   ownerId: string;
   applicationIds: string[];
   adminIds: string[];
+  stripeId: string | null;
+  freeLimitUsed: boolean | null;
   createdOn: Date;
   updatedOn: Date;
   deletedOn?: Date | null;

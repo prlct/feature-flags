@@ -41,10 +41,11 @@ const PaymentSuccessModal = () => {
 
   /* eslint-disable react/no-array-index-key */
   const renderFeatureList = useCallback(
-    () => activeSubscriptionPlan.features.map((item, index) => (
-      <Container
+    () => activeSubscriptionPlan.chapters.map((chapter, index) => (
+      <Stack
         key={index}
-        fluid
+        fluid="true"
+        spacing={10}
         sx={{
           display: 'flex',
           justifyContent: 'flex-start',
@@ -53,10 +54,25 @@ const PaymentSuccessModal = () => {
           padding: 0,
         }}
       >
-        <IconCheck size={14} className={classes.icon} />
-        <Space w={8} />
-        {item}
-      </Container>
+        {chapter.chaptersList.map((item, index) => (
+          <Container
+            key={index}
+            fluid="true"
+            sx={{
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start',
+              width: '100%',
+              padding: 0,
+            }}
+          >
+            <IconCheck size={16} className={classes.icon} />
+            <Space w={8} />
+            {item}
+          </Container>
+        ))}
+      </Stack>
+
     )),
     [activeSubscriptionPlan, classes.icon],
   );

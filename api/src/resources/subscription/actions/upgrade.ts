@@ -5,6 +5,7 @@ import { subscriptionService } from 'resources/subscription';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
+import { companyService } from 'resources/company';
 
 const schema = Joi.object({
   priceId: Joi.string()
@@ -23,7 +24,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { admin } = ctx.state;
   const { priceId } = ctx.validatedData;
 
-  const currentSubscription = await subscriptionService.findOne({ customer: admin.stripeId || undefined });
+  const company = await companyService.findOne({ _id: admin.companyIds[0] });
+
+  const currentSubscription = company && await subscriptionService.findOne({ companyId: company._id || undefined });
 
   if (!currentSubscription) {
     ctx.status = 400;
@@ -45,7 +48,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const items = [{
     id: subscriptionDetails.items.data[0].id,
-    price: priceId
+    price: priceId,
   }];
 
   await stripe.subscriptions.update(currentSubscription.subscriptionId, {

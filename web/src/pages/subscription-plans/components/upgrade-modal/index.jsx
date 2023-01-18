@@ -64,6 +64,8 @@ const UpgradeModal = (props) => {
   }, [upgradeMutation, plan.priceId, plan.title, router, interval, amplitude]);
 
   const renderPrice = useCallback(() => {
+    if (!invoicePreview) { return; }
+
     const { invoice } = invoicePreview;
     let secondRow = (
       <>

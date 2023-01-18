@@ -58,7 +58,6 @@ export const useStyles = createStyles(({ colors }) => ({
     padding: 24,
     '@media (max-width: 768px)': {
       padding: '0 20px',
-      borderTop: `1px solid ${colors.gray[2]}`,
     },
   },
   logout: {

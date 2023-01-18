@@ -5,13 +5,25 @@ import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import schema from './admin.schema';
 import { Admin } from './admin.types';
+import { companyService } from 'resources/company';
 
 const service = db.createService<Admin>(DATABASE_DOCUMENTS.ADMINS, { schema });
 
-const attachStripeCustomerId = (data: any) => {
-  service.atomic.updateOne(
+const attachStripeCustomerId = async (data: any) => {
+  const admin = await service.atomic.findOneAndUpdate(
     {
       email: data.email,
+    },
+    {
+      $set: {
+        stripeId: data.id,
+      },
+    },
+  );
+
+  companyService.atomic.updateOne(
+    {
+      ownerId: admin?.value?._id,
     },
     {
       $set: {

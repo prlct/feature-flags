@@ -12,6 +12,10 @@ import applicationService from 'resources/application/application.service';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 import pipelineUserService from '../pipeline-user/pipeline-user.service';
 import sequenceService from '../sequence/sequence.service';
+import { emailsSendingAnalyticsService } from 'resources/emails-sending-analytics';
+import config from 'config';
+import { companyService } from 'resources/company';
+import { subscriptionService } from 'resources/subscription';
 
 export const todayScheduledJobs = {
   current: [] as Job[],
@@ -75,11 +79,37 @@ const getHandler = (job: ScheduledJob) => {
             return await failJob(job._id, 'Application not found or no gmail credentials provided');
           }
 
+          const company = await companyService.findOne({ applicationIds: job.applicationId });
+          const subscription = company && await subscriptionService.findOne({ companyId: company._id });
+
+          const today = moment().format('YYYY/MM/DD');
+          const daysInMonth = moment().daysInMonth();
+
+          let dailyEmailsLimit = Math.floor(Number(config.MONTHLY_EMAILS_LIMIT) / daysInMonth);
+          
+          const emailsSendingToday = await emailsSendingAnalyticsService.findOne({
+            companyId: company?._id,
+            [`sendingEmails.${today}`]: { $exists: true },
+          });
+
+          if (subscription) {
+            const monthlyEmailsLimit = subscription.subscriptionLimits.emails || 1; 
+            dailyEmailsLimit = Math.floor(monthlyEmailsLimit / daysInMonth) || 1;
+          }
+
+          if (emailsSendingToday && emailsSendingToday?.sendingEmails[today] >= dailyEmailsLimit) {
+            await scheduledJobService.rescheduleSendingSequenceEmail(job._id, job.scheduledDate, 1);
+            return;
+          }
+
           await sendEmail(
             email,
             job.applicationId,
             job.data.targetEmail,
           );
+
+          await emailsSendingAnalyticsService
+            .createEmailsSendingAnalytics({ applicationId: job.applicationId });
 
           let nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
           let nextSequence = null;

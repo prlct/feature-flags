@@ -8,7 +8,7 @@ export const useStyles = createStyles((theme) => ({
   },
   active: {
     border: 'none',
-    background: `linear-gradient(0deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.8)), ${theme.colors.gray[3]}`,
+    background: 'rgba(115, 74, 183, 0.05)',
   },
   icon: {
     color: theme.colors.gray[6],

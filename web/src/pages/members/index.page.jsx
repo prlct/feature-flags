@@ -150,24 +150,26 @@ const Members = () => {
         {isLoading ? <Loader /> : (
           <Stack spacing={16}>
             <Title order={4} sx={{ paddingTop: 24 }}>Team members</Title>
-            <Group className={classes.headerGroup} spacing={12}>
-              <TextInput
-                {...register('email')}
-                icon={<IconSearch size={16} />}
-                placeholder="Enter email"
-                error={errors?.email?.message}
-                className={classes.search}
-              />
-              <Button
-                className={classes.addButton}
-                variant="light"
-                loading={inviteMemberMutation.isLoading}
-                sx={{ borderRadius: 12, fontSize: 18 }}
-                onClick={handleSubmit(handleInvite)}
-              >
-                Invite
-              </Button>
-            </Group>
+            {currentAdmin?.ownCompanyId && (
+              <Group className={classes.headerGroup} spacing={12}>
+                <TextInput
+                  {...register('email')}
+                  icon={<IconSearch size={16} />}
+                  placeholder="Enter email"
+                  error={errors?.email?.message}
+                  className={classes.search}
+                />
+                <Button
+                  className={classes.addButton}
+                  variant="light"
+                  loading={inviteMemberMutation.isLoading}
+                  sx={{ borderRadius: 12, fontSize: 18 }}
+                  onClick={handleSubmit(handleInvite)}
+                >
+                  Invite
+                </Button>
+              </Group>
+            )}
 
             <Paper radius="sm">
               <ScrollArea pb={20}>
@@ -190,13 +192,15 @@ const Members = () => {
                               />
                             )
                           }
-                          {isInvitation && (
+                          {isInvitation
+                            && currentAdmin?.ownCompanyId
+                            && (
                             <DeleteMenu
                               mainAction={handleCancelInvitation(email)}
                               loading={cancelInvitationMutation.isLoading}
                             />
 
-                          )}
+                            )}
                         </Group>
                       </Group>
                       <Group>
@@ -228,7 +232,7 @@ const Members = () => {
       {isLoading ? <Loader /> : (
         <Stack spacing="lg">
           <Title order={2}>Team members</Title>
-
+          {currentAdmin?.ownCompanyId && (
           <Group sx={{ width: '100%' }}>
             <TextInput
               {...register('email')}
@@ -246,6 +250,7 @@ const Members = () => {
               Send invite
             </Button>
           </Group>
+          )}
 
           <Paper radius="sm" withBorder>
             <ScrollArea>
@@ -298,13 +303,14 @@ const Members = () => {
                               />
                             )
                           }
-                          { isInvitation && (
+                          { isInvitation
+                            && currentAdmin?.ownCompanyId
+                            && (
                             <DeleteMenu
                               mainAction={handleCancelInvitation(email)}
                               loading={cancelInvitationMutation.isLoading}
                             />
-
-                          )}
+                            )}
                         </Group>
                       </td>
                     </tr>
