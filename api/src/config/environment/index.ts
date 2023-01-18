@@ -1,5 +1,5 @@
 import { configUtil } from 'utils';
-import local from './local';
+
 const env = process.env.APP_ENV || 'development';
 
 const base = {
