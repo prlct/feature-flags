@@ -1,5 +1,5 @@
 type SubscriptionLimits = {
-  emails: number | null,
+  emails: number,
   mau: number,
   pipelines: number | null,
   users: number | null,
