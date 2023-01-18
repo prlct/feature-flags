@@ -218,11 +218,11 @@ const MainLayout = ({ children }) => {
         root: {
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
           backgroundColor: theme.white,
         },
         main: {
           width: '99vw',
+          minHeight: 'auto',
         },
       })}
     >
