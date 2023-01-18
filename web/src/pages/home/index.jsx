@@ -352,108 +352,111 @@ const Home = () => {
           </>
         )}
         {(!!filteredFeatureFlags.length && !isLoading) && (
-          <Paper radius="sm" withBorder>
-            <ScrollArea>
-              <Table
-                horizontalSpacing="xl"
-                verticalSpacing="lg"
-                className={classes.table}
-              >
-                <thead>
-                  <tr>
-                    {dashboardColumns.map(({ title, width }) => (
-                      <th key={title} style={{ width }}>{title}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredFeatureFlags
-                    .map(({
-                      _id,
-                      name,
-                      description,
-                      enabled,
-                      enabledForEveryone,
-                      createdOn,
-                      usersPercentage,
-                      targetingRules,
-                      tests,
-                      usersViewedCount,
-                      env }) => (
-                        <tr key={_id}>
-                          <td>
-                            <Group>
-                              <Text size="md" weight={700}>
-                                {name}
-                              </Text>
-                              {isABTestingOn && tests.length && <Badge variant="gradient" gradient={{ from: 'lime', to: 'blue' }}>A/B testing</Badge>}
-                            </Group>
-                            <Text size="sm" color="grey">{description}</Text>
-                          </td>
-                          <td>
-                            <Group>
-                              <Switch
-                                checked={enabled}
-                                sx={{ display: 'flex', label: { cursor: 'pointer' } }}
-                                disabled={isRefetching}
-                                onChange={() => handleSwitchChange({
-                                  _id,
-                                  enabled,
-                                  name,
-                                  env })}
-                              />
-                              <Stack spacing={0}>
-                                <MessagingText
-                                  enabledForEveryone={enabledForEveryone}
-                                  usersPercentage={usersPercentage}
-                                  targetingRulesCount={targetingRules?.length || 0}
-                                />
-                              </Stack>
-                            </Group>
-                          </td>
-                          <td>
-                            {`${usersViewedCount} ${pluralize('user', usersViewedCount)}`}
-                          </td>
-                          <td>{new Date(createdOn).toLocaleDateString('en-US')}</td>
-                          <td>
-                            <Menu>
-                              <Menu.Target>
-                                <ActionIcon
-                                  title="Settings"
-                                  variant="transparent"
+          <Paper radius="sm">
+            <ScrollArea pb={65}>
+              <Stack sx={(theme) => ({ borderRadius: 8, border: `1px solid ${theme.colors.gray[2]}` })}>
+                <Table
+                  horizontalSpacing="xl"
+                  verticalSpacing="lg"
+                  className={classes.table}
+                >
+                  <thead>
+                    <tr>
+                      {dashboardColumns.map(({ title, width }) => (
+                        <th key={title} style={{ width }}>{title}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredFeatureFlags
+                      .map(({
+                        _id,
+                        name,
+                        description,
+                        enabled,
+                        enabledForEveryone,
+                        createdOn,
+                        usersPercentage,
+                        targetingRules,
+                        tests,
+                        usersViewedCount,
+                        env }) => (
+                          <tr key={_id}>
+                            <td>
+                              <Group>
+                                <Text size="md" weight={700}>
+                                  {name}
+                                </Text>
+                                {isABTestingOn && tests.length && <Badge variant="gradient" gradient={{ from: 'lime', to: 'blue' }}>A/B testing</Badge>}
+                              </Group>
+                              <Text size="sm" color="grey">{description}</Text>
+                            </td>
+                            <td>
+                              <Group>
+                                <Switch
+                                  checked={enabled}
+                                  sx={{ display: 'flex', label: { cursor: 'pointer' } }}
                                   disabled={isRefetching}
-                                  className={classes.menuButton}
-                                  sx={{
-                                    width: '100%',
-                                    justifyContent: 'flex-end',
-                                  }}
-                                >
-                                  <CardSettingsButton />
-                                </ActionIcon>
-                              </Menu.Target>
-                              <Menu.Dropdown>
-                                <Menu.Item
-                                  component={NextLink}
-                                  href={`${routes.path.featureFlag}/${_id}`}
-                                  icon={<IconSettings size={14} />}
-                                >
-                                  Settings
-                                </Menu.Item>
-                                <Menu.Item
-                                  icon={<IconTrash size={14} />}
-                                  color="red"
-                                  onClick={() => handleFeatureDelete({ _id, name })}
-                                >
-                                  Delete
-                                </Menu.Item>
-                              </Menu.Dropdown>
-                            </Menu>
+                                  onChange={() => handleSwitchChange({
+                                    _id,
+                                    enabled,
+                                    name,
+                                    env })}
+                                />
+                                <Stack spacing={0}>
+                                  <MessagingText
+                                    enabledForEveryone={enabledForEveryone}
+                                    usersPercentage={usersPercentage}
+                                    targetingRulesCount={targetingRules?.length || 0}
+                                  />
+                                </Stack>
+                              </Group>
+                            </td>
+                            <td>
+                              {`${usersViewedCount} ${pluralize('user', usersViewedCount)}`}
+                            </td>
+                            <td>{new Date(createdOn).toLocaleDateString('en-US')}</td>
+                            <td>
+                              <Menu>
+                                <Menu.Target>
+                                  <ActionIcon
+                                    title="Settings"
+                                    variant="transparent"
+                                    disabled={isRefetching}
+                                    className={classes.menuButton}
+                                    sx={{
+                                      width: '100%',
+                                      justifyContent: 'flex-end',
+                                    }}
+                                  >
+                                    <CardSettingsButton />
+                                  </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                  <Menu.Item
+                                    component={NextLink}
+                                    href={`${routes.path.featureFlag}/${_id}`}
+                                    icon={<IconSettings size={14} />}
+                                  >
+                                    Settings
+                                  </Menu.Item>
+                                  <Menu.Item
+                                    icon={<IconTrash size={14} />}
+                                    color="red"
+                                    onClick={() => handleFeatureDelete({ _id, name })}
+                                  >
+                                    Delete
+                                  </Menu.Item>
+                                </Menu.Dropdown>
+                              </Menu>
 
-                          </td>
-                        </tr>
-                    ))}
-                </tbody>
-              </Table>
+                            </td>
+                          </tr>
+                      ))}
+                  </tbody>
+                </Table>
+              </Stack>
+
             </ScrollArea>
           </Paper>
         )}
