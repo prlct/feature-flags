@@ -10,7 +10,7 @@ const schema = Joi.object({
   isEmailVerified: Joi.boolean().required().default(false),
   avatarUrl: Joi.string().allow(null),
   ownCompanyId: Joi.string().allow(null),
-  companyIds: Joi.array().items(Joi.string()).max(1).unique(),
+  companyIds: Joi.array().items(Joi.string()).max(99).unique(),
   applicationIds: Joi.array().items(Joi.string()).max(1).unique(),
   stripeId: Joi.string().allow(null),
 
@@ -23,6 +23,11 @@ const schema = Joi.object({
     _id: Joi.string().trim().required(),
     name: Joi.string().trim().required(),
   }).required(),
+
+  companies: Joi.array().items(Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+  })),
 
   currentApplicationId: Joi.string().required(),
 
