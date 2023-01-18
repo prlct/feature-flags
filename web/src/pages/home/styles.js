@@ -33,7 +33,6 @@ export const useStyles = createStyles(({ colors }) => ({
     },
   },
   table: {
-    borderRadius: 8,
     '& thead tr th': {
       color: colors.gray[4],
       fontWeight: 400,

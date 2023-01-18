@@ -12,8 +12,12 @@ export default [
       month: 0,
       year: 0,
     },
-    limitUsers: 3,
-    limitPipelines: 3,
+    subscriptionLimits: {
+      emails: 500,
+      mau: 2000,
+      users: 3,
+      pipelines: 3,
+    },
     chapters: [
       {
         chaptersList: [

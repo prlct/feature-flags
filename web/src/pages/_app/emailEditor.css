@@ -7,6 +7,10 @@
   min-height: 300px !important;  
 }
 
+.ql-snow .ql-tooltip {
+  position: static
+}
+
 @media (max-width: 768px) {
   .quill {
     min-height: 150px !important

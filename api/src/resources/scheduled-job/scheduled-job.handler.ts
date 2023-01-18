@@ -83,7 +83,7 @@ const getHandler = (job: ScheduledJob) => {
           const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
           const today = moment().format('YYYY/MM/DD');
-          const daysInMonth = moment().daysInMonth();
+          const daysInMonth = 30;
 
           let dailyEmailsLimit = Math.floor(Number(config.MONTHLY_EMAILS_LIMIT) / daysInMonth);
           

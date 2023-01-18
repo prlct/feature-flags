@@ -127,7 +127,7 @@ const PlanUsageStatistics = ({
       </Stack>
 
       <Space h={24} />
-      <Group>
+      <Group pb={40}>
         <Stack className={classes.limitBox}>
           <Text size="lg" className={classes.limitBoxTitle}>
             Daily emails
@@ -139,8 +139,18 @@ const PlanUsageStatistics = ({
             className={classes.progressBar}
           />
           <Group position="apart" width="100%" sx={{ height: 20 }}>
-            <Text size="sm" className={classes.progressValue}>{emailsStatistics?.sendingEmailsToday || 0}</Text>
-            <Text size="sm" className={classes.progressValue}>{emailsStatistics?.dailyEmailsLimit}</Text>
+            <Text
+              size="sm"
+              className={classes.progressValue}
+            >
+              {emailsStatistics?.sendingEmailsToday || 0}
+            </Text>
+            <Text
+              size="sm"
+              className={classes.progressValue}
+            >
+              {emailsStatistics?.dailyEmailsLimit.toLocaleString('en')}
+            </Text>
           </Group>
         </Stack>
         <Stack className={classes.limitBox}>
@@ -154,8 +164,8 @@ const PlanUsageStatistics = ({
             className={classes.progressBar}
           />
           <Group position="apart" width="100%">
-            <Text size="sm">{mauStatistics?.count}</Text>
-            <Text size="sm">{mauStatistics?.monthlyActiveUsersLimit}</Text>
+            <Text size="sm">{mauStatistics?.count.toLocaleString('en')}</Text>
+            <Text size="sm">{mauStatistics?.monthlyActiveUsersLimit.toLocaleString('en')}</Text>
           </Group>
         </Stack>
         <Stack className={classes.limitBox}>
@@ -164,12 +174,13 @@ const PlanUsageStatistics = ({
           </Text>
           <Progress
             size="sm"
-            value={Math.floor((pipelines.length / (subscriptionLimits?.pipelines || 1)) * 100)}
+            value={subscriptionLimits?.pipelines
+              ? Math.floor((pipelines.length / (subscriptionLimits?.pipelines || 1)) * 100) : 0}
             className={classes.progressBar}
           />
           <Group position="apart" width="100%">
-            <Text size="sm">{pipelines.length}</Text>
-            <Text size="sm">{subscriptionLimits?.pipelines || currentSubscription?.limitPipelines}</Text>
+            <Text size="sm">{pipelines.length.toLocaleString('en')}</Text>
+            <Text size="sm">{subscriptionLimits?.pipelines || 'Unlimited'}</Text>
           </Group>
         </Stack>
         <Stack className={classes.limitBox}>
@@ -178,12 +189,13 @@ const PlanUsageStatistics = ({
           </Text>
           <Progress
             size="sm"
-            value={Math.floor((membersList.length / (subscriptionLimits?.users || 1)) * 100)}
+            value={subscriptionLimits?.users
+              ? Math.floor((membersList.length / (subscriptionLimits?.users || 1)) * 100) : 0}
             className={classes.progressBar}
           />
           <Group position="apart" width="100%">
-            <Text size="sm">{membersList.length}</Text>
-            <Text size="sm">{subscriptionLimits?.users || currentSubscription?.limitUsers}</Text>
+            <Text size="sm">{membersList.length.toLocaleString('en')}</Text>
+            <Text size="sm">{subscriptionLimits?.users || 'Unlimited'}</Text>
           </Group>
         </Stack>
       </Group>
@@ -201,7 +213,7 @@ PlanUsageStatistics.propTypes = {
     mau: PropTypes.number.isRequired,
     pipelines: PropTypes.number.isRequired,
     users: PropTypes.number.isRequired,
-  }),
+  }).isRequired,
   cancelAtPeriodEnd: PropTypes.bool,
 };
 
@@ -210,7 +222,6 @@ PlanUsageStatistics.defaultProps = {
   planId: '',
   nextPayment: 0,
   interval: 'month',
-  subscriptionLimits: null,
   cancelAtPeriodEnd: false,
 };
 

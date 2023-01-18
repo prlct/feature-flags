@@ -20,7 +20,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { companyId } = ctx.validatedData;
 
   const today = moment().format('YYYY/MM/DD');
-  const daysInMonth = moment().daysInMonth();
+  const daysInMonth = 30;
 
   const company = await companyService.findOne({ _id: companyId });
   const subscription = company && await subscriptionService.findOne({ companyId: company._id });
