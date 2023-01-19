@@ -319,7 +319,8 @@ const Members = () => {
                       ownCompanyId,
                     }) => {
                       const isAdminCompanyOwner = ownCompanyId === companyId;
-                      const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers;
+                      const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers
+                        || currentAdmin.ownCompanyId === companyId;
 
                       return (
                         <tr key={_id}>
@@ -330,7 +331,7 @@ const Members = () => {
                               </Text>
                               {isInvitation
                                 && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
-                              {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                              {isAdminCompanyOwner
                                 && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
                             </Group>
                           </td>
@@ -345,7 +346,7 @@ const Members = () => {
                             </Text>
                           </td>
                           <td>
-                            {!isAdminCompanyOwner && !isInvitation
+                            {!isAdminCompanyOwner && !isInvitation && isHavePermission
                               && (
                               <PermissionsMenu
                                 onPermissionChanged={onPermissionChanged(_id)}
