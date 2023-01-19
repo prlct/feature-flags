@@ -46,11 +46,6 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
     global: 'The invitation link is expired',
   });
 
-  const isAdminExists = await adminService.exists({ email: invitation.email });
-  ctx.assertClientError(!isAdminExists, {
-    global: 'You already have an account',
-  });
-
   ctx.validatedData.email = invitation.email;
   ctx.validatedData.companyId = invitation.companyId;
 
@@ -60,25 +55,51 @@ async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { email, companyId, firstName, lastName } = ctx.validatedData;
 
-  const company = await companyService.findOne({ _id: companyId });
+  const company = await companyService.findOne({ _id: companyId, deletedOn: { $exists: false } });
 
   // Added because of TS reasons
   ctx.assertClientError(company, {
     global: 'Company does not exists',
   });
 
-  const admin = await adminService.insertOne({
-    email,
-    firstName,
-    lastName,
-    companyIds: [company._id],
-    applicationIds: [company.applicationIds[0]],
-    isEmailVerified: true,
-  });
+  let admin = await adminService.findOne({ email, deletedOn: { $exists: false } });
+
+  if (admin) {
+    admin = await adminService.updateOne({ _id: admin._id }, ((doc) => {
+      doc.companyIds = [...doc.companyIds, companyId];
+      doc.companies = [...doc.companies, {
+        _id: companyId,
+        name: company.name,
+      }];
+
+      return doc;
+    }));
+  } else {
+    admin = await adminService.insertOne({
+      email,
+      firstName,
+      lastName,
+      companyIds: [company._id],
+      currentCompany: {
+        _id: company._id,
+        name: company.name,
+      },
+      permissions: {
+        [company._id]: {
+          manageMembers: false,
+          managePayments: false,
+          manageSenderEmails: false,
+        },
+      },
+      applicationIds: [company.applicationIds[0]],
+      isEmailVerified: true,
+    });
+  }
 
   const updateCompanyP = companyService.updateOne({ _id: company._id }, (doc) => {
-    doc.adminIds = [...doc.adminIds, admin._id];
-    
+    const adminId = admin?._id as string;
+    doc.adminIds = [...doc.adminIds, adminId];
+
     return doc;
   });
 

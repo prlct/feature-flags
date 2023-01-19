@@ -27,7 +27,8 @@ import { useQueryClient } from 'react-query';
 import { handleError } from 'helpers';
 import { companyApi } from 'resources/company';
 import { useAmplitude } from 'contexts/amplitude-context';
-import DeleteMenu from './components/delete-menu';
+import MemberMenu from './components/delete-menu';
+import PermissionsMenu from './components/permissions-menu';
 
 import { useStyles } from './styles';
 
@@ -35,13 +36,20 @@ const schema = yup.object().shape({
   email: yup.string().email('Email format is incorrect.'),
 });
 
-const columns = ['Email', 'First name', 'Last name', ''];
+const columns = [
+  { title: 'Email', sx: { maxWidth: '180px', width: '180px' } },
+  { title: 'First name' },
+  { title: 'Last name' },
+  { title: 'Permissions' },
+  { title: '' },
+];
 
 const Members = () => {
   const { classes } = useStyles();
   const modals = useModals();
   const queryClient = useQueryClient();
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  const companyId = currentAdmin.currentCompany._id;
   const { data, isLoading } = companyApi.useGetMembers();
 
   const amplitude = useAmplitude();
@@ -115,6 +123,10 @@ const Members = () => {
   };
 
   const removeMemberMutation = companyApi.useRemoveMember();
+  const {
+    mutate: changeMemberPermissions,
+    isLoading: isPermissionsLoading,
+  } = companyApi.useChangeMemberPermissions(companyId);
 
   const handleMemberRemove = useCallback((_id, email) => () => {
     modals.openConfirmModal({
@@ -140,6 +152,14 @@ const Members = () => {
       }),
     });
   }, [removeMemberMutation, setError, modals]);
+
+  const getMemberPermissions = useCallback((permissions) => Object.entries(permissions[companyId])
+    .filter(([, enabled]) => !!enabled)
+    .map((obj) => obj[0]), [companyId]);
+
+  const onPermissionChanged = (memberId) => (enabledPermissions) => {
+    changeMemberPermissions({ memberId, enabledPermissions });
+  };
 
   if (matches) {
     return (
@@ -174,48 +194,68 @@ const Members = () => {
             <Paper radius="sm">
               <ScrollArea pb={20}>
                 <Stack spacing={8}>
-                  {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
-                    <Stack key={_id} className={classes.itemBlock}>
-                      <Group sx={{ justifyContent: 'space-between' }}>
-                        <Text size="sm" weight={600}>
-                          {email}
-                        </Text>
-                        <Group sx={{ justifyContent: 'flex-end' }}>
-                          {
-                            !isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && _id !== currentAdmin?._id
-                            && (
-                              <DeleteMenu
-                                mainAction={handleMemberRemove(_id, email)}
-                                loading={removeMemberMutation.isLoading}
-                              />
-                            )
-                          }
-                          {isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && (
-                            <DeleteMenu
-                              mainAction={handleCancelInvitation(email)}
-                              loading={cancelInvitationMutation.isLoading}
-                            />
+                  {membersList.map(({
+                    _id,
+                    email,
+                    firstName,
+                    lastName,
+                    isInvitation,
+                    permissions,
+                    ownCompanyId,
+                  }) => {
+                    const isAdminCompanyOwner = ownCompanyId === companyId;
+                    const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers;
 
+                    return (
+                      <Stack key={_id} className={classes.itemBlock}>
+                        <Group sx={{ justifyContent: 'space-between' }}>
+                          <Text size="sm" weight={600}>
+                            {email}
+                          </Text>
+                          <Group sx={{ justifyContent: 'flex-end' }}>
+                            {
+                              !isInvitation
+                              && isHavePermission
+                              && !isAdminCompanyOwner
+                              && (
+                                <>
+                                  <MemberMenu
+                                    onDelete={handleMemberRemove(_id, email)}
+                                    loading={removeMemberMutation.isLoading}
+                                  />
+                                  {!isInvitation
+                                  && (
+                                  <PermissionsMenu
+                                    onPermissionChanged={onPermissionChanged(_id)}
+                                    disabled={isPermissionsLoading}
+                                    permissions={getMemberPermissions(permissions)}
+                                  />
+                                  )}
+                                </>
+                              )
+                            }
+                            {isInvitation && (
+                              <MemberMenu
+                                onDelete={handleCancelInvitation(email)}
+                                loading={cancelInvitationMutation.isLoading}
+                              />
                             )}
+                          </Group>
                         </Group>
-                      </Group>
-                      <Group>
-                        {isInvitation
-                          && <Badge className={classes.badge} variant="light">Pending invitation</Badge>}
-                        {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
-                          && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
-                      </Group>
-                      {firstName && (
-                        <Text size="sm" weight={600}>
-                          {`${firstName} ${lastName}`}
-                        </Text>
-                      )}
-                    </Stack>
-                  ))}
+                        <Group>
+                          {isInvitation
+                            && <Badge className={classes.badge} variant="light">Pending invitation</Badge>}
+                          {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                            && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
+                        </Group>
+                        {firstName && (
+                          <Text size="sm" weight={600}>
+                            {`${firstName} ${lastName}`}
+                          </Text>
+                        )}
+                      </Stack>
+                    );
+                  })}
                 </Stack>
               </ScrollArea>
             </Paper>
@@ -224,6 +264,7 @@ const Members = () => {
       </>
     );
   }
+
   return (
     <>
       <Head>
@@ -261,60 +302,83 @@ const Members = () => {
               >
                 <thead>
                   <tr>
-                    {columns.map((title) => (
-                      <th key={title}>{title}</th>
+                    {columns.map(({ title, sx }) => (
+                      <th key={title} style={sx}>{title}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {membersList.map(({ _id, email, firstName, lastName, isInvitation }) => (
-                    <tr key={_id}>
-                      <td>
-                        <Group>
-                          <Text size="sm" weight={600}>
-                            {email}
-                          </Text>
-                          {isInvitation
-                            && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
-                          { currentAdmin?.ownCompanyId && _id === currentAdmin?._id
-                            && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
-                        </Group>
-                      </td>
-                      <td>
-                        <Text size="sm" weight={600}>
-                          {firstName}
-                        </Text>
-                      </td>
-                      <td>
-                        <Text size="sm" weight={600}>
-                          {lastName}
-                        </Text>
-                      </td>
-                      <td>
-                        <Group sx={{ justifyContent: 'flex-end' }}>
-                          {
-                            !isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && _id !== currentAdmin?._id
-                            && (
-                              <DeleteMenu
-                                mainAction={handleMemberRemove(_id, email)}
-                                loading={removeMemberMutation.isLoading}
+                  {membersList.map(
+                    ({
+                      _id,
+                      email,
+                      firstName,
+                      lastName,
+                      isInvitation,
+                      permissions,
+                      ownCompanyId,
+                    }) => {
+                      const isAdminCompanyOwner = ownCompanyId === companyId;
+                      const isHavePermission = !!currentAdmin?.permissions[companyId].manageMembers;
+
+                      return (
+                        <tr key={_id}>
+                          <td>
+                            <Group>
+                              <Text size="sm" weight={600}>
+                                {email}
+                              </Text>
+                              {isInvitation
+                                && <Badge variant="light" className={classes.badge}>Pending invitation</Badge>}
+                              {currentAdmin?.ownCompanyId && _id === currentAdmin?._id
+                                && <Badge className={classes.badge} variant="filled">Company Owner</Badge>}
+                            </Group>
+                          </td>
+                          <td>
+                            <Text size="sm" weight={600}>
+                              {firstName}
+                            </Text>
+                          </td>
+                          <td>
+                            <Text size="sm" weight={600}>
+                              {lastName}
+                            </Text>
+                          </td>
+                          <td>
+                            {!isAdminCompanyOwner && !isInvitation
+                              && (
+                              <PermissionsMenu
+                                onPermissionChanged={onPermissionChanged(_id)}
+                                disabled={isPermissionsLoading}
+                                permissions={getMemberPermissions(permissions)}
                               />
-                            )
-                          }
-                          { isInvitation
-                            && currentAdmin?.ownCompanyId
-                            && (
-                            <DeleteMenu
-                              mainAction={handleCancelInvitation(email)}
-                              loading={cancelInvitationMutation.isLoading}
-                            />
-                            )}
-                        </Group>
-                      </td>
-                    </tr>
-                  ))}
+                              )}
+                          </td>
+                          <td>
+                            <Group sx={{ justifyContent: 'flex-end' }}>
+                              {
+                                !isInvitation
+                                && isHavePermission
+                                && _id !== currentAdmin?._id
+                                && (
+                                  <MemberMenu
+                                    onDelete={handleMemberRemove(_id, email)}
+                                    loading={removeMemberMutation.isLoading}
+                                  />
+                                )
+                              }
+                              {isInvitation && (
+                                <MemberMenu
+                                  onDelete={handleCancelInvitation(email)}
+                                  loading={cancelInvitationMutation.isLoading}
+                                />
+                              )}
+                            </Group>
+                          </td>
+                        </tr>
+                      );
+                    },
+                  )}
                 </tbody>
               </Table>
             </ScrollArea>

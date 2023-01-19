@@ -9,6 +9,7 @@ import { emailService } from 'services';
 import companyAuth from '../middlewares/company-auth.middleware';
 import companyService from '../company.service';
 import { subscriptionService } from 'resources/subscription';
+import { permissionsMiddleware } from '../../application';
 
 const schema = Joi.object({
   email: Joi.string()
@@ -27,17 +28,6 @@ type ValidatedData = {
   email: string;
 };
 
-async function validator(ctx: AppKoaContext<ValidatedData>, next: Next) {
-  const { email } = ctx.validatedData;
-
-  const isAdminExists = await adminService.exists({ email });
-  ctx.assertClientError(!isAdminExists, {
-    email: 'User already has a company',
-  });
-
-  await next();
-}
-
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { companyId } = ctx.params;
   const { admin } = ctx.state;
@@ -50,7 +40,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   if (subscription) {
-    usersLimit = subscription.subscriptionLimits.users || 0;  
+    usersLimit = subscription.subscriptionLimits.users || 0;
   }
 
   if (company && usersLimit) {
@@ -59,16 +49,21 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
     ctx.assertClientError(!isMembersLength, {
       global: 'Members limit exceeded',
-    }); 
+    });
   }
+
+  const adminExists = await adminService.findOne({ email, deletedOn: { $exists: false } });
 
   const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId: admin._id });
   try {
+    const link = adminExists
+      ? `${config.apiUrl}/invitations/accept/${invitation.token}`
+      : `${config.webUrl}/accept-invitation/?token=${invitation.token}`;
     await emailService.sentCompanyInvitation(
       email,
       {
         fullName: `${admin.firstName} ${admin.lastName}`,
-        acceptInvitationLink: `${config.webUrl}/accept-invitation/?token=${invitation.token}`,
+        acceptInvitationLink: link,
       },
     );
   } catch (error) {
@@ -82,5 +77,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/:companyId/invitations', companyAuth, validateMiddleware(schema), validator, handler);
+  router.post(
+    '/:companyId/invitations',
+    companyAuth,
+    permissionsMiddleware(['manageMembers']),
+    validateMiddleware(schema),
+    handler,
+  );
 };

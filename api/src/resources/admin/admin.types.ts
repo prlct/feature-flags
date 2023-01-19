@@ -11,6 +11,22 @@ export type Admin = {
   companyIds: string[];
   applicationIds: string[];
   stripeId: string | null;
+  currentCompany: {
+    _id: string,
+    name: string,
+  };
+  companies: {
+    _id: string,
+    name: string,
+  }[],
+  currentApplicationId: string,
+  permissions: {
+    [key in string]: { // companyId
+      manageSenderEmails: boolean,
+      manageMembers: boolean,
+      managePayments: boolean,
+    };
+  };
 
   lastRequestOn?: Date;
   lastLoginOn: Date;

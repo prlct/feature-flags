@@ -15,6 +15,7 @@ const companyAuth = async (ctx: AppKoaContext, next: Next) => {
   const isAdminHasAccessToCompany = includes(company.adminIds, ctx.state.admin._id);
 
   if (isAdminHasAccessToCompany) {
+    ctx.state.company = company;
     return next();
   }
 

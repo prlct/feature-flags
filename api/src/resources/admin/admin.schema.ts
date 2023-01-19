@@ -10,9 +10,32 @@ const schema = Joi.object({
   isEmailVerified: Joi.boolean().required().default(false),
   avatarUrl: Joi.string().allow(null),
   ownCompanyId: Joi.string().allow(null),
-  companyIds: Joi.array().items(Joi.string()).max(1).unique(),
-  applicationIds: Joi.array().items(Joi.string()).max(1).unique(),
+  companyIds: Joi.array().items(Joi.string()).max(99).unique(),
+  applicationIds: Joi.array().items(Joi.string()).max(99).unique(),
   stripeId: Joi.string().allow(null),
+
+  oauth: Joi.object().keys({
+    google: Joi.boolean().default(false),
+    github: Joi.boolean().default(false),
+  }),
+
+  currentCompany: Joi.object({
+    _id: Joi.string().trim().required(),
+    name: Joi.string().trim().required(),
+  }).required(),
+
+  companies: Joi.array().items(Joi.object({
+    _id: Joi.string().required(),
+    name: Joi.string().required(),
+  })),
+
+  currentApplicationId: Joi.string().required(),
+
+  permissions: Joi.object({}).pattern(Joi.string().trim(), {
+    manageSenderEmails: Joi.boolean(),
+    manageMembers: Joi.boolean(),
+    managePayments: Joi.boolean(),
+  }).required(),
 
   lastRequestOn: Joi.date(),
   lastLoginOn: Joi.date(),
@@ -20,10 +43,6 @@ const schema = Joi.object({
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),
-  oauth: Joi.object().keys({
-    google: Joi.boolean().default(false),
-    github: Joi.boolean().default(false),
-  }),
 });
 
 export default schema;

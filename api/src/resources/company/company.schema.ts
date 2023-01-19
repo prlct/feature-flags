@@ -9,6 +9,8 @@ const schema = Joi.object({
   adminIds: Joi.array().items(Joi.string()).min(1).unique().required(),
   stripeId: Joi.string().allow(null).default(null),
   freeLimitUsed: Joi.bool().allow(null).default(false),
+  name: Joi.string().trim().max(200),
+
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
   deletedOn: Joi.date(),

@@ -35,8 +35,12 @@ export function useRemoveProfilePhoto() {
   });
 }
 
-export const useList = (params) => {
-  const list = () => apiService.get('/admins', params);
+export function useChangeCurrentCompany() {
+  const changeCompany = (companyId) => apiService.put(`/admins/company/${companyId}`);
 
-  return useQuery(['admins', params], list);
-};
+  return useMutation(changeCompany, {
+    onSuccess: () => {
+      window.location.reload();
+    },
+  });
+}

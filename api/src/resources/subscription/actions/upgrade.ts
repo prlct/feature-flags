@@ -6,6 +6,7 @@ import { subscriptionService } from 'resources/subscription';
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
 import { companyService } from 'resources/company';
+import { permissionsMiddleware } from '../../application';
 
 const schema = Joi.object({
   priceId: Joi.string()
@@ -61,5 +62,5 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/upgrade-subscription', validateMiddleware(schema), handler);
+  router.post('/upgrade-subscription', permissionsMiddleware(['managePayments']), validateMiddleware(schema), handler);
 };

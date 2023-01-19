@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { AppKoaContext, AppRouter } from 'types';
 import { getRedirectUrl } from 'services/google/gmail-sender.service';
 
-import { applicationAuth } from '../middlewares';
+import { applicationAuth, permissionsMiddleware } from '../middlewares';
 
 const handler = async (ctx: AppKoaContext) => {
   const { applicationId } = ctx.params;
@@ -26,5 +26,10 @@ const handler = async (ctx: AppKoaContext) => {
 };
 
 export default (router: AppRouter) => {
-  router.get('/:applicationId/add-gmail', applicationAuth, handler);
+  router.get(
+    '/:applicationId/add-gmail',
+    applicationAuth,
+    permissionsMiddleware(['manageSenderEmails']),
+    handler,
+  );
 };

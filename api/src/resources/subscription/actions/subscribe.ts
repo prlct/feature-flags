@@ -4,6 +4,7 @@ import stripe from 'services/stripe/stripe.service';
 
 import { validateMiddleware } from 'middlewares';
 import { AppKoaContext, AppRouter } from 'types';
+import { permissionsMiddleware } from '../../application';
 
 const schema = Joi.object({
   priceId: Joi.string()
@@ -51,5 +52,5 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 }
 
 export default (router: AppRouter) => {
-  router.post('/subscribe', validateMiddleware(schema), handler);
+  router.post('/subscribe', permissionsMiddleware(['managePayments']), validateMiddleware(schema), handler);
 };

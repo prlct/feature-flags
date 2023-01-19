@@ -5,6 +5,7 @@ import type { Admin } from 'resources/admin';
 import type { Application } from 'resources/application';
 import type { Feature, Changes } from 'resources/feature';
 import { AuthAdminData } from 'resources/account/account.types';
+import type { Company } from 'resources/company/company.types';
 
 export type AppKoaContextState = {
   admin: Admin;
@@ -13,6 +14,7 @@ export type AppKoaContextState = {
   feature?: Feature;
   featureChanges?: Omit<Changes, 'admin' | 'changedOn'>;
   authAdminData: AuthAdminData;
+  company?: Company;
 };
 
 export type CustomErrors = {
@@ -37,6 +39,8 @@ export type AppRouterMiddleware = Router.Middleware<AppKoaContextState, AppKoaCo
 export type ValidationErrors = {
   [name: string]: string[] | string;
 };
+
+export type Permission = 'manageMembers' | 'manageSenderEmails' | 'managePayments';
 
 export {
   Next,

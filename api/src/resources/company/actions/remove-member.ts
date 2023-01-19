@@ -1,19 +1,15 @@
+import { filter, includes } from 'lodash';
+
 import { AppKoaContext, Next, AppRouter } from 'types';
 import { adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 import companyAuth from '../middlewares/company-auth.middleware';
-import { filter, includes } from 'lodash';
+import { permissionsMiddleware } from '../../application';
 
 
 async function validator(ctx: AppKoaContext, next: Next) {
-  const { companyId, adminId } = ctx.params;
+  const { adminId } = ctx.params;
   const { admin } = ctx.state;
-
-  const isAdminCompanyOwner = admin.ownCompanyId === companyId;
-
-  ctx.assertClientError(isAdminCompanyOwner, {
-    global: 'Only company owner can remove members',
-  });
 
   const isRemovingCompanyOwner = admin._id === adminId;
 
@@ -41,7 +37,7 @@ async function handler(ctx: AppKoaContext) {
 
   await adminService.updateOne({ _id: adminId }, (doc) => {
     doc.companyIds = filter(doc.companyIds, (id) => (id !== company?._id));
-    doc.applicationIds = filter(doc.applicationIds, (id) => (!includes(company?.applicationIds, id)));
+    doc.applicationIds = filter(doc.applicationIds, (id) => !includes(company?.applicationIds, id));
 
     return doc;
   });
@@ -50,5 +46,11 @@ async function handler(ctx: AppKoaContext) {
 }
 
 export default (router: AppRouter) => {
-  router.delete('/:companyId/members/:adminId', companyAuth, validator, handler);
+  router.delete(
+    '/:companyId/members/:adminId',
+    companyAuth,
+    permissionsMiddleware(['manageMembers']),
+    validator,
+    handler,
+  );
 };

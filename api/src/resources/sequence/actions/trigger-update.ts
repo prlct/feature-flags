@@ -39,7 +39,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { sequenceId } = ctx.params;
   const trigger = ctx.validatedData;
 
-  const applicationId = ctx.state.admin.applicationIds[0];
+  const applicationId = ctx.state.admin.currentApplicationId;
 
   const application = await applicationService.findOne({ _id: applicationId }, { projection: {
     'gmailCredentials': 1,
