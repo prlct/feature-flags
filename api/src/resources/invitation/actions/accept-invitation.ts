@@ -67,6 +67,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   if (admin) {
     admin = await adminService.updateOne({ _id: admin._id }, ((doc) => {
       doc.companyIds = [...doc.companyIds, companyId];
+      doc.companies = [...doc.companies, {
+        _id: companyId,
+        name: company.name,
+      }];
 
       return doc;
     }));

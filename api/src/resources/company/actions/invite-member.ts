@@ -52,13 +52,18 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     });
   }
 
+  const adminExists = await adminService.findOne({ email, deletedOn: { $exists: false } });
+
   const invitation = await invitationService.createCompanyMemberInvitation({ companyId, email, adminId: admin._id });
   try {
+    const link = adminExists
+      ? `${config.apiUrl}/invitations/accept/${invitation.token}`
+      : `${config.webUrl}/accept-invitation/?token=${invitation.token}`;
     await emailService.sentCompanyInvitation(
       email,
       {
         fullName: `${admin.firstName} ${admin.lastName}`,
-        acceptInvitationLink: `${config.webUrl}/accept-invitation/?token=${invitation.token}`,
+        acceptInvitationLink: link,
       },
     );
   } catch (error) {

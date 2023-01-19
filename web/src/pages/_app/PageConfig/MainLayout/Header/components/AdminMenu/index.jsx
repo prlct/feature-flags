@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react';
 import { accountApi } from 'resources/account';
-import { Menu, Text } from '@mantine/core';
-import { IconLogout } from '@tabler/icons';
+import { Avatar, Menu, Stack, Text, Group } from '@mantine/core';
+import { IconCheck, IconLogout } from '@tabler/icons';
 
 import { useAmplitude } from 'contexts/amplitude-context';
 
@@ -14,7 +14,9 @@ const AdminMenu = () => {
   const { data: currentAdmin } = adminApi.useGetCurrent();
 
   const amplitude = useAmplitude();
-  const isHaveMultipleCompanies = currentAdmin?.companyIds?.length > 1;
+  const isHaveMultipleCompanies = currentAdmin?.companies?.length > 1;
+
+  const changeCurrentCompany = adminApi.useChangeCurrentCompany().mutate;
 
   const onClickSignOut = useCallback(() => {
     amplitude.track('Admin log out');
@@ -32,6 +34,14 @@ const AdminMenu = () => {
     return 'Admin';
   }, [currentAdmin]);
 
+  const changeCompanyHandler = (companyId) => {
+    if (companyId === currentAdmin.currentCompany._id) {
+      return;
+    }
+
+    changeCurrentCompany(companyId);
+  };
+
   return (
     <Menu>
       <Text
@@ -48,9 +58,14 @@ const AdminMenu = () => {
       </Menu.Target>
       <Menu.Dropdown>
         {isHaveMultipleCompanies && currentAdmin.companies.map((company) => (
-          <Menu.Item key={company._id}>
-            <Text>{company.name}</Text>
-            <Text>{company._id === currentAdmin.ownCompanyId ? 'Owner' : 'Member'}</Text>
+          <Menu.Item key={company._id} icon={<Avatar color="gray" radius="xl" />} onClick={() => changeCompanyHandler(company._id)}>
+            <Stack spacing="xs">
+              <Group spacing={2}>
+                <Text size="sm">{company.name}</Text>
+                {company._id === currentAdmin.currentCompany._id && <IconCheck size={16} />}
+              </Group>
+              <Text size="xs" color="grey">{company._id === currentAdmin.ownCompanyId ? 'Owner' : 'Member'}</Text>
+            </Stack>
           </Menu.Item>
         ))}
         <Menu.Item

@@ -7,7 +7,7 @@ import type { Company } from 'resources/company';
 async function handler(ctx: AppKoaContext) {
   const company = ctx.state.company as Company;
 
-  await adminService.updateOne({ _id: ctx.state.admin._id }, (doc) => {
+  const admin = await adminService.updateOne({ _id: ctx.state.admin._id }, (doc) => {
     doc.currentCompany = {
       _id: company._id,
       name: company.name,
@@ -16,7 +16,7 @@ async function handler(ctx: AppKoaContext) {
     return doc;
   });
 
-  ctx.body = adminService.getPublic(ctx.state.admin);
+  ctx.body = adminService.getPublic(admin);
 }
 
 export default (router: AppRouter) => {
