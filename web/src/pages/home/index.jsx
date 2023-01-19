@@ -353,7 +353,7 @@ const Home = () => {
         )}
         {(!!filteredFeatureFlags.length && !isLoading) && (
           <Paper radius="sm">
-            <ScrollArea pb={65}>
+            <ScrollArea pb={72}>
               <Stack sx={(theme) => ({ borderRadius: 8, border: `1px solid ${theme.colors.gray[2]}` })}>
                 <Table
                   horizontalSpacing="xl"
@@ -417,7 +417,7 @@ const Home = () => {
                             </td>
                             <td>{new Date(createdOn).toLocaleDateString('en-US')}</td>
                             <td>
-                              <Menu>
+                              <Menu offset={2}>
                                 <Menu.Target>
                                   <ActionIcon
                                     title="Settings"

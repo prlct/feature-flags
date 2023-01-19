@@ -10,7 +10,7 @@ import { magic } from 'libs/magic';
 const MagicLinkRedirect = () => {
   const router = useRouter();
 
-  const { mutate: signIn } = accountApi.useSignIn({
+  const { mutate: signIn } = accountApi.useSignIn({}, {
     // TODO: Check that error handling working
     onError: (e) => handleError(e),
   });

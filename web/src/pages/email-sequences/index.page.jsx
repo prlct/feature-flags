@@ -49,8 +49,8 @@ const EmailSequences = () => {
   } = emailSequencesApi.useAddPipeline(env);
 
   const handleAddPipeline = () => {
-    addPipeline({
-      oonError: (e) => handleError(e),
+    addPipeline({}, {
+      onError: (e) => handleError(e),
     });
   };
 
