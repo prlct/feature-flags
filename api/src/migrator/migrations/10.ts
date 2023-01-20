@@ -42,6 +42,12 @@ migration.migrate = async () => {
             _id: adminWithCompany.company._id,
             name: adminWithCompany.company.name,
           },
+          companies: adminWithCompany.companies.map((c: { _id: string; }) => {
+            if (c._id === adminWithCompany.company._id) {
+              return { ...c, name: adminWithCompany.company.name };
+            }
+            return c;
+          }),
         },
       },
       upsert: false,
