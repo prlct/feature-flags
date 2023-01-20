@@ -17,7 +17,7 @@ import { useStyles } from './styles';
 
 const Header = () => {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
 
   const { data: mauStatistics } = statisticsApi.useGetStatistics();
   const { data: emailsStatistics } = statisticsApi.useGetEmailStatistics({ companyId });

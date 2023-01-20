@@ -9,7 +9,7 @@ import { permissionsMiddleware } from '../../application';
 async function handler(ctx: AppKoaContext) {
   const { admin } = ctx.state;
 
-  const company = await companyService.findOne({ _id: admin.companyIds[0] });
+  const company = await companyService.findOne({ _id: admin.currentCompany._id });
 
   const currentSubscription = company && await subscriptionService.findOne({ companyId: company._id || undefined });
 

@@ -3,9 +3,9 @@ import { subscriptionService } from 'resources/subscription';
 import { companyService } from 'resources/company';
 
 async function handler(ctx: AppKoaContext) {
-  const { companyIds } = ctx.state.admin;
+  const { currentCompany } = ctx.state.admin;
 
-  const company = await companyService.findOne({ _id: companyIds[0] });
+  const company = await companyService.findOne({ _id: currentCompany._id });
 
   if (company?._id) {
     const subscription = await subscriptionService.findOne({ companyId: company._id });
