@@ -39,6 +39,8 @@ const handler = async (ctx: AppKoaContext) => {
     return doc;
   });
 
+  await invitationService.deleteSoft({ _id: invitation._id });
+
   ctx.redirect(config.webUrl);
 };
 
