@@ -2,15 +2,15 @@ import { AppKoaContext, AppRouter } from 'types';
 import { subscriptionService } from 'resources/subscription';
 
 async function handler(ctx: AppKoaContext) {
-  const { applicationIds } = ctx.state.admin;
+  const { currentApplicationId } = ctx.state.admin;
 
-  const statistics = await subscriptionService.getMauUsageLimit(applicationIds[0]);
+  const statistics = await subscriptionService.getMauUsageLimit(currentApplicationId);
 
   let usagePercentage = 0;
 
   if (statistics?.count) {
     usagePercentage = Math.floor((statistics?.count / statistics?.monthlyActiveUsersLimit) * 100);
-  } 
+  }
 
   ctx.body = {
     ...statistics,
