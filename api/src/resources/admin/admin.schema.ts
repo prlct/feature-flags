@@ -26,7 +26,7 @@ const schema = Joi.object({
 
   companies: Joi.array().items(Joi.object({
     _id: Joi.string().required(),
-    name: Joi.string().required(),
+    name: Joi.string().trim().required().allow('').empty(null).default(''),
   })),
 
   currentApplicationId: Joi.string().required(),
