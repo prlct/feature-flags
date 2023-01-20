@@ -30,7 +30,7 @@ const PlanUsageStatistics = ({
   cancelAtPeriodEnd,
 }) => {
   const admin = queryClient.getQueryData(['currentAdmin']);
-  const companyId = admin.companyIds[0];
+  const companyId = admin.currentCompany._id;
 
   const matches = useMediaQuery('(max-width: 768px)');
   const { classes } = useStyles(matches);
