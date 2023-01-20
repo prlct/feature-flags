@@ -71,7 +71,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
         _id: companyId,
         name: company.name,
       }];
-
+      doc.permissions = { ...doc.permissions, [company._id]: {
+        manageMembers: false,
+        managePayments: false,
+        manageSenderEmails: false,
+      } };
       return doc;
     }));
   } else {
