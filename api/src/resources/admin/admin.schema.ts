@@ -21,7 +21,7 @@ const schema = Joi.object({
 
   currentCompany: Joi.object({
     _id: Joi.string().trim().required(),
-    name: Joi.string().trim().required(),
+    name: Joi.string().trim().required().allow('').empty(null).default(''),
   }).required(),
 
   companies: Joi.array().items(Joi.object({
