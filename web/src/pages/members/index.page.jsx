@@ -153,7 +153,7 @@ const Members = () => {
     });
   }, [removeMemberMutation, setError, modals]);
 
-  const getMemberPermissions = useCallback((permissions) => Object.entries(permissions[companyId])
+  const getMemberPermissions = useCallback((permissions) => Object.entries(permissions?.[companyId])
     .filter(([, enabled]) => !!enabled)
     .map((obj) => obj[0]), [companyId]);
 
