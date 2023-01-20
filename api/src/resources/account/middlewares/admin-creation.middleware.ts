@@ -64,6 +64,12 @@ const createAdmin = async (ctx: AppKoaContext) => {
               manageSenderEmails: true,
             },
           },
+          companies: [
+            {
+              _id: companyId,
+              name: authAdminData.email,
+            },
+          ],
         }, { session });
 
         await companyService.insertOne({
