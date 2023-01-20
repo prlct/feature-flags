@@ -37,6 +37,7 @@ async function handler(ctx: AppKoaContext) {
 
   await adminService.updateOne({ _id: adminId }, (doc) => {
     doc.companyIds = filter(doc.companyIds, (id) => (id !== company?._id));
+    doc.companies = filter(doc.companies, ({ _id }) => _id !== company?._id);
     doc.applicationIds = filter(doc.applicationIds, (id) => !includes(company?.applicationIds, id));
 
     return doc;
