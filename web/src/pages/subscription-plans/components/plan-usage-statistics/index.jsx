@@ -164,7 +164,7 @@ const PlanUsageStatistics = ({
             className={classes.progressBar}
           />
           <Group position="apart" width="100%">
-            <Text size="sm">{mauStatistics?.count.toLocaleString('en')}</Text>
+            <Text size="sm">{mauStatistics?.count?.toLocaleString('en') || 0}</Text>
             <Text size="sm">{mauStatistics?.monthlyActiveUsersLimit.toLocaleString('en')}</Text>
           </Group>
         </Stack>
