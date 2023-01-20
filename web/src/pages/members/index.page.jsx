@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import trim from 'lodash/trim';
 import cloneDeep from 'lodash/cloneDeep';
 import { useForm } from 'react-hook-form';
@@ -16,12 +16,12 @@ import {
   Badge,
   Paper,
   ScrollArea,
-  Table,
+  Table, UnstyledButton,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
-import { IconSearch } from '@tabler/icons';
+import { IconEdit, IconSearch } from '@tabler/icons';
 import { useQueryClient } from 'react-query';
 
 import { handleError } from 'helpers';
@@ -72,6 +72,15 @@ const Members = () => {
 
     return list;
   }, [data]);
+
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [companyName, setCompanyName] = useState(currentAdmin?.currentCompany?.name || '');
+
+  useEffect(() => {
+    if (currentAdmin) {
+      setCompanyName(currentAdmin.currentCompany.name);
+    }
+  }, [currentAdmin]);
 
   const inviteMemberMutation = companyApi.useInviteMember();
 
@@ -157,9 +166,43 @@ const Members = () => {
     .filter(([, enabled]) => !!enabled)
     .map((obj) => obj[0]), [companyId]);
 
+  const changeNameMutation = companyApi.useChangeName(companyId).mutate;
+
   const onPermissionChanged = (memberId) => (enabledPermissions) => {
     changeMemberPermissions({ memberId, enabledPermissions });
   };
+
+  const saveCompanyName = () => {
+    setIsRenaming(false);
+    changeNameMutation(companyName);
+  };
+
+  const isCurrentAdminOwner = currentAdmin?.currentCompany?._id === currentAdmin?.ownCompanyId;
+  const currentAdminCanManageMembers = isCurrentAdminOwner
+    || currentAdmin?.permissions?.[companyId]?.manageMembers;
+
+  const renderRenameBlock = () => (
+    isRenaming
+      ? (
+        <Group>
+          <TextInput
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
+            sx={{ width: 300 }}
+          />
+          <UnstyledButton onClick={saveCompanyName}>Save</UnstyledButton>
+        </Group>
+      )
+      : (
+        <Group>
+          <Text sx={{ display: 'flex' }}>
+            <Text weight="bold">Company name:&nbsp;</Text>
+            <Text>{companyName}</Text>
+          </Text>
+          <IconEdit onClick={() => setIsRenaming(true)} size={16} style={{ cursor: 'pointer' }} />
+        </Group>
+      )
+  );
 
   if (matches) {
     return (
@@ -170,7 +213,8 @@ const Members = () => {
         {isLoading ? <Loader /> : (
           <Stack spacing={16}>
             <Title order={4} sx={{ paddingTop: 24 }}>Team members</Title>
-            {currentAdmin?.ownCompanyId && (
+            {isCurrentAdminOwner && renderRenameBlock()}
+            {currentAdminCanManageMembers && (
               <Group className={classes.headerGroup} spacing={12}>
                 <TextInput
                   {...register('email')}
@@ -273,7 +317,8 @@ const Members = () => {
       {isLoading ? <Loader /> : (
         <Stack spacing="lg">
           <Title order={2}>Team members</Title>
-          {currentAdmin?.ownCompanyId && (
+          {isCurrentAdminOwner && renderRenameBlock()}
+          {currentAdminCanManageMembers && (
           <Group sx={{ width: '100%' }}>
             <TextInput
               {...register('email')}

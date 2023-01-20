@@ -5,6 +5,7 @@ import inviteMember from './actions/invite-member';
 import cancelInvitation from './actions/cancel-invitation';
 import removeMember from './actions/remove-member';
 import updateMemberPermissions from './actions/update-member-permissions';
+import changeName from './actions/change-name';
 
 const privateRoutes = routeUtil.getRoutes([
   getMember,
@@ -12,6 +13,7 @@ const privateRoutes = routeUtil.getRoutes([
   cancelInvitation,
   removeMember,
   updateMemberPermissions,
+  changeName,
 ]);
 
 export default {

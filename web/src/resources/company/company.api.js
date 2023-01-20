@@ -61,3 +61,22 @@ export function useChangeMemberPermissions(companyId) {
     },
   });
 }
+
+export function useChangeName(companyId) {
+  const changeName = (name) => apiService.put(`${resource}/${companyId}/name`, { name });
+  const currentAdmin = queryClient.getQueryData(['currentAdmin']);
+  return useMutation(changeName, {
+    onSuccess: (data) => {
+      const updatedAdmin = { ...currentAdmin };
+      updatedAdmin.currentCompany.name = data.name;
+      updatedAdmin.companies = updatedAdmin.companies.map((c) => {
+        if (c._id === updatedAdmin.currentCompany._id) {
+          return { ...c, name: data.name };
+        }
+        return c;
+      });
+
+      queryClient.setQueryData(['currentAdmin'], () => ({ ...updatedAdmin }));
+    },
+  });
+}
