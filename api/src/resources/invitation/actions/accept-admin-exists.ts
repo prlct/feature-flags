@@ -26,6 +26,11 @@ const handler = async (ctx: AppKoaContext) => {
       _id: invitation.companyId,
       name: company.name,
     }];
+    doc.permissions = { ...doc.permissions, [company._id]: {
+      manageMembers: false,
+      managePayments: false,
+      manageSenderEmails: false,
+    } };
     return doc;
   }));
 
