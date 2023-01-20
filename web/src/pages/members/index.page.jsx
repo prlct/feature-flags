@@ -223,7 +223,7 @@ const Members = () => {
                                     onDelete={handleMemberRemove(_id, email)}
                                     loading={removeMemberMutation.isLoading}
                                   />
-                                  {!isInvitation
+                                  {!isInvitation && !isAdminCompanyOwner
                                   && (
                                   <PermissionsMenu
                                     onPermissionChanged={onPermissionChanged(_id)}
@@ -361,6 +361,7 @@ const Members = () => {
                                 !isInvitation
                                 && isHavePermission
                                 && _id !== currentAdmin?._id
+                                && !isAdminCompanyOwner
                                 && (
                                   <MemberMenu
                                     onDelete={handleMemberRemove(_id, email)}
