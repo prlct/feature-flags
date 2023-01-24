@@ -13,7 +13,7 @@ import applicationService from 'resources/application/application.service';
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import sequenceService from 'resources/sequence/sequence.service';
 import { emailsSendingAnalyticsService } from 'resources/emails-sending-analytics';
-import { companyService } from 'resources/company';
+import { Company, companyService } from 'resources/company';
 import { subscriptionService } from 'resources/subscription';
 import { tokenService, TokenType } from 'resources/token';
 import { generateSecureToken } from 'utils/security.util';
@@ -61,7 +61,7 @@ const getHandler = (job: ScheduledJob) => {
           }
 
           const user = await pipelineUserService.findOne({
-            sequences: { _id: email.sequenceId, finishedOn: { $exists: false } },
+            sequences: { $elemMatch: { _id: email.sequenceId, finishedOn: { $exists: false } } },
             'pipelines._id': sequence?.pipelineId,
             email: job.data.targetEmail,
           });
@@ -82,7 +82,7 @@ const getHandler = (job: ScheduledJob) => {
             return await failJob(job._id, 'Application not found or no gmail credentials provided');
           }
 
-          const company = await companyService.findOne({ applicationIds: job.applicationId });
+          const company = await companyService.findOne({ applicationIds: job.applicationId }) as Company;
           const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
           const today = moment().format('YYYY/MM/DD');
@@ -112,6 +112,9 @@ const getHandler = (job: ScheduledJob) => {
             sequenceId: email.sequenceId,
             pipelineUserId: user._id,
             value: unsubscribeToken,
+            applicationId: job.applicationId,
+            companyName: company.name,
+            targetEmail: job.data.targetEmail,
           });
 
           await sendEmail(

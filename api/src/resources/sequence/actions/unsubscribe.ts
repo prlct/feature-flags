@@ -21,10 +21,15 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   const tokenEntity = await unsubscribeTokenService.findOne({ value: token });
 
-  ctx.assertError(tokenEntity, 'Invalid token');
+  if (!tokenEntity) {
+    ctx.throwClientError({ token: 'Invalid token' }, 400);
+  }
 
-  const user = await pipelineUserService.findOne({ _id: tokenEntity.pipelineUser });
-  ctx.assertError(user, 'Subscriber not found');
+  const user = await pipelineUserService.findOne({ _id: tokenEntity.pipelineUserId });
+
+  if (!user) {
+    ctx.throwClientError({ token: 'Invalid token' }, 400);
+  }
 
   await pipelineUserService.atomic.updateOne({ _id: user._id, 'sequences._id': tokenEntity.sequenceId }, {
     $set: {
@@ -39,6 +44,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   await sequenceEmailService.atomic.updateOne({ _id: tokenEntity.emailId }, { $inc: { dropped: 1 } });
 
   await unsubscribeTokenService.deleteSoft({ _id: tokenEntity._id });
+
+  ctx.body = 'ok';
 };
 
 export default (router: AppRouter) => {

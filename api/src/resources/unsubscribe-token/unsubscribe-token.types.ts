@@ -5,6 +5,9 @@ export type UnsubscribeToken = {
   emailId: string,
   sequenceId: string,
   pipelineUserId: string,
+  applicationId: string,
+  targetEmail: string,
+  companyName: string,
 
   createdOn?: Date;
   updatedOn?: Date;

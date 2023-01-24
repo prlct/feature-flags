@@ -18,7 +18,7 @@ const encodeEmail = (str: string) => Buffer.from(str)
   .replace(/\//g, '_');
 
 const addUnsubscribeLink = (text: string, token: string) => {
-  const link = `${config.webUrl}/unsubscribe?token=${token}`;
+  const link = `${config.webUrl}/unsubscribe/${token}`;
   const a = `<div style="margin-top: 20px"><a href="${link}" target="_blank" referrerpolicy="no-referrer" style="font-size: 10px; color: gray; ">Unsubscribe</a></div>`;
   return `<div><div>${text}</div>${a}</div>`;
 };
