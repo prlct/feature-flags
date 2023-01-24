@@ -15,7 +15,6 @@ import sequenceService from 'resources/sequence/sequence.service';
 import { emailsSendingAnalyticsService } from 'resources/emails-sending-analytics';
 import { Company, companyService } from 'resources/company';
 import { subscriptionService } from 'resources/subscription';
-import { tokenService, TokenType } from 'resources/token';
 import { generateSecureToken } from 'utils/security.util';
 
 import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
