@@ -16,6 +16,7 @@ const DATABASE_DOCUMENTS = {
   SCHEDULED_JOBS: 'scheduled-jobs',
   EMAILS_SENDING_ANALYTICS: 'emails-sending-analytics',
   ADDITIONAL_PACKAGE: 'additional-package',
+  UNSUBSCRIBE_TOKENS: 'unsubscribe-tokens',
 };
 
 const COOKIES = {
