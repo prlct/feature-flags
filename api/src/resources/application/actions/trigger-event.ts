@@ -11,6 +11,7 @@ import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
+import { generateId } from '@paralect/node-mongo';
 
 const schema = Joi.object({
   eventKey: Joi.string().required(),
@@ -72,7 +73,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     return;
   }
 
-  const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId, deletedOn: { $exists: false } });
+  const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
 
   if (!pipeline) {
     ctx.status = 400;
@@ -92,6 +93,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
         email,
         applicationId: pipeline.applicationId,
       },
+      $setOnInsert: { _id: generateId() },
       $addToSet: {
         pipelines: {
           _id: pipeline._id,

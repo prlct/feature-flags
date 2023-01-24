@@ -9,7 +9,9 @@ import { applicationService } from '../../application';
 
 const schema = Joi.object({
   name: Joi.string().required(),
-  senderEmail: Joi.string().email().required(),
+  senderEmail: Joi.string().email().required().messages({
+    'any.required': 'Please select email to send from',
+  }),
   eventName: Joi.string().optional(),
   eventKey: Joi.string().optional(),
   stopEventKey: Joi.string().optional(),

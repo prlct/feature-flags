@@ -4,18 +4,21 @@ import schedule, { Job } from 'node-schedule';
 import logger from 'logger';
 import { eventBus, InMemoryEvent } from '@paralect/node-mongo';
 
+import { DATABASE_DOCUMENTS } from 'app.constants';
+import config from 'config';
+
 import { sendEmail } from 'services/google/gmail-sender.service';
 import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import applicationService from 'resources/application/application.service';
+import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import sequenceService from 'resources/sequence/sequence.service';
+import { emailsSendingAnalyticsService } from 'resources/emails-sending-analytics';
+import { Company, companyService } from 'resources/company';
+import { subscriptionService } from 'resources/subscription';
+import { generateSecureToken } from 'utils/security.util';
 
 import { ScheduledJob, ScheduledJobStatus, ScheduledJobType } from './scheduled-job.types';
-import applicationService from 'resources/application/application.service';
-import { DATABASE_DOCUMENTS } from 'app.constants';
-import pipelineUserService from '../pipeline-user/pipeline-user.service';
-import sequenceService from '../sequence/sequence.service';
-import { emailsSendingAnalyticsService } from 'resources/emails-sending-analytics';
-import config from 'config';
-import { companyService } from 'resources/company';
-import { subscriptionService } from 'resources/subscription';
+import { unsubscribeTokenService } from '../unsubscribe-token';
 
 export const todayScheduledJobs = {
   current: [] as Job[],
@@ -57,10 +60,9 @@ const getHandler = (job: ScheduledJob) => {
           }
 
           const user = await pipelineUserService.findOne({
-            'sequences._id': email.sequenceId,
+            sequences: { $elemMatch: { _id: email.sequenceId, finishedOn: { $exists: false } } },
             'pipelines._id': sequence?.pipelineId,
             email: job.data.targetEmail,
-            deletedOn: { $exists: false },
           });
 
           if (!user || user.sequences.find((seq) => seq._id === email.sequenceId)?.finishedOn) {
@@ -79,21 +81,21 @@ const getHandler = (job: ScheduledJob) => {
             return await failJob(job._id, 'Application not found or no gmail credentials provided');
           }
 
-          const company = await companyService.findOne({ applicationIds: job.applicationId });
+          const company = await companyService.findOne({ applicationIds: job.applicationId }) as Company;
           const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
           const today = moment().format('YYYY/MM/DD');
           const daysInMonth = 30;
 
           let dailyEmailsLimit = Math.floor(Number(config.MONTHLY_EMAILS_LIMIT) / daysInMonth);
-          
+
           const emailsSendingToday = await emailsSendingAnalyticsService.findOne({
             companyId: company?._id,
             [`sendingEmails.${today}`]: { $exists: true },
           });
 
           if (subscription) {
-            const monthlyEmailsLimit = subscription.subscriptionLimits.emails || 1; 
+            const monthlyEmailsLimit = subscription.subscriptionLimits.emails || 1;
             dailyEmailsLimit = Math.floor(monthlyEmailsLimit / daysInMonth) || 1;
           }
 
@@ -102,11 +104,26 @@ const getHandler = (job: ScheduledJob) => {
             return;
           }
 
+          const unsubscribeToken = generateSecureToken();
+
+          await unsubscribeTokenService.insertOne({
+            emailId: email._id,
+            sequenceId: email.sequenceId,
+            pipelineUserId: user._id,
+            value: unsubscribeToken,
+            applicationId: job.applicationId,
+            companyName: company.name,
+            targetEmail: job.data.targetEmail,
+          });
+
           await sendEmail(
             email,
             job.applicationId,
             job.data.targetEmail,
+            unsubscribeToken,
           );
+
+          await sequenceEmailService.atomic.updateOne({ _id: email._id }, { $inc: { sent: 1 } });
 
           await emailsSendingAnalyticsService
             .createEmailsSendingAnalytics({ applicationId: job.applicationId });
@@ -145,8 +162,8 @@ const getHandler = (job: ScheduledJob) => {
             await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
           }
 
-          await scheduledJobService.updateOne({ _id: job._id }, (doc) => {
-            return { ...doc, status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
+          await scheduledJobService.updateOne({ _id: job._id }, () => {
+            return { status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };
           });
         } catch (error) {
           let message = 'unknown';

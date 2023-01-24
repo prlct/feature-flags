@@ -3,9 +3,7 @@ import config from 'config';
 
 import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
-import sequenceService from '../../resources/sequence/sequence.service';
-import sequenceEmailService from '../../resources/sequence-email/sequence-email.service';
-import pipelineUserService from '../../resources/pipeline-user/pipeline-user.service';
+import sequenceService from 'resources/sequence/sequence.service';
 
 
 type MailOptions = {
@@ -19,6 +17,12 @@ const encodeEmail = (str: string) => Buffer.from(str)
   .replace(/\+/g, '-')
   .replace(/\//g, '_');
 
+const addUnsubscribeLink = (text: string, token: string) => {
+  const link = `${config.webUrl}/unsubscribe/${token}`;
+  const a = `<div style="margin-top: 20px"><a href="${link}" target="_blank" referrerpolicy="no-referrer" style="font-size: 10px; color: gray; ">Unsubscribe</a></div>`;
+  return `<div><div>${text}</div>${a}</div>`;
+};
+
 const encodeEmailString = (mailOptions: MailOptions, from: string) => {
   const encodedSubject = Buffer.from(mailOptions.subject).toString('base64');
   return ['Content-Type: text/html; charset="UTF-8"\n',
@@ -31,15 +35,19 @@ const encodeEmailString = (mailOptions: MailOptions, from: string) => {
   ].join('');
 };
 
-export const buildEmail = (
+export const buildEmail = async (
   sequenceEmail: SequenceEmail,
+  to: string,
+  token = '',
   firstName?: string,
   lastName?: string,
 ) => {
-  return { subject: sequenceEmail.subject, text: sequenceEmail.body }; // fixme
+
+  const text = token ? addUnsubscribeLink(sequenceEmail.body, token) : sequenceEmail.body;
+  return { subject: sequenceEmail.subject, text, to }; // fixme - add firstName, lastName
 };
 
-export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to: string) => {
+export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to: string, token = '') => {
   try {
     const oAuth2Client = new google.auth.OAuth2(config.gmail);
 
@@ -58,13 +66,12 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
     oAuth2Client
       .setCredentials({
         refresh_token:
-          app.gmailCredentials[from].refreshToken,
+        app.gmailCredentials[from].refreshToken,
       });
 
     const gmail = google.gmail('v1');
 
-
-    const mailOptions = { ...buildEmail(sequenceEmail), to };
+    const mailOptions = await buildEmail(sequenceEmail, to, token);
 
     const str = encodeEmailString(mailOptions, from);
     const encodedMail = encodeEmail(str);
@@ -74,17 +81,8 @@ export const sendEmail = async (sequenceEmail: SequenceEmail, appId: string, to:
       userId: 'me',
       requestBody: { raw: encodedMail },
     });
-    await sequenceEmailService.atomic.updateOne({ _id: sequenceEmail._id }, {  $inc: { sent: 1 } });
-    await pipelineUserService.atomic.updateOne({
-      applicationId: appId,
-      email: to,
-      deletedOn: { $exists: false },
-      'sequence._id': sequence._id,
-    }, {
-      $set: { [`sequenceHistory.${sequence._id}`]: new Date() },
-    });
   } catch (error) {
-    console.error(error);
+    console.error(`Failed to send email ${sequenceEmail._id}, app id ${appId} to ${to}`);
   }
 };
 

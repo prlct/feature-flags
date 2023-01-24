@@ -16,7 +16,8 @@ import {
   Badge,
   Paper,
   ScrollArea,
-  Table, UnstyledButton,
+  Table,
+  UnstyledButton,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { useModals } from '@mantine/modals';
@@ -315,7 +316,7 @@ const Members = () => {
         <title>Team members</title>
       </Head>
       {isLoading ? <Loader /> : (
-        <Stack spacing="lg">
+        <Stack spacing="lg" pb={60}>
           <Title order={2}>Team members</Title>
           {isCurrentAdminOwner && renderRenameBlock()}
           {currentAdminCanManageMembers && (

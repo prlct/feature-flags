@@ -436,3 +436,23 @@ export function useRemoveSenderEmail() {
     },
   });
 }
+
+export function useGetUnsubscribeTokenInfo(token) {
+  const getInfo = () => apiService.get(`${sequencesResource}/get-unsubscribe-info/${token}`);
+
+  return useQuery(['unsubscribe-token', token], getInfo);
+}
+
+export function useUnsubscribe(token) {
+  const unsub = () => apiService.get(`${sequencesResource}/unsubscribe/${token}`);
+
+  return useMutation(unsub, {
+    onSuccess: () => {
+      showNotification({
+        title: "You've successfully unsubscribed",
+        message: "You've successfully unsubscribed",
+        color: 'green',
+      });
+    },
+  });
+}

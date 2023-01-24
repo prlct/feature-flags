@@ -130,7 +130,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     <>
       <Stack spacing={24}>
         <TextInput
-          error={errors?.['trigger.name']}
+          error={errors?.name}
           label="Trigger name"
           placeholder="Enter trigger name"
           value={triggerName}
@@ -141,7 +141,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
           placeholder="Enter trigger description"
           value={triggerDescription}
           onChange={(e) => setTriggerDescription(e.target.value)}
-          error={errors?.['trigger.description']}
+          error={errors?.description}
           sx={{ height: 80 }}
         />
         <Box sx={{ padding: '24px 0', borderTop: '1px solid #D4D8DD' }}>
@@ -151,7 +151,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
             placeholder="Select"
             value={selectedSenderEmail}
             onChange={setSelectedSenderEmail}
-            error={errors?.['trigger.senderEmail']}
+            error={errors?.senderEmail}
           />
           <UnstyledButton onClick={() => setCreatingEvent((prev) => !prev)}>
             <Group spacing={0} sx={{ paddingTop: 8 }}>

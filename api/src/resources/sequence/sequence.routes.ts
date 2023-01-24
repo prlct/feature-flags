@@ -6,6 +6,8 @@ import removeSequence from './actions/remove-sequence';
 import toggleSequenceEnabled from './actions/toggle-sequence-enabled';
 import startWebhook from './actions/start-webhook';
 import stopWebhook from './actions/stop-webhook';
+import getUnsubscribeInfo from './actions/get-unsubscribe-info';
+import unsubscribe from './actions/unsubscribe';
 
 const privateRoutes = routeUtil.getRoutes([
   sequenceUpdate,
@@ -17,6 +19,12 @@ const privateRoutes = routeUtil.getRoutes([
   stopWebhook,
 ]);
 
+const publicRoutes = routeUtil.getRoutes([
+  getUnsubscribeInfo,
+  unsubscribe,
+]);
+
 export default {
   privateRoutes,
+  publicRoutes,
 };

@@ -32,6 +32,7 @@ export const route = {
   subscriptionPlans: '/subscription-plans',
   emailEditor: '/email-editor',
   sequencesDemo: '/sequences-demo',
+  unsubscribe: '/unsubscribe/[token]',
 };
 
 export const path = {
@@ -156,5 +157,10 @@ export const configuration = {
     route: route.sequencesDemo,
     scope: scope.PRIVATE,
     layout: layout.MAIN,
+  },
+  unsubscribe: {
+    route: route.unsubscribe,
+    scope: scope.NONE,
+    layout: layout.NONE,
   },
 };
