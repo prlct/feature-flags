@@ -93,7 +93,6 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     } }, { upsert: true });
 
     await scheduledJobService.scheduleSequenceEmail(firstEmail, email);
-
   }
 
   ctx.body = 'ok';

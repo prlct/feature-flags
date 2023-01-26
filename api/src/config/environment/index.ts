@@ -1,4 +1,5 @@
 import { configUtil } from 'utils';
+import * as process from 'process';
 
 const env = process.env.APP_ENV || 'development';
 
@@ -47,6 +48,7 @@ const base = {
   PIPELINES_LIMIT: process.env.PIPELINES_LIMIT || 3,
   USERS_LIMIT: process.env.USERS_LIMIT || 3,
   AMPLITUDE_API_KEY: process.env.AMPLITUDE_API_KEY || '',
+  mainApplicationId: process.env.MAIN_APPLICATION_ID || '',
 };
 
 const config = configUtil.loadConfig(base, env, __dirname);

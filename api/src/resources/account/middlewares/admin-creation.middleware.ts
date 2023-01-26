@@ -1,15 +1,37 @@
 import { generateId } from '@paralect/node-mongo';
+import axios from 'axios';
 
+import config from 'config';
 import { securityUtil } from 'utils';
 import { PRIVATE_API_KEY_SECURITY_LENGTH, PUBLIC_API_KEY_SECURITY_LENGTH } from 'app.constants';
 import { AppKoaContext } from 'types';
 import { authService } from 'services';
-import { applicationService, Env } from 'resources/application';
+import { Application, applicationService, Env } from 'resources/application';
 import { Admin, adminService } from 'resources/admin';
 import { companyService } from 'resources/company';
 import slackService from 'services/slack.service';
 import mailerLiteService from 'services/mailerlite.service';
 import amplitudeService from 'services/amplitude/amplitude.service';
+
+
+const triggerEvent = async (
+  applicationId: string,
+  eventKey: string,
+  email: string,
+  firstName?: string,
+  lastName?: string,
+) => {
+  const application = await applicationService.findOne({ _id: applicationId }) as Application;
+
+  return axios.post(`${config.apiUrl}/sequences/webhook/start/${eventKey}`, {
+    eventKey,
+    email,
+    firstName,
+    lastName,
+  }, {
+    headers: { authorization: `Bearer ${application.privateApiKey}` },
+  });
+};
 
 const createAdmin = async (ctx: AppKoaContext) => {
 
@@ -111,9 +133,17 @@ const createAdmin = async (ctx: AppKoaContext) => {
       ]);
       const name = `${newAdmin.firstName} ${newAdmin.lastName}`.trim();
       const method = Object.keys(ctx.state.authAdminData?.oauth || {})[0];
+
       amplitudeService.trackEvent(newAdmin._id, 'Admin sign up', { method });
       slackService.send(`${name} just signed up! Reach out by email: ${newAdmin.email}.`);
       mailerLiteService.addOnboardingSubscriber({ email: newAdmin.email, name });
+      triggerEvent(
+        config.mainApplicationId,
+        'admin-sign-up',
+        authAdminData.email,
+        authAdminData.firstName || undefined,
+        authAdminData.lastName || undefined,
+      );
     }
   }
 };

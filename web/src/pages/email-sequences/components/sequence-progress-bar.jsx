@@ -11,7 +11,7 @@ const SequenceProgressBar = ({ total, dropped }) => {
       <Progress value={percentage} size={4} color="#734AB7" sx={{ backgroundColor: 'rgba(115, 74, 183, 0.2)' }} />
       <Group position="apart" px={4}>
         <Text size="sm" sx={(theme) => ({ color: theme.colors.gray[4] })}>
-          {`Completed: ${total - dropped}`}
+          {`Converted: ${total - dropped}`}
         </Text>
         <Text size="sm" sx={(theme) => ({ color: theme.colors.gray[4] })}>
           {`Dropped: ${dropped}`}
