@@ -29,6 +29,5 @@
   "STRIPE_API_KEY": "configure in local.ts file",
   "STRIPE_WEBHOOK_SECRET": "configure in local.ts file",
   "STARTER_SUBSCRIPTION_ID": "configure in local.ts file",
-  "PRO_SUBSCRIPTION_ID": "configure in local.ts file",
-  "mainApplicationId": "63c6e677669d2437a4096b4c"
+  "PRO_SUBSCRIPTION_ID": "configure in local.ts file"
   }
