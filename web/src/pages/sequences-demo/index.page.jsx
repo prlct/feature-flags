@@ -8,8 +8,8 @@ const SequencesDemo = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const demoConfig = gf?.getConfig('sequences-demo');
-  const pageViewEvent = demoConfig?.pageEvent || 'demo-view-event';
-  const demoEventKey = demoConfig?.eventKey || 'sequences-demo';
+  const pageViewEvent = demoConfig?.pageOpenedEventKey || 'demo-page-opened-event';
+  const demoEventKey = demoConfig?.buttonEventKey || 'sequences-demo';
   const demoButtonText = demoConfig?.buttonText || 'Send me details';
 
   const triggerDemoEvent = useCallback(async (eventKey) => {
