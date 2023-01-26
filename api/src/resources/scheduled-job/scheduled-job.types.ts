@@ -24,6 +24,7 @@ export type ScheduledJob = {
 
 export enum ScheduledJobType {
   EMAIL_SEQUENCE_SEND = 'email-sequence-send',
+  DELAYED_CHECK = 'delayed-check',
 }
 
 export enum ScheduledJobStatus {

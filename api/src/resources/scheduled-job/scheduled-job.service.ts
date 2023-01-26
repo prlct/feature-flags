@@ -47,8 +47,28 @@ const rescheduleSendingSequenceEmail = async (_id: string, scheduled: Date, extr
   await service.atomic.updateOne({
     _id,
   }, {
-    $set: { scheduledDate: newScheduledDate },    
+    $set: { scheduledDate: newScheduledDate },
   });
 };
 
-export default Object.assign({ scheduleSequenceEmail, rescheduleSendingSequenceEmail }, service);
+const scheduleDelayedCheck = async (lastJob: ScheduledJob) => {
+  const scheduledDate = moment()
+    .add(3, 'days')
+    .toDate();
+
+  const job = {
+    applicationId: lastJob.applicationId,
+    type: ScheduledJobType.DELAYED_CHECK,
+    data: {
+      emailId: lastJob.data.emailId,
+      targetEmail: lastJob.data.targetEmail,
+      pipelineId: lastJob.data.pipelineId,
+    },
+    status: ScheduledJobStatus.PENDING,
+    scheduledDate,
+  };
+
+  await service.insertOne(job);
+};
+
+export default Object.assign({ scheduleSequenceEmail, rescheduleSendingSequenceEmail, scheduleDelayedCheck }, service);

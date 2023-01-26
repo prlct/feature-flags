@@ -35,6 +35,98 @@ const failJob = async (jobId: string, reason: string) => {
 
 const getHandler = (job: ScheduledJob) => {
   switch (job.type) {
+    case ScheduledJobType.DELAYED_CHECK: {
+      return async () => {
+        try {
+          const email = await sequenceEmailService.findOne({
+            _id: job.data.emailId,
+            enabled: true,
+            deletedOn: { $exists: false },
+          });
+
+          if (!email) {
+            return await failJob(job._id, `Sequence email not found or was disabled: ${job.data.emailId}`);
+          }
+
+          const sequence = await sequenceService.findOne({
+            _id: email.sequenceId,
+            enabled: true,
+            deletedOn: { $exists: false },
+          });
+
+          if (!sequence) {
+            return await failJob(job._id, 'Sequence not found or was removed');
+          }
+
+          const user = await pipelineUserService.findOne({
+            sequences: { $elemMatch: { _id: email.sequenceId, finishedOn: { $exists: false } } },
+            'pipelines._id': sequence?.pipelineId,
+            email: job.data.targetEmail,
+          });
+
+          if (!user || user.sequences.find((seq) => seq._id === email.sequenceId)?.finishedOn) {
+            return await failJob(job._id, 'User not found or was removed from pipeline');
+          }
+
+          let nextEmail = await sequenceEmailService.findNextEnabledEmail(email);
+          let nextSequence = null;
+
+          if (!nextEmail && sequence.trigger?.allowMoveToNextSequence) {
+            nextSequence = await sequenceService.findNextEnabledSequence(sequence);
+            if (nextSequence) {
+              const { results: nextEmails } = await sequenceEmailService.find({
+                sequenceId: nextSequence._id,
+                enabled: true,
+                deletedOn: { $exists: false },
+              });
+              nextEmail = nextEmails?.[0];
+            }
+          }
+
+          if (nextEmail) {
+            await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
+            await scheduledJobService.updateOne({ _id: job._id }, () => {
+              return {
+                status: ScheduledJobStatus.COMPLETED,
+                result: 'Check completed. Scheduled next email to send',
+              };
+            });
+          } else {
+            await pipelineUserService.atomic.updateOne({
+              email: user.email,
+              'sequences._id': sequence._id,
+            }, {
+              $set: {
+                'sequences.$.finishedOn': new Date(),
+              },
+            });
+
+            await sequenceService.atomic.updateOne({ _id: sequence._id }, { $inc: {
+              dropped: 1,
+            } });
+            await scheduledJobService.updateOne({ _id: job._id }, () => {
+              return {
+                status: ScheduledJobStatus.COMPLETED,
+                result: 'Check completed. Marked subscriber as dropped for inactivity',
+              };
+            });
+          }
+
+        } catch (error) {
+          let message = 'unknown';
+          if (error instanceof Error) {
+            message = error.message;
+          }
+
+          await scheduledJobService.atomic.updateOne({ _id: job._id }, {
+            $set: {
+              status: ScheduledJobStatus.FAILED,
+              result: `Execute failed: ${message}`,
+            },
+          });
+        }
+      };
+    }
     case ScheduledJobType.EMAIL_SEQUENCE_SEND: {
 
       return async () => {
@@ -160,7 +252,9 @@ const getHandler = (job: ScheduledJob) => {
 
           if (nextEmail) {
             await scheduledJobService.scheduleSequenceEmail(nextEmail, job.data.targetEmail);
-          }
+          } else {
+            await scheduledJobService.scheduleDelayedCheck(job);
+          }//
 
           await scheduledJobService.updateOne({ _id: job._id }, () => {
             return { status: ScheduledJobStatus.COMPLETED, result: 'Email sent.' };

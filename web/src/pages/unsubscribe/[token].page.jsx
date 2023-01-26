@@ -66,7 +66,7 @@ const Unsubscribe = () => {
             Are you sure you want to unsubscribe?
           </Text>
           <Text>
-            You are currently subscribed to
+            You are currently subscribed to&nbsp;
             {tokenInfo.companyName}
             {' '}
             with the following address:
