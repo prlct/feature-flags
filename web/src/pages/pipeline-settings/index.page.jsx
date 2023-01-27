@@ -106,14 +106,20 @@ const PipelineSettings = () => {
       labels: { confirm: 'Delete', cancel: 'Cancel' },
       confirmProps: { color: 'red', variant: 'subtle' },
       cancelProps: { variant: 'subtle' },
-      onConfirm: () => removeEmail(email),
+      onConfirm: () => removeEmail(email, { onSuccess: () => {
+        queryClient.invalidateQueries(['sender-emails']);
+      } }),
     });
   };
+  const companyId = currentAdmin?.currentCompany._id;
+  const isCurrentAdminOwner = currentAdmin?.currentCompany?._id === currentAdmin?.ownCompanyId;
+  const isCurrentAdminCanManageEmails = isCurrentAdminOwner
+    || currentAdmin?.permissions?.[companyId]?.manageSenderEmails;
 
   const emailsRows = emails.map((email) => (
     <tr key={email}>
       <td>{email.value}</td>
-      {currentAdmin?.ownCompanyId && (
+      {isCurrentAdminCanManageEmails && (
         <td>
           <UnstyledButton onClick={() => removeEmailHandler(email.value)}>
             <IconTrash color="red" icon={<IconTrash />} />
@@ -165,7 +171,7 @@ const PipelineSettings = () => {
       <LoadingOverlay visible={isLoading} />
       <Group sx={{ justifyContent: 'space-between' }}>
         <Text my={8}>Application emails</Text>
-        {currentAdmin?.ownCompanyId && (
+        {isCurrentAdminCanManageEmails && (
           <GoogleButton
             href={`${config.apiUrl}/applications/${applicationId}/add-gmail`}
           >

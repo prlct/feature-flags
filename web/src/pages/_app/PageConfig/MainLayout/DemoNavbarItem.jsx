@@ -15,7 +15,8 @@ const DemoNavbarItem = ({ tab, isTabActive }) => {
   }
 
   let { label } = tab;
-
+  const fontSize = gf?.getConfig(tab.featureFlag)?.fontSize || 14;
+  const fontColor = gf?.getConfig(tab.featureFlag)?.fontColor || '#424242';
   if (tab.featureFlag) {
     label = gf?.getConfig(tab.featureFlag)?.label || tab.label;
   }
@@ -47,10 +48,12 @@ const DemoNavbarItem = ({ tab, isTabActive }) => {
           {tab.icon}
         </ActionIcon>
 
-        <Text className={[
-          classes.label,
-          isTabActive && classes.activeLabel,
-        ]}
+        <Text
+          className={[
+            classes.label,
+            isTabActive && classes.activeLabel,
+          ]}
+          sx={{ color: fontColor, fontSize }}
         >
           {label}
         </Text>
