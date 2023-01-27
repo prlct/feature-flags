@@ -36,8 +36,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const subscription = company && await subscriptionService.findOne({ companyId: company._id });
 
   if (subscription) {
-    pipelinesLimit = subscription.subscriptionLimits.pipelines || 0;  
-  }  
+    pipelinesLimit = subscription.subscriptionLimits.pipelines || 0;
+  }
 
   if (company && pipelinesLimit) {
     const { results: pipelineList } = await pipelineService.find({ applicationId: ctx.state.admin.applicationIds[0] });
@@ -45,7 +45,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
     ctx.assertClientError(!isPipelinesLength, {
       global: 'Pipelines limit exceeded',
-    }); 
+    });
   }
 
   const index = (pipelines[0]?.index ?? -1) + 1;
@@ -63,6 +63,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     enabled: false,
     name: 'New sequence',
     index: 0,
+    env,
   },
   {
     pipelineId: createdPipeline._id,
@@ -70,6 +71,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     enabled: false,
     name: 'New sequence',
     index: 1,
+    env,
   }]);
 
   ctx.body = createdPipeline;

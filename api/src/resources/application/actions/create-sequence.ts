@@ -5,10 +5,11 @@ import { AppKoaContext, AppRouter } from 'types';
 
 import sequenceService from 'resources/sequence/sequence.service';
 import applicationAuth from '../middlewares/application-auth.middleware';
-import { applicationService } from '../index';
+import { applicationService, Env } from '../index';
 
 const schema = Joi.object({
   name: Joi.string().required(),
+  env: Joi.string().valid(...Object.values(Env)).required(),
   trigger: Joi.object({
     name: Joi.string().required(),
     senderEmail: Joi.string().email().required(),
@@ -26,6 +27,7 @@ const schema = Joi.object({
 type ValidatedData = {
   name: string,
   pipelineId: string,
+  env: Env,
   trigger?: {
     name: string,
     senderEmail: string,
@@ -41,7 +43,7 @@ type ValidatedData = {
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
-  const { name, pipelineId, trigger } = ctx.validatedData;
+  const { name, pipelineId, trigger, env } = ctx.validatedData;
 
   const application = await applicationService.findOne({ _id: applicationId }, { projection: {
     'gmailCredentials': 1,
@@ -66,6 +68,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     enabled: false,
     trigger,
     index,
+    env,
   });
 };
 

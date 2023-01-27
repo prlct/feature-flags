@@ -9,11 +9,12 @@ import sequenceEmailService from 'resources/sequence-email/sequence-email.servic
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
-import { extractTokenFromQuery } from 'resources/application';
+import { Env, extractTokenFromQuery } from 'resources/application';
 import privateTokenAuthMiddleware from 'resources/application/middlewares/private-token-auth.middleware';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
+  env: Joi.string().valid(...Object.values(Env)).required(),
   firstName: Joi.string().allow(null),
   lastName: Joi.string().allow(null),
   eventKey: Joi.string().required(),
@@ -24,16 +25,18 @@ type ValidatedData = {
   email: string,
   firstName: string,
   lastName: string,
+  env: Env,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { eventKey } = ctx.params;
-  const { email, firstName, lastName } = ctx.validatedData;
+  const { email, firstName, lastName, env } = ctx.validatedData;
   const { _id: applicationId } = ctx.state.application;
 
   const sequence = await sequenceService.findOne({
     applicationId,
     'trigger.eventKey': eventKey,
+    env,
     deletedOn: { $exists: false },
   });
 

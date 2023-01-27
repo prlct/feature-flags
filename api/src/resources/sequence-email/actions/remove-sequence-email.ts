@@ -6,12 +6,7 @@ import sequenceEmailAccess from '../middlewares/sequence-email-access';
 const handler = async (ctx: AppKoaContext) => {
   const { sequenceEmailId } = ctx.params;
 
-  ctx.body = await sequenceEmailService.updateOne(
-    { _id: sequenceEmailId },
-    (email)=> {
-      return { ...email, deletedOn: new Date() };
-    },
-  );
+  ctx.body = await sequenceEmailService.deleteSoft({ _id: sequenceEmailId });
 };
 
 export default (router: AppRouter) => {

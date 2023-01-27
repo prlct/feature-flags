@@ -5,27 +5,31 @@ import { AppKoaContext, AppRouter } from 'types';
 import { extractTokenFromHeader, validateMiddleware } from 'middlewares';
 
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
-import { extractTokenFromQuery } from 'resources/application';
+import { Env, extractTokenFromQuery } from 'resources/application';
 import privateTokenAuthMiddleware from '../../application/middlewares/private-token-auth.middleware';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
+  env: Joi.string().valid(...Object.values(Env)).required(),
   stopEventKey: Joi.string().required(),
 });
 
 type ValidatedData = {
   stopEventKey: string,
   email: string,
+  env: Env,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { stopEventKey } = ctx.params;
-  const { email } = ctx.validatedData;
+  const { email, env } = ctx.validatedData;
   const { _id: applicationId } = ctx.state.application;
 
   const sequence = await sequenceService.findOne({
     applicationId,
-    'trigger.stopEventKey': stopEventKey, deletedOn: { $exists: false },
+    'trigger.stopEventKey': stopEventKey,
+    deletedOn: { $exists: false },
+    env,
   });
 
   if (!sequence) {

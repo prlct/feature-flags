@@ -7,9 +7,7 @@ import sequenceService from '../sequence.service';
 const handler = async (ctx: AppKoaContext) => {
   const { sequenceId } = ctx.params;
 
-  await sequenceService.updateOne({ _id: sequenceId }, (pipeline) => {
-    return { ...pipeline, deletedOn: new Date() };
-  });
+  await sequenceService.deleteSoft({ _id: sequenceId });
 
   ctx.body = {};
 };

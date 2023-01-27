@@ -42,6 +42,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     applicationId: application._id,
     'trigger.eventKey': eventKey,
     enabled: true,
+    env: user.env,
     deletedOn: { $exists: false },
   }, { sort: { index: -1 }, limit: 1 });
 
