@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   UnstyledButton,
@@ -41,14 +41,20 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
 
   const matches = useMediaQuery('(max-width: 768px)');
 
-  const events = fetchedEvents?.events || [];
+  const events = useMemo(() => fetchedEvents?.events || [], [fetchedEvents]);
 
   const [selectedEvent, setSelectedEvent] = useState(
-    sequence?.trigger?.eventKey || events?.[0]?.value,
+    sequence?.trigger?.eventKey,
   );
   const [selectedStopEvent, setSelectedStopEvent] = useState(
-    sequence?.trigger?.stopEventKey || events?.filter((e) => e.value !== selectedEvent)?.[0]?.value,
+    sequence?.trigger?.stopEventKey,
   );
+
+  useEffect(() => {
+    if (sequence?.trigger?.eventKey) {
+      setSelectedEvent(sequence?.trigger?.eventKey);
+    }
+  }, [sequence]);
 
   const { data: senderEmails = [] } = useGetSenderEmails();
 
@@ -58,6 +64,11 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
   );
 
   const [startEvent, setStartEvent] = useState(false);
+
+  useEffect(() => {
+    setStartEvent(!!sequence?.trigger?.eventKey);
+  }, [sequence?.trigger?.eventKey]);
+
   const [stopEvent, setStopEvent] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [creatingEventName, setCreatingEventName] = useState('');
@@ -87,8 +98,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
       allowRepeat,
       repeatDelay,
       name: triggerName,
-      eventKey: selectedEvent,
-      stopEventKey: selectedStopEvent,
+      eventKey: (startEvent && selectedEvent) || null,
+      stopEventKey: (stopEvent && selectedStopEvent) || null,
       description: triggerDescription,
       allowMoveToNextSequence,
       senderEmail: selectedSenderEmail,

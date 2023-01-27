@@ -12,9 +12,9 @@ const schema = Joi.object({
   trigger: Joi.object({
     name: Joi.string().required(),
     senderEmail: Joi.string().email().required(),
-    eventName: Joi.string().optional(),
-    eventKey: Joi.string().optional(),
-    stopEventKey: Joi.string().optional(),
+    eventName: Joi.string().allow(null).optional(),
+    eventKey: Joi.string().allow(null).optional(),
+    stopEventKey: Joi.string().allow(null).optional(),
     allowRepeat: Joi.bool().default(false),
     repeatDelay: Joi.number().min(0).integer(),
     description: Joi.string().empty(null).default('').allow(''),
