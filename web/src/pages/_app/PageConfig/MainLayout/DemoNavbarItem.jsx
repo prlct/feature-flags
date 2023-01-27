@@ -15,7 +15,7 @@ const DemoNavbarItem = ({ tab, isTabActive }) => {
   }
 
   let { label } = tab;
-  const fontSize = gf?.getConfig(tab.featureFlag)?.fontSize || 14;
+  const fontSize = Number(gf?.getConfig(tab.featureFlag)?.fontSize) || 14;
   const fontColor = gf?.getConfig(tab.featureFlag)?.fontColor || '#424242';
   if (tab.featureFlag) {
     label = gf?.getConfig(tab.featureFlag)?.label || tab.label;
