@@ -33,9 +33,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const user = await userService.findOne({ $or: [ { _id: userId }, { 'data.id': userId }] });
 
   if (!user) {
-    ctx.status = 400;
-    ctx.body = 'fail';
-    return;
+    ctx.throwClientError({ sequence: 'User not found' }, 400);
   }
   const email = user.email || user.data.email;
   const application = ctx.state.application;
@@ -48,9 +46,7 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   }, { sort: { index: -1 }, limit: 1 });
 
   if (!sequence) {
-    ctx.status = 400;
-    ctx.body = 'fail';
-    return;
+    ctx.throwClientError({ sequence: 'Not found' }, 400);
   }
 
   const pipelineUser = await pipelineUserService.findOne({
@@ -67,17 +63,13 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   }, { sort: { index: -1 }, limit: 1 });
 
   if (!sequenceEmail) {
-    ctx.status = 400;
-    ctx.body = 'fail';
-    return;
+    ctx.throwClientError({ sequenceEmail: 'Not found' }, 400);
   }
 
   const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
 
   if (!pipeline) {
-    ctx.status = 400;
-    ctx.body = 'fail';
-    return;
+    ctx.throwClientError({ pipeline: 'Not found' }, 400);
   }
 
   if (!pipelineUser) {
