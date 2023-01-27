@@ -60,12 +60,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     deletedOn: { $exists: false },
   });
 
-  const sequenceEmail = await sequenceEmailService.findOne({
+  const { results: [sequenceEmail] } = await sequenceEmailService.find({
     sequenceId: sequence._id,
     enabled: true,
-    index: 0,
     deletedOn: { $exists: false },
-  });
+  }, { sort: { index: -1 }, limit: 1 });
 
   if (!sequenceEmail) {
     ctx.status = 400;
