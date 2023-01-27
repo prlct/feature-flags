@@ -30,7 +30,8 @@ type ValidatedData = {
 async function handler(ctx: AppKoaContext<ValidatedData>) {
   const { userId, eventKey, firstName, lastName } = ctx.validatedData;
 
-  const user = await userService.findOne({ _id: userId });
+  const user = await userService.findOne({ $or: [ { _id: userId }, { 'data.id': userId }] });
+
   if (!user) {
     ctx.status = 400;
     ctx.body = 'fail';
@@ -39,13 +40,12 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const email = user.email || user.data.email;
   const application = ctx.state.application;
 
-  const sequence = await sequenceService.findOne({
+  const { results: [sequence] } = await sequenceService.find({
     applicationId: application._id,
     'trigger.eventKey': eventKey,
     enabled: true,
-    index: 0,
     deletedOn: { $exists: false },
-  });
+  }, { sort: { index: -1 }, limit: 1 });
 
   if (!sequence) {
     ctx.status = 400;
