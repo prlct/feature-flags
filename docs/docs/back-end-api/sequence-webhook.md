@@ -14,6 +14,7 @@ sidebar_position: 3
 ### Params
 
  - `email` - email address for the user on the account. **Required**
+ - `env` - environment of the sequence (`production`, `development`, `demo` or `staging`). **Required**
  - `firstName` - **Optional**.
  - `lastName` - **Optional**.
 

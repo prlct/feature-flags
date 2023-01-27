@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Group, Paper, Space, Stack, Text, Button, Box, ScrollArea, LoadingOverlay } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
-import { useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
@@ -10,6 +10,7 @@ import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
 
 import { useStyles } from './styles';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from '../../../helpers/constants';
 
 const Pipeline = ({ id }) => {
   const {
@@ -22,6 +23,12 @@ const Pipeline = ({ id }) => {
     mutate: handleAddSequence,
     isLoading: isSequenceCreateInProgress,
   } = emailSequencesApi.useAddSequence(id);
+
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
 
   const sequences = data || [];
 
@@ -86,7 +93,7 @@ const Pipeline = ({ id }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => handleAddSequence({ name: 'New sequence' })}
+            onClick={() => handleAddSequence({ name: 'New sequence', env })}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: matches ? 248 : 304 }}

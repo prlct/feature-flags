@@ -1,10 +1,11 @@
-import Joi from 'joi';
+import { Env } from '../application';
 
 export type Sequence = {
   _id: string,
   name: string,
   applicationId: string,
   pipelineId: string,
+  env: Env,
 
   trigger?: {
     name: string,

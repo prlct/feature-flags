@@ -14,7 +14,7 @@ import {
   Box, Code,
   Textarea,
 } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { IconCopy } from '@tabler/icons';
 import { showNotification } from '@mantine/notifications';
 import * as routes from 'routes';
@@ -28,6 +28,7 @@ import {
   useGetSenderEmails,
 } from 'resources/email-sequence/email-sequence.api';
 import { Link } from 'components';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
@@ -38,6 +39,11 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     isLoading,
     error: eventCreationError,
   } = useAddApplicationEvent();
+  const [env] = useLocalStorage({
+    key: LOCAL_STORAGE_ENV_KEY,
+    defaultValue: ENV.DEVELOPMENT,
+    getInitialValueInEffect: false,
+  });
 
   const matches = useMediaQuery('(max-width: 768px)');
 
@@ -111,7 +117,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
         },
       });
     } else {
-      await createSequence({ name: 'new sequence', trigger: data }, {
+      await createSequence({ name: 'new sequence', trigger: data, env }, {
         onSuccess: () => {
           context.closeModal(id);
         },

@@ -1,10 +1,12 @@
 import Joi from 'joi';
+import { Env } from '../application';
 
 const schema = Joi.object({
   _id: Joi.string().required(),
 
   applicationId: Joi.string().required(),
   pipelineId: Joi.string().required(),
+  env: Joi.string().valid(...Object.values(Env)).required(),
   name: Joi.string().required(),
   enabled: Joi.bool().required(),
   total: Joi.number().integer().default(0),
