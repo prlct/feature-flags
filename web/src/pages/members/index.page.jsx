@@ -342,8 +342,8 @@ const Members = () => {
           <Paper radius="sm" withBorder>
             <ScrollArea>
               <Table
-                horizontalSpacing="xl"
-                verticalSpacing="lg"
+                horizontalSpacing="xs"
+                verticalSpacing="xs"
                 className={classes.table}
               >
                 <thead>
