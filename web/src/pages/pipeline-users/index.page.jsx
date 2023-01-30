@@ -10,7 +10,7 @@ import {
   LoadingOverlay,
   Menu,
   ActionIcon,
-  Group,
+  Group, Paper, ScrollArea,
 } from '@mantine/core';
 import { useLocalStorage, useDebouncedValue, useMediaQuery } from '@mantine/hooks';
 import { openContextModal } from '@mantine/modals';
@@ -122,9 +122,9 @@ const UsersList = () => {
 
   const rows = filteredSubscribers.length > 0 ? filteredSubscribers.map((user) => (
     <tr key={user._id}>
-      <td>{user.email}</td>
-      <td>{user.firstName}</td>
-      <td>{user.lastName}</td>
+      <td><Text weight="bold">{user.email}</Text></td>
+      <td><Text weight="bold">{user.firstName}</Text></td>
+      <td><Text weight="bold">{user.lastName}</Text></td>
       <td>
         <MultiSelect
           data={getPipelinesList(pipelines)}
@@ -205,65 +205,69 @@ const UsersList = () => {
           </UnstyledButton>
         ) : null}
       />
-      <Table verticalSpacing="xs" horizontalSpacing="xs">
-        <thead>
-          <tr>
-            <th>
-              <Group spacing={3}>
-                <ActionIcon
-                  onClick={() => handleSort('email')}
-                  className={classes.tableTitle}
-                >
-                  Email
-                  {filters.email === 'desc' && (
-                  <IconArrowDown size={16} />
-                  )}
-                  {filters.email === 'asc' && (
-                  <IconArrowUp size={16} />
-                  )}
-                </ActionIcon>
-              </Group>
-            </th>
-            <th>
-              <Group spacing={3}>
-                <ActionIcon
-                  onClick={() => handleSort('firstName')}
-                  className={classes.tableTitle}
-                >
-                  First name
-                  {filters.firstName === 'desc' && (
-                  <IconArrowDown size={16} />
-                  )}
-                  {filters.firstName === 'asc' && (
-                  <IconArrowUp size={16} />
-                  )}
-                </ActionIcon>
-              </Group>
-            </th>
-            <th>
-              <Group spacing={3}>
-                <ActionIcon
-                  onClick={() => handleSort('lastName')}
-                  className={classes.tableTitle}
-                >
-                  Last name
-                  {filters.lastName === 'desc' && (
-                  <IconArrowDown size={16} />
-                  )}
-                  {filters.lastName === 'asc' && (
-                  <IconArrowUp size={16} />
-                  )}
-                </ActionIcon>
-              </Group>
-            </th>
-            <th>Pipeline</th>
-            <th>&nbsp;</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows}
-        </tbody>
-      </Table>
+      <Paper radius="sm" withBorder>
+        <ScrollArea>
+          <Table verticalSpacing="xs" horizontalSpacing="xs" className={classes.table}>
+            <thead>
+              <tr>
+                <th>
+                  <Group spacing={3}>
+                    <ActionIcon
+                      onClick={() => handleSort('email')}
+                      className={classes.tableTitle}
+                    >
+                      Email
+                      {filters.email === 'desc' && (
+                      <IconArrowDown size={16} />
+                      )}
+                      {filters.email === 'asc' && (
+                      <IconArrowUp size={16} />
+                      )}
+                    </ActionIcon>
+                  </Group>
+                </th>
+                <th>
+                  <Group spacing={3}>
+                    <ActionIcon
+                      onClick={() => handleSort('firstName')}
+                      className={classes.tableTitle}
+                    >
+                      First name
+                      {filters.firstName === 'desc' && (
+                      <IconArrowDown size={16} />
+                      )}
+                      {filters.firstName === 'asc' && (
+                      <IconArrowUp size={16} />
+                      )}
+                    </ActionIcon>
+                  </Group>
+                </th>
+                <th>
+                  <Group spacing={3}>
+                    <ActionIcon
+                      onClick={() => handleSort('lastName')}
+                      className={classes.tableTitle}
+                    >
+                      Last name
+                      {filters.lastName === 'desc' && (
+                      <IconArrowDown size={16} />
+                      )}
+                      {filters.lastName === 'asc' && (
+                      <IconArrowUp size={16} />
+                      )}
+                    </ActionIcon>
+                  </Group>
+                </th>
+                <th>Pipeline</th>
+                <th>&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows}
+            </tbody>
+          </Table>
+        </ScrollArea>
+      </Paper>
     </Stack>
   );
 };

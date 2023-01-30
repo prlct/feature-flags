@@ -38,7 +38,8 @@ export const useStyles = createStyles(({ colors }) => ({
   tableTitle: {
     width: 120,
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: 400,
+    color: colors.gray[4],
     justifyContent: 'flex-start',
   },
   menuItem: {

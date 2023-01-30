@@ -9,7 +9,7 @@ import {
   Text,
   Menu,
   ActionIcon,
-  Title,
+  Title, Paper, ScrollArea,
 } from '@mantine/core';
 import config from 'config';
 import queryClient from 'query-client';
@@ -152,8 +152,8 @@ const PipelineSettings = () => {
 
   const eventsRows = fetchedEvents?.events?.map((event) => (
     <tr key={event.label}>
-      <td>{event.label}</td>
-      <td>{event.value}</td>
+      <td><Text weight="bold">{event.label}</Text></td>
+      <td><Text weight="bold">{event.value}</Text></td>
       <td>
         <Menu position="bottom-end">
           <Menu.Target>
@@ -192,7 +192,7 @@ const PipelineSettings = () => {
   return (
     <Box>
       <LoadingOverlay visible={isLoading} />
-      <Group sx={{ justifyContent: 'space-between' }}>
+      <Group sx={{ justifyContent: 'space-between', marginBottom: 8 }}>
         <Text my={8}>Application emails</Text>
         {isCurrentAdminCanManageEmails && (
           <GoogleButton
@@ -203,24 +203,19 @@ const PipelineSettings = () => {
         )}
       </Group>
 
-      <Table verticalSpacing="xs" horizontalSpacing="xs" striped>
-        <thead>
-          <tr>
-            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-            <th />
-            {currentAdmin?.ownCompanyId && (
-            // eslint-disable-next-line jsx-a11y/control-has-associated-label
-            <th />
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {emailsRows}
-        </tbody>
-      </Table>
+      <Paper radius="sm" withBorder>
+        <ScrollArea>
+          <Table verticalSpacing="xs" horizontalSpacing="xs" className={classes.table}>
+            <thead />
+            <tbody>
+              {emailsRows}
+            </tbody>
+          </Table>
+        </ScrollArea>
+      </Paper>
 
       <Space h={24} />
-      <Group sx={{ justifyContent: 'space-between' }}>
+      <Group sx={{ justifyContent: 'space-between', marginBottom: 8 }}>
         <Text my={8}>Application events</Text>
         <Button
           onClick={() => setIsEventCreateModalOpened(true)}
@@ -229,17 +224,23 @@ const PipelineSettings = () => {
         </Button>
       </Group>
 
-      <Table verticalSpacing="xs" horizontalSpacing="xs" striped sx={{ '& td:last-child': { width: '5%' } }}>
-        <thead>
-          <tr>
-            <th>Event name</th>
-            <th>Key</th>
-          </tr>
-        </thead>
-        <tbody>
-          {eventsRows}
-        </tbody>
-      </Table>
+      <Paper radius="sm" withBorder>
+        <ScrollArea>
+          <Table verticalSpacing="xs" horizontalSpacing="xs" className={classes.table}>
+            <thead>
+              <tr>
+                <th>Event name</th>
+                <th>Key</th>
+                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {eventsRows}
+            </tbody>
+          </Table>
+        </ScrollArea>
+      </Paper>
 
       <EventCreateModal
         opened={isEventCreateModalOpened}
