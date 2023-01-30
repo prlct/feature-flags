@@ -14,7 +14,6 @@ const AdminMenu = () => {
   const { data: currentAdmin } = adminApi.useGetCurrent();
 
   const amplitude = useAmplitude();
-  const isHaveMultipleCompanies = currentAdmin?.companies?.length > 1;
 
   const changeCurrentCompany = adminApi.useChangeCurrentCompany().mutate;
 
@@ -57,7 +56,7 @@ const AdminMenu = () => {
         <MenuToggle />
       </Menu.Target>
       <Menu.Dropdown>
-        {isHaveMultipleCompanies && currentAdmin.companies.map((company) => (
+        {currentAdmin.companies.map((company) => (
           <Menu.Item key={company._id} icon={<Avatar color="gray" radius="xl" />} onClick={() => changeCompanyHandler(company._id)}>
             <Stack spacing="xs">
               <Group spacing={2}>

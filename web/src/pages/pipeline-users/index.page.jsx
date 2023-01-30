@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Table, Text, UnstyledButton, TextInput, MultiSelect, Title, Stack, LoadingOverlay, Menu, ActionIcon, Group } from '@mantine/core';
+import {
+  Table,
+  Text,
+  UnstyledButton,
+  TextInput,
+  MultiSelect,
+  Title,
+  Stack,
+  LoadingOverlay,
+  Menu,
+  ActionIcon,
+  Group,
+} from '@mantine/core';
 import { useLocalStorage, useDebouncedValue, useMediaQuery } from '@mantine/hooks';
 import { openContextModal } from '@mantine/modals';
 import { IconArrowDown, IconArrowUp, IconSearch, IconSettings, IconTrash, IconX } from '@tabler/icons';
@@ -139,7 +151,7 @@ const UsersList = () => {
               <CardSettingsButton />
             </ActionIcon>
           </Menu.Target>
-          <Menu.Dropdown sx={{ width: '192px !important', height: 112 }}>
+          <Menu.Dropdown>
             <Menu.Item
               icon={<IconSettings size={14} />}
               onClick={() => openContextModal({
@@ -150,7 +162,10 @@ const UsersList = () => {
                 innerProps: { user, pipelines },
                 styles: { title: { fontSize: 20, fontWeight: 600 } },
               })}
-              sx={{ padding: '14px 13px' }}
+              sx={{
+                padding: '20px 13px',
+              }}
+              className={classes.menuItem}
             >
               Settings
             </Menu.Item>
@@ -158,7 +173,8 @@ const UsersList = () => {
               icon={<IconTrash size={14} />}
               color="red"
               onClick={() => removeUserHandler(user._id)}
-              sx={{ padding: '14px 13px' }}
+              sx={{ padding: '20px 13px' }}
+              className={classes.menuItem}
             >
               Delete
             </Menu.Item>
