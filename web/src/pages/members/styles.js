@@ -79,4 +79,8 @@ export const useStyles = createStyles(({ colors }) => ({
       fontSize: 15,
     },
   },
+  menuItem: {
+    height: 18,
+    minHeight: 18,
+  },
 }));

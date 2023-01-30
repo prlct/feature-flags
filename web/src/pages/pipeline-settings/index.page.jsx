@@ -10,7 +10,6 @@ import {
   Menu,
   ActionIcon,
   Title,
-  UnstyledButton,
 } from '@mantine/core';
 import config from 'config';
 import queryClient from 'query-client';
@@ -28,9 +27,11 @@ import {
 } from 'resources/email-sequence/email-sequence.api';
 import GoogleButton from 'components/google-button/google-button';
 import EventCreateModal from './components/event-create-modal';
+import { useStyles } from './styles';
 
 const PipelineSettings = () => {
   const modals = useModals();
+  const { classes } = useStyles();
   const matches = useMediaQuery('(max-width: 768px)');
 
   const { data: emails = [], isLoading } = useGetSenderEmails();
@@ -106,9 +107,11 @@ const PipelineSettings = () => {
       labels: { confirm: 'Delete', cancel: 'Cancel' },
       confirmProps: { color: 'red', variant: 'subtle' },
       cancelProps: { variant: 'subtle' },
-      onConfirm: () => removeEmail(email, { onSuccess: () => {
-        queryClient.invalidateQueries(['sender-emails']);
-      } }),
+      onConfirm: () => removeEmail(email, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(['sender-emails']);
+        },
+      }),
     });
   };
   const companyId = currentAdmin?.currentCompany._id;
@@ -121,9 +124,27 @@ const PipelineSettings = () => {
       <td>{email.value}</td>
       {isCurrentAdminCanManageEmails && (
         <td>
-          <UnstyledButton onClick={() => removeEmailHandler(email.value)}>
-            <IconTrash color="red" icon={<IconTrash />} />
-          </UnstyledButton>
+          <Menu position="bottom-end">
+            <Menu.Target>
+              <ActionIcon
+                title="Settings"
+                variant="transparent"
+                sx={{ width: '100%', justifyContent: 'flex-end' }}
+              >
+                <CardSettingsButton />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                icon={<IconTrash color="red" icon={<IconTrash />} />}
+                onClick={() => removeEmailHandler(email.value)}
+                sx={{ padding: '20px 13px' }}
+                className={classes.menuItem}
+              >
+                Remove
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         </td>
       )}
     </tr>
@@ -144,11 +165,12 @@ const PipelineSettings = () => {
               <CardSettingsButton />
             </ActionIcon>
           </Menu.Target>
-          <Menu.Dropdown sx={{ width: '192px !important', height: 112 }}>
+          <Menu.Dropdown>
             <Menu.Item
               icon={<IconSettings size={14} />}
               onClick={() => handleEventSetting(event)}
-              sx={{ padding: '14px 13px' }}
+              sx={{ padding: '20px 13px' }}
+              className={classes.menuItem}
             >
               Settings
             </Menu.Item>
@@ -156,7 +178,8 @@ const PipelineSettings = () => {
               icon={<IconTrash size={14} />}
               color="red"
               onClick={() => handleEventDelete(event)}
-              sx={{ padding: '14px 13px' }}
+              sx={{ padding: '20px 13px' }}
+              className={classes.menuItem}
             >
               Delete
             </Menu.Item>
@@ -183,9 +206,11 @@ const PipelineSettings = () => {
       <Table verticalSpacing="xs" horizontalSpacing="xs" striped>
         <thead>
           <tr>
-            <th>Email</th>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <th />
             {currentAdmin?.ownCompanyId && (
-              <th>Actions</th>
+            // eslint-disable-next-line jsx-a11y/control-has-associated-label
+            <th />
             )}
           </tr>
         </thead>

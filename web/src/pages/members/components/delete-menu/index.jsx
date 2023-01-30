@@ -24,12 +24,13 @@ const MemberMenu = (props) => {
           <CardSettingsButton />
         </ActionIcon>
       </Menu.Target>
-      <Menu.Dropdown sx={{ width: '192px !important', height: 60 }}>
+      <Menu.Dropdown>
         <Menu.Item
           icon={!matches && <IconTrash size={14} />}
           color="red"
           onClick={onDelete}
           sx={{ padding: '16px 13px' }}
+          className={classes.menuItem}
         >
           Delete
         </Menu.Item>

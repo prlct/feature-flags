@@ -6,7 +6,6 @@ import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
-import sequenceService from '../../sequence/sequence.service';
 
 const schema = Joi.object({
   userId: Joi.string().required(),

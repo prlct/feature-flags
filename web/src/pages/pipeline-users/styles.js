@@ -41,4 +41,8 @@ export const useStyles = createStyles(({ colors }) => ({
     fontWeight: 'bold',
     justifyContent: 'flex-start',
   },
+  menuItem: {
+    height: 18,
+    minHeight: 18,
+  },
 }));
