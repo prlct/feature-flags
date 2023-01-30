@@ -112,6 +112,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
 
   if (newUserList.length > 0) {
     await pipelineUserService.atomic.bulkWrite(newUserList);
+    await sequenceService.atomic.updateOne({ _id: sequence._id }, { $inc: { total: 1 } });
     const extraDelayMillis = 100;
     for (const [i, user] of Object.entries(newUserList)) {
       await scheduledJobService.scheduleSequenceEmail(firstEmail, user.updateOne.filter.email, +i * extraDelayMillis);

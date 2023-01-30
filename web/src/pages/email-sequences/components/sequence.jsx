@@ -45,7 +45,11 @@ const Sequence = (props) => {
           </Text>
           <SequenceMenu sequence={sequence} />
         </Group>
-        <SequenceProgressBar total={sequence.total} dropped={sequence.dropped} />
+        <SequenceProgressBar
+          total={sequence.total}
+          completed={sequence.completed}
+          dropped={sequence.dropped}
+        />
         {sequence.trigger && (
         <Card shadow="sm" p="sm" radius="sm" withBorder mt={!matches && 16} sx={{ borderRadius: 12 }}>
           <Stack spacing={12}>

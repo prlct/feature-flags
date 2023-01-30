@@ -41,7 +41,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
       dropped: 1,
     },
   });
-  await sequenceEmailService.atomic.updateOne({ _id: tokenEntity.emailId }, { $inc: { dropped: 1 } });
+
+  await sequenceEmailService.atomic.updateOne({ _id: tokenEntity.emailId }, { $inc: { unsubscribed: 1 } });
 
   await unsubscribeTokenService.deleteSoft({ _id: tokenEntity._id });
 

@@ -37,6 +37,8 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     return;
   }
 
+  await sequenceService.atomic.updateOne({ _id: sequence._id }, { $inc: { completed: 1 } });
+
   await pipelineUserService.atomic.updateOne({
     email,
     'sequences._id': sequence._id,
