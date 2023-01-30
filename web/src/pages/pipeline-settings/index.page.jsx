@@ -152,8 +152,8 @@ const PipelineSettings = () => {
 
   const eventsRows = fetchedEvents?.events?.map((event) => (
     <tr key={event.label}>
-      <td>{event.label}</td>
-      <td>{event.value}</td>
+      <td><Text weight="bold">{event.label}</Text></td>
+      <td><Text weight="bold">{event.value}</Text></td>
       <td>
         <Menu position="bottom-end">
           <Menu.Target>

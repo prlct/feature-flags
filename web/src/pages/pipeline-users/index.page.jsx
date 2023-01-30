@@ -122,9 +122,9 @@ const UsersList = () => {
 
   const rows = filteredSubscribers.length > 0 ? filteredSubscribers.map((user) => (
     <tr key={user._id}>
-      <td>{user.email}</td>
-      <td>{user.firstName}</td>
-      <td>{user.lastName}</td>
+      <td><Text weight="bold">{user.email}</Text></td>
+      <td><Text weight="bold">{user.firstName}</Text></td>
+      <td><Text weight="bold">{user.lastName}</Text></td>
       <td>
         <MultiSelect
           data={getPipelinesList(pipelines)}
