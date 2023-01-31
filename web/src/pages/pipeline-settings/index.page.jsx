@@ -13,7 +13,7 @@ import {
 } from '@mantine/core';
 import config from 'config';
 import queryClient from 'query-client';
-import { IconSettings, IconTrash } from '@tabler/icons';
+import { IconDots, IconSettings, IconTrash } from '@tabler/icons';
 import { openContextModal, useModals } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
@@ -124,21 +124,23 @@ const PipelineSettings = () => {
       <td>{email.value}</td>
       {isCurrentAdminCanManageEmails && (
         <td>
-          <Menu position="bottom-end">
+          <Menu position="right" withinPortal>
             <Menu.Target>
               <ActionIcon
                 title="Settings"
                 variant="transparent"
-                sx={{ width: '100%', justifyContent: 'flex-end' }}
+                size="sm"
+                color="gray"
+                sx={{ marginLeft: 'auto' }}
               >
-                <CardSettingsButton />
+                <IconDots />
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
               <Menu.Item
                 icon={<IconTrash color="red" icon={<IconTrash />} />}
                 onClick={() => removeEmailHandler(email.value)}
-                sx={{ padding: '20px 13px' }}
+                sx={{ padding: '14px 13px' }}
                 className={classes.menuItem}
               >
                 Remove
@@ -224,7 +226,7 @@ const PipelineSettings = () => {
         </Button>
       </Group>
 
-      <Paper radius="sm" withBorder>
+      <Paper radius="sm" withBorder mb={60}>
         <ScrollArea>
           <Table verticalSpacing="xs" horizontalSpacing="xs" className={classes.table}>
             <thead>
