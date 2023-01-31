@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import sequenceService from 'resources/sequence/sequence.service';
 import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
@@ -32,6 +34,17 @@ export const updatePipelinesForUser = async (user: PipelineUser, pipelinesArray:
       { pipelineId: pl._id, enabled: true },
       { sort: { index: -1 }, limit: 1 },
     );
+    const existingSequenceInUser = user.sequences.find((seq) => seq._id === sequence._id);
+
+    if (existingSequenceInUser && existingSequenceInUser.finishedOn) {
+      if (sequence.trigger?.allowRepeat) {
+        const now = moment();
+        const allowRepeatDate = moment(existingSequenceInUser.finishedOn).add(sequence.trigger.repeatDelay, 'days');
+        if (allowRepeatDate.isAfter(now)) {
+          return;
+        }
+      }
+    }
 
     const { results: [sequenceEmail] } = await sequenceEmailService.find({
       sequenceId: sequence._id,
