@@ -131,6 +131,7 @@ const UsersList = () => {
           defaultValue={[user?.pipeline?._id]}
           value={user?.pipelines?.map((p) => p._id)}
           clearButtonLabel="Clear selection"
+          withinPortal
           onChange={(value) => handlePipelinesList(value, user._id, user.email)}
           size="sm"
           styles={{
@@ -141,7 +142,7 @@ const UsersList = () => {
         />
       </td>
       <td>
-        <Menu position="bottom-end">
+        <Menu position="bottom-end" withinPortal>
           <Menu.Target>
             <ActionIcon
               title="Settings"

@@ -4,6 +4,7 @@ import { validateMiddleware } from 'middlewares';
 
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
+import { updatePipelinesForUser } from 'resources/pipeline-user/pipeline-user.helper';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
 
@@ -29,16 +30,15 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     projection: { _id: 1, name: 1 },
   });
 
-  ctx.body = await pipelineUserService.updateOne(
-    {
-      _id: userId,
-      applicationId,
-    },
-    (user) => {
-      user.pipelines = pipelinesArray;
-      return user;
-    },
-  );
+  const user = await pipelineUserService.findOne({ _id: userId });
+  ctx.assertError(user, 'User not found');
+
+  await updatePipelinesForUser(user, pipelinesArray);
+
+  ctx.body = await pipelineUserService.findOne({
+    _id: userId,
+    applicationId,
+  });
 };
 
 
