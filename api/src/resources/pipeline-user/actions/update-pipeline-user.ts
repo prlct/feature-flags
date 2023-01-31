@@ -6,6 +6,7 @@ import { validateMiddleware } from 'middlewares';
 import applicationAccess from 'resources/pipeline/middlewares/application-access';
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
+import { updatePipelinesForUser } from 'resources/pipeline-user/pipeline-user.helper';
 
 
 const schema = Joi.object({
@@ -32,13 +33,26 @@ type ValidatedData = {
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { userId } = ctx.params;
-  const { email, firstName, lastName, pipelines } = ctx.validatedData;
+  const { applicationId, email, firstName, lastName, pipelines } = ctx.validatedData;
 
+  const user = await pipelineUserService.updateOne({ _id: userId, applicationId }, () => {
+    return { email, firstName, lastName };
+  });
+  ctx.assertError(user, 'User not found');
 
-  ctx.body = await pipelineUserService.updateOne({
+  const { results: pipelinesArray } = await pipelineService.find({
+    applicationId,
+    _id: { $in: pipelines.map((p) => p._id) },
+    deletedOn: { $exists: false },
+  }, {
+    projection: { _id: 1, name: 1 },
+  });
+
+  await updatePipelinesForUser(user, pipelinesArray);
+
+  ctx.body = await pipelineUserService.findOne({
     _id: userId,
-  },  (user) => {
-    return { ...user, email, firstName, lastName, pipelines };
+    applicationId,
   });
 };
 
