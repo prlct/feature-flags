@@ -20,7 +20,8 @@ export function useAddPipeline(env) {
   const currentAdmin = queryClient.getQueryData(['currentAdmin']);
   const applicationId = currentAdmin.currentApplicationId;
 
-  const data = queryClient.getQueryData([pipelinesResource]);
+  const data = queryClient.getQueryData([pipelinesResource, env]);
+
   const currentPipelines = data?.results || [];
 
   const createEmptyPipeline = async () => apiService.post(

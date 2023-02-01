@@ -5,6 +5,7 @@ import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
 import { openContextModal } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 
+import { useAmplitude } from 'contexts/amplitude-context';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
 import CardSettingsButton from './card-settings-button';
@@ -24,6 +25,7 @@ const EmailCard = (props) => {
   } = email;
 
   const matches = useMediaQuery('(max-width: 768px)');
+  const amplitude = useAmplitude();
 
   const textColor = enabled ? 'gray' : '#ddd';
 
@@ -48,7 +50,11 @@ const EmailCard = (props) => {
               <Menu.Dropdown>
                 <Menu.Item
                   icon={!matches && enabledMenuIcon}
-                  onClick={handleEmailToggle}
+                  onClick={() => handleEmailToggle(undefined, { onSuccess: (email) => {
+                    if (email.enabled) {
+                      amplitude.track('Sequence email enabled');
+                    }
+                  } })}
                 >
                   {enabled ? 'Disable' : 'Enable'}
                 </Menu.Item>

@@ -5,6 +5,7 @@ import { IconDots, IconEdit, IconPlayerPlay, IconPlayerStop, IconPlus, IconTrash
 import { openContextModal } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 import { useRemoveSequence, useToggleSequenceEnabled } from 'resources/email-sequence/email-sequence.api';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const ICON_SIZE = 16;
 
@@ -19,6 +20,9 @@ const SequenceMenu = ({ sequence }) => {
     : <IconPlayerPlay size={ICON_SIZE} />;
 
   const { mutate: removeSequenceHandler, isLoading } = useRemoveSequence();
+
+  const amplitude = useAmplitude();
+
   const {
     mutate: toggleSequenceEnabled,
     isLoading: toggleSequenceLoading,
@@ -76,7 +80,11 @@ const SequenceMenu = ({ sequence }) => {
           <Menu.Divider />
           <Menu.Item
             icon={!matches && startStopIcon}
-            onClick={() => toggleSequenceEnabled(sequence?._id)}
+            onClick={() => toggleSequenceEnabled(sequence?._id, { onSuccess: (seq) => {
+              if (seq.enabled) {
+                amplitude.track('Sequence enabled');
+              }
+            } })}
           >
             {`${startOrStopText} sequence`}
           </Menu.Item>
