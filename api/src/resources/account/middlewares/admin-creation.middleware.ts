@@ -28,6 +28,7 @@ const triggerEvent = async (
     email,
     firstName,
     lastName,
+    env: Env.PRODUCTION,
   }, {
     headers: { authorization: `Bearer ${application.privateApiKey}` },
   });
