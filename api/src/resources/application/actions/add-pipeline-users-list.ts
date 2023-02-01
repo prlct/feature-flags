@@ -12,6 +12,7 @@ import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
 import { generateId } from '@paralect/node-mongo';
+import { amplitudeService } from '../../../services';
 
 const schema = Joi.object({
   sequenceId: Joi.string().required(),
@@ -111,6 +112,11 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   }));
 
   if (newUserList.length > 0) {
+    const totalDocuments = await pipelineUserService.countDocuments({}, { requireDeletedOn: true });
+
+    if (totalDocuments === 1) {
+      amplitudeService.trackEvent(applicationId, 'First subscriber added');
+    }
     await pipelineUserService.atomic.bulkWrite(newUserList);
     await sequenceService.atomic.updateOne({ _id: sequence._id }, { $inc: { total: 1 } });
     const extraDelayMillis = 100;

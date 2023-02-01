@@ -6,6 +6,7 @@ import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
+import { useAmplitude } from 'contexts/amplitude-context';
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
 
@@ -29,6 +30,8 @@ const Pipeline = ({ id }) => {
     defaultValue: ENV.DEVELOPMENT,
     getInitialValueInEffect: false,
   });
+
+  const amplitude = useAmplitude();
 
   const sequences = data || [];
 
@@ -93,7 +96,9 @@ const Pipeline = ({ id }) => {
         ))}
         <Box mt={8}>
           <Button
-            onClick={() => handleAddSequence({ name: 'New sequence', env })}
+            onClick={() => handleAddSequence({ name: 'New sequence', env }, { onSuccess: () => {
+              amplitude.track('Sequence created');
+            } })}
             variant="light"
             className={classes.addButton}
             style={{ minWidth: matches ? 248 : 304 }}

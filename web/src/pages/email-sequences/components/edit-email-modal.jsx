@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button, Group, NumberInput, Stack, TextInput } from '@mantine/core';
 import EmailEditor from 'components/emailEditor';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const EditEmailModal = ({ context, id, innerProps }) => {
   const { email, sequenceId } = innerProps;
@@ -12,7 +13,7 @@ const EditEmailModal = ({ context, id, innerProps }) => {
 
   const [subject, setSubject] = useState(email?.subject || '');
   const [body, setBody] = useState(email?.body || '');
-
+  const amplitude = useAmplitude();
   const isEdit = !!email;
 
   const {
@@ -31,7 +32,10 @@ const EditEmailModal = ({ context, id, innerProps }) => {
       });
     } else {
       handleEmailCreate(data, {
-        onSuccess: () => context.closeModal(id),
+        onSuccess: () => {
+          context.closeModal(id);
+          amplitude.track('Sequence email created');
+        },
       });
     }
   };

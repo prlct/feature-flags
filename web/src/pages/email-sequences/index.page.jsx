@@ -7,8 +7,9 @@ import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api'
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import { handleError } from 'helpers';
-import Pipeline from './components/pipeline';
+import { useAmplitude } from 'contexts/amplitude-context';
 
+import Pipeline from './components/pipeline';
 import { useStyles, tabListStyles } from './styles';
 import PipelineTab from './components/pipeline-tab';
 import InactivePipelineTab from './components/inactive-pipeline-tab';
@@ -24,6 +25,7 @@ const EmailSequences = () => {
     isLoading,
     isFetching,
   } = emailSequencesApi.useGetPipelines(env);
+  const amplitude = useAmplitude();
 
   const pipelines = useMemo(() => data?.results || [], [data]);
   const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || 'activation-pipelines');
@@ -50,6 +52,9 @@ const EmailSequences = () => {
 
   const handleAddPipeline = () => {
     addPipeline({}, {
+      onSuccess: () => {
+        amplitude.track('Pipeline created');
+      },
       onError: (e) => handleError(e),
     });
   };

@@ -18,6 +18,7 @@ import { Application } from 'resources/application/application.types';
 
 import { extractTokenFromQuery } from '../middlewares';
 import publicTokenAuthMiddleware from '../middlewares/public-token-auth.middleware';
+import { amplitudeService } from '../../../services';
 
 const schema = Joi.object({
   eventKey: Joi.string().required(),
@@ -70,6 +71,11 @@ const handleStartEvent = async (
         },
       },
     }, { upsert: true });
+    const totalDocuments = await pipelineUserService.countDocuments({}, { requireDeletedOn: true });
+
+    if (totalDocuments === 1) {
+      amplitudeService.trackEvent(application._id, 'First subscriber added');
+    }
 
     await scheduledJobService.scheduleSequenceEmail(sequenceEmail, email);
     await sequenceService.atomic.updateOne({ _id: sequence._id }, { $inc: { total: 1 } });
@@ -165,6 +171,8 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       application,
     );
   }
+
+  amplitudeService.trackEvent(userId, 'SDK Track event');
 
   ctx.body = 'ok';
 }

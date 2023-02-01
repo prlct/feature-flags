@@ -29,16 +29,20 @@ import {
 } from 'resources/email-sequence/email-sequence.api';
 import { Link } from 'components';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+import { useAmplitude } from 'contexts/amplitude-context';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
   const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const { data: fetchedEvents } = useGetApplicationEvents();
+  const amplitude = useAmplitude();
+
   const {
     mutate: createApplicationEvent,
     isLoading,
     error: eventCreationError,
   } = useAddApplicationEvent();
+
   const [env] = useLocalStorage({
     key: LOCAL_STORAGE_ENV_KEY,
     defaultValue: ENV.DEVELOPMENT,
@@ -119,6 +123,8 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     } else {
       await createSequence({ name: 'new sequence', trigger: data, env }, {
         onSuccess: () => {
+          amplitude.track('Trigger added');
+          amplitude.track('Sequence created');
           context.closeModal(id);
         },
       });
@@ -129,6 +135,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
     createApplicationEvent({ label: creatingEventName, value: creatingEventKey }, {
       onSuccess: () => {
         setCreatingEvent(false);
+        amplitude.track('Event created');
         showNotification({
           title: 'Trigger event created',
           message: 'Trigger event created',
