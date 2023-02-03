@@ -1,12 +1,14 @@
-import sequenceService from './sequence.service';
-import pipelineUserService from '../pipeline-user/pipeline-user.service';
-import { Env } from 'resources/application';
 import { generateId } from '@paralect/node-mongo';
-import { amplitudeService } from '../../services';
-import scheduledJobService from '../scheduled-job/scheduled-job.service';
-import { Pipeline } from '../pipeline';
-import sequenceEmailService from '../sequence-email/sequence-email.service';
-import pipelineService from '../pipeline/pipeline.service';
+
+import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
+import { Env } from 'resources/application';
+import { amplitudeService } from 'services';
+import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
+import { Pipeline } from 'resources/pipeline';
+import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import pipelineService from 'resources/pipeline/pipeline.service';
+
+import sequenceService from './sequence.service';
 
 const triggerEvent = async (
   eventKey: string,
