@@ -77,8 +77,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     (doc) => ({ featureIds: [...doc.featureIds, feature._id] }),
   );
 
-  // TODO: Fix response?
-  ctx.body = {};
+  const count = await featureService.countDocuments({}, { requireDeletedOn: true });
+
+  ctx.body = { isFirst: count === 1 };
 }
 
 export default (router: AppRouter) => {

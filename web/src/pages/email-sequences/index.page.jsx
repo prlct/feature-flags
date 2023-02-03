@@ -8,6 +8,7 @@ import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 
 import { handleError } from 'helpers';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 import Pipeline from './components/pipeline';
 import { useStyles, tabListStyles } from './styles';
@@ -26,6 +27,7 @@ const EmailSequences = () => {
     isFetching,
   } = emailSequencesApi.useGetPipelines(env);
   const amplitude = useAmplitude();
+  const growthflags = useGrowthFlags();
 
   const pipelines = useMemo(() => data?.results || [], [data]);
   const [openedPipeline, setOpenedPipeline] = useState(pipelines?.[0]?._id || 'activation-pipelines');
@@ -54,6 +56,7 @@ const EmailSequences = () => {
     addPipeline({}, {
       onSuccess: () => {
         amplitude.track('Pipeline created');
+        growthflags?.triggerEvent('pipeline-added');
       },
       onError: (e) => handleError(e),
     });

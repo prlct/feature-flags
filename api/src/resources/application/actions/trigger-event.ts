@@ -71,7 +71,10 @@ const handleStartEvent = async (
         },
       },
     }, { upsert: true });
-    const totalDocuments = await pipelineUserService.countDocuments({ applicationId: pipeline.applicationId }, { requireDeletedOn: true });
+    const totalDocuments = await pipelineUserService.countDocuments(
+      { applicationId: pipeline.applicationId },
+      { requireDeletedOn: true },
+    );
 
     if (totalDocuments === 1) {
       amplitudeService.trackEvent(application._id, 'First subscriber added');

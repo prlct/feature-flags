@@ -30,12 +30,14 @@ import {
 import { Link } from 'components';
 import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 const TriggerSelectionModal = ({ context, id, innerProps }) => {
   const { sequence, pipelineId } = innerProps;
   const [triggerName, setTriggerName] = useState(sequence?.trigger?.name ?? '');
   const { data: fetchedEvents } = useGetApplicationEvents();
   const amplitude = useAmplitude();
+  const growthflags = useGrowthFlags();
 
   const {
     mutate: createApplicationEvent,
@@ -125,6 +127,7 @@ const TriggerSelectionModal = ({ context, id, innerProps }) => {
         onSuccess: () => {
           amplitude.track('Trigger added');
           amplitude.track('Sequence created');
+          growthflags?.triggerEvent('trigger-added');
           context.closeModal(id);
         },
       });

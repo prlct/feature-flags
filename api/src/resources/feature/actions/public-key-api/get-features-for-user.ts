@@ -10,6 +10,9 @@ import { userService } from 'resources/user';
 import  { amplitudeService } from 'services';
 import { calculateABTestsForUser, calculateFlagsForUser, featuresToConfigsForUser } from './helpers';
 import { companyService } from 'resources/company';
+import { Admin, adminService } from 'resources/admin';
+import sequenceHelper from 'resources/sequence/sequence.helper';
+import config from 'config';
 
 const schema = Joi.object({
   env: Joi.string()
@@ -44,6 +47,15 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   if (!application.sdkInstalled) {
     await applicationService.atomic.updateOne({ _id: application._id }, { $set: { sdkInstalled: true } });
     amplitudeService.trackEvent(undefined, 'Install SDK');
+    const owner = await adminService.findOne({ ownCompanyId: application.companyId }) as Admin;
+    sequenceHelper.triggerEvent(
+      'sdk-initialized',
+      config.mainApplicationId,
+      env,
+      owner.email,
+      owner.firstName || undefined,
+      owner.lastName || undefined,
+    );
   }
 
   const company = await companyService.findOne({ applicationIds: application._id });
