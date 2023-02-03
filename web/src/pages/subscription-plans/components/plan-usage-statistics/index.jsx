@@ -82,6 +82,11 @@ const PlanUsageStatistics = ({
 
   if (isLoaderVisible) return null;
 
+  const intervalNames = {
+    month: 'Monthly',
+    year: 'Annual',
+  };
+
   return (
     <>
       <Stack spacing={7}>
@@ -97,7 +102,9 @@ const PlanUsageStatistics = ({
           <b>{subscriptionName || 'Basic'}</b>
         </Text>
         <Text size="lg" className={classes.planDescription}>
-          Monthly cost
+          {intervalNames[interval]}
+          {' '}
+          cost
           {' '}
           <b>
             {currentSubscription?.price[interval] ? `$${currentSubscription?.price[interval]}` : 'Free'}
