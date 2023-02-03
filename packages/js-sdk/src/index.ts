@@ -289,7 +289,7 @@ class FeatureFlags {
 let instance: FeatureFlags;
 
 export default {
-  create: ({ publicApiKey, env, defaultFeatures, isDevelopmentApi = false }: Constructor) => {
+  create: ({ publicApiKey, env, defaultFeatures = {}, isDevelopmentApi = false }: Constructor) => {
     if (!publicApiKey) {
       throw new RangeError('Invalid arguments: "publicApiKey" must be provided.');
     }
