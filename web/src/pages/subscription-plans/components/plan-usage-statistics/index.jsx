@@ -28,6 +28,7 @@ const PlanUsageStatistics = ({
   nextPayment,
   subscriptionLimits,
   cancelAtPeriodEnd,
+  currentInterval,
 }) => {
   const admin = queryClient.getQueryData(['currentAdmin']);
   const companyId = admin.currentCompany._id;
@@ -102,7 +103,7 @@ const PlanUsageStatistics = ({
           <b>{subscriptionName || 'Basic'}</b>
         </Text>
         <Text size="lg" className={classes.planDescription}>
-          {intervalNames[interval]}
+          {intervalNames[currentInterval]}
           {' '}
           cost
           {' '}
@@ -222,6 +223,7 @@ PlanUsageStatistics.propTypes = {
     users: PropTypes.number.isRequired,
   }).isRequired,
   cancelAtPeriodEnd: PropTypes.bool,
+  currentInterval: PropTypes.string,
 };
 
 PlanUsageStatistics.defaultProps = {
@@ -230,6 +232,7 @@ PlanUsageStatistics.defaultProps = {
   nextPayment: 0,
   interval: 'month',
   cancelAtPeriodEnd: false,
+  currentInterval: '',
 };
 
 export default memo(PlanUsageStatistics);
