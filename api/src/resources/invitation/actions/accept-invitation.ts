@@ -83,6 +83,11 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       email,
       firstName,
       lastName,
+      currentApplicationId: company.applicationIds[0],
+      companies: [{
+        _id: company._id,
+        name: company.name,
+      }],
       companyIds: [company._id],
       currentCompany: {
         _id: company._id,
