@@ -5,6 +5,7 @@ import { AppKoaContext, Next, AppRouter } from 'types';
 import { featureService } from 'resources/feature';
 import { applicationService, Env } from 'resources/application';
 import applicationAuth from '../middlewares/application-auth.middleware';
+import pipelineUserService from '../../pipeline-user/pipeline-user.service';
 
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 300;
@@ -77,8 +78,9 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
     (doc) => ({ featureIds: [...doc.featureIds, feature._id] }),
   );
 
-  // TODO: Fix response?
-  ctx.body = {};
+  const count = await featureService.countDocuments({}, { requireDeletedOn: true });
+
+  ctx.body = { isFirst: count === 1 };
 }
 
 export default (router: AppRouter) => {

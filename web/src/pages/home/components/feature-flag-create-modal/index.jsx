@@ -16,6 +16,7 @@ import * as yup from 'yup';
 import { handleError } from 'helpers';
 import { applicationApi } from 'resources/application';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 const schema = yup.object().shape({
   name: yup.string().trim().max(100).required('Field is required.'),
@@ -34,6 +35,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
   });
 
   const amplitude = useAmplitude();
+  const growthflags = useGrowthFlags();
 
   const handleClose = useCallback(() => {
     reset();
@@ -43,7 +45,7 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
   const createFeatureFlagMutation = applicationApi.useCreateFeatureFlag();
 
   const onSubmit = (data) => createFeatureFlagMutation.mutate(data, {
-    onSuccess: () => {
+    onSuccess: (result) => {
       handleClose();
       showNotification({
         title: 'Success',
@@ -51,6 +53,9 @@ const FeatureFlagCreateModal = ({ opened, onClose }) => {
         color: 'green',
       });
       amplitude.track('Create feature flag');
+      if (result.isFirst) {
+        growthflags?.triggerEvent('feature-flag-created');
+      }
     },
     onError: (e) => handleError(e, setError),
   });

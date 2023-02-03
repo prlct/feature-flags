@@ -11,7 +11,7 @@ import pipelineService from 'resources/pipeline/pipeline.service';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
 import { Env, extractTokenFromQuery } from 'resources/application';
 import privateTokenAuthMiddleware from 'resources/application/middlewares/private-token-auth.middleware';
-import { amplitudeService } from '../../../services';
+import { amplitudeService } from 'services';
 
 const schema = Joi.object({
   email: Joi.string().email().required(),

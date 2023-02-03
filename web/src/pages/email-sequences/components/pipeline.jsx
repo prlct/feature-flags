@@ -5,13 +5,12 @@ import { openContextModal } from '@mantine/modals';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
-
 import { useAmplitude } from 'contexts/amplitude-context';
+import { ENV, LOCAL_STORAGE_ENV_KEY } from 'helpers/constants';
+
 import Sequence from './sequence';
 import SequenceMenu from './sequence-menu';
-
 import { useStyles } from './styles';
-import { ENV, LOCAL_STORAGE_ENV_KEY } from '../../../helpers/constants';
 
 const Pipeline = ({ id }) => {
   const {

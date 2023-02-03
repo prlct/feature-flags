@@ -6,6 +6,7 @@ import { openContextModal } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 import { useRemoveSequence, useToggleSequenceEnabled } from 'resources/email-sequence/email-sequence.api';
 import { useAmplitude } from 'contexts/amplitude-context';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 
 const ICON_SIZE = 16;
 
@@ -22,6 +23,7 @@ const SequenceMenu = ({ sequence }) => {
   const { mutate: removeSequenceHandler, isLoading } = useRemoveSequence();
 
   const amplitude = useAmplitude();
+  const growthflags = useGrowthFlags();
 
   const {
     mutate: toggleSequenceEnabled,
@@ -83,6 +85,7 @@ const SequenceMenu = ({ sequence }) => {
             onClick={() => toggleSequenceEnabled(sequence?._id, { onSuccess: (seq) => {
               if (seq.enabled) {
                 amplitude.track('Sequence enabled');
+                growthflags?.triggerEvent('sequence-enabled');
               }
             } })}
           >

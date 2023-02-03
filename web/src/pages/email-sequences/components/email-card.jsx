@@ -6,6 +6,7 @@ import { openContextModal } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAmplitude } from 'contexts/amplitude-context';
+import { useGrowthFlags } from 'contexts/growth-flags-context';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 
 import CardSettingsButton from './card-settings-button';
@@ -26,6 +27,7 @@ const EmailCard = (props) => {
 
   const matches = useMediaQuery('(max-width: 768px)');
   const amplitude = useAmplitude();
+  const growthflags = useGrowthFlags();
 
   const textColor = enabled ? 'gray' : '#ddd';
 
@@ -53,6 +55,7 @@ const EmailCard = (props) => {
                   onClick={() => handleEmailToggle(undefined, { onSuccess: (email) => {
                     if (email.enabled) {
                       amplitude.track('Sequence email enabled');
+                      growthflags?.triggerEvent('email-enabled');
                     }
                   } })}
                 >
