@@ -98,6 +98,7 @@ const SubscriptionPlans = () => {
         subscriptionName={currentSubscription?.name}
         planId={currentSubscription?.planId}
         interval={interval}
+        currentInterval={currentSubscription?.interval}
         nextPayment={currentSubscription?.endDate}
         subscriptionLimits={currentSubscription?.subscriptionLimits
         || subscriptionList[0].subscriptionLimits}
