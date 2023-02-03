@@ -108,7 +108,7 @@ const PlanUsageStatistics = ({
           cost
           {' '}
           <b>
-            {currentSubscription?.price[interval] ? `$${currentSubscription?.price[interval]}` : 'Free'}
+            {currentSubscription?.price[currentInterval] ? `$${currentSubscription?.price[currentInterval]}` : 'Free'}
           </b>
         </Text>
 
