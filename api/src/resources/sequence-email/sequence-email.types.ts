@@ -10,6 +10,7 @@ export type SequenceEmail = {
   enabled: boolean,
   sent: number,
   unsubscribed: number,
+  converted: number,
   index: number,
 
   createdOn?: Date;

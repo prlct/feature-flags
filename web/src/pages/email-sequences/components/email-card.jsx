@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconPlayerStop, IconSend, IconTrash } from '@tabler/icons';
-import { Card, Group, Space, Stack, Text, Menu, Box } from '@mantine/core';
+import { Card, Group, Stack, Text, Menu, Box } from '@mantine/core';
 
 import { openContextModal } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
@@ -11,8 +11,7 @@ import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api'
 
 import CardSettingsButton from './card-settings-button';
 import DayBadge from './day-badge';
-
-const UNSUBSCRIBE_SHOW_THRESHOLD = 10;
+import EmailProgressBar from './email-progress-bar';
 
 const EmailCard = (props) => {
   const { email } = props;
@@ -20,7 +19,8 @@ const EmailCard = (props) => {
     name,
     enabled,
     sent,
-    unsubscribed,
+    converted = 0,
+    unsubscribed = 0,
     delayDays,
     _id,
   } = email;
@@ -30,8 +30,6 @@ const EmailCard = (props) => {
   const growthflags = useGrowthFlags();
 
   const textColor = enabled ? 'gray' : '#ddd';
-
-  const unsubPercentage = ((unsubscribed / sent) * 100).toFixed(2);
 
   const handleEmailToggle = emailSequencesApi.useEmailToggle(_id).mutate;
   const handleEmailRemove = emailSequencesApi.useEmailRemove(_id).mutate;
@@ -89,26 +87,9 @@ const EmailCard = (props) => {
               </Menu.Dropdown>
             </Menu>
           </Group>
-          <Space h="sm" />
-          <Space h="sm" />
-          <Group position="apart">
-            <Text size={14} color="#797C80" style={{ lineHeight: '20px' }}>
-              Sent:
-            </Text>
-            <Text size={14} weight="bold" color={textColor} style={{ lineHeight: '20px' }}>
-              {sent}
-            </Text>
-          </Group>
-          {unsubPercentage >= UNSUBSCRIBE_SHOW_THRESHOLD && (
-          <Group position="apart">
-            <Text size={14} color="#797C80" style={{ lineHeight: '20px' }}>
-              Unsubscribes:
-            </Text>
-            <Text size={14} weight={600} color={textColor} mt={8} style={{ lineHeight: '20px' }}>
-              {`${unsubPercentage}%`}
-            </Text>
-          </Group>
-          )}
+          <Box>
+            <EmailProgressBar converted={converted} dropped={unsubscribed} sent={sent} />
+          </Box>
         </Stack>
         {!enabled && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -127,6 +108,7 @@ EmailCard.propTypes = {
     name: PropTypes.string,
     enabled: PropTypes.bool,
     sent: PropTypes.number,
+    converted: PropTypes.number,
     unsubscribed: PropTypes.number,
   }).isRequired,
 };
