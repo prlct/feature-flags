@@ -114,6 +114,9 @@ const handleStopEvent = async (
       completed: modifiedCount,
     },
   });
+  const lastEmail = pipelineUser.sequences.find((seq) => seq._id === sequence._id)?.lastEmail;
+
+  await sequenceEmailService.atomic.updateOne({ _id: lastEmail }, { $inc: { converted: modifiedCount } });
 };
 
 async function handler(ctx: AppKoaContext<ValidatedData>) {
@@ -127,52 +130,56 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
   const email = user.email || user.data.email;
   const application = ctx.state.application;
 
-  const { results: [sequence] } = await sequenceService.find({
+  const { results: sequences } = await sequenceService.find({
     applicationId: application._id,
     enabled: true,
     env: user.env,
     deletedOn: { $exists: false },
     $or: [{ 'trigger.eventKey': eventKey }, { 'trigger.stopEventKey': eventKey }],
-  }, { sort: { index: -1 }, limit: 1 });
+  }, { sort: { index: -1 } });
 
-  if (!sequence) {
+  if (!sequences.length) {
     ctx.throwClientError({ sequence: 'Not found' }, 400);
   }
 
-  const pipelineUser = await pipelineUserService.findOne({
-    'pipelines._id': sequence.pipelineId,
-    'sequences._id': sequence._id,
-    email: email,
-    deletedOn: { $exists: false },
-  });
+  for (const sequence of sequences) {
+    const pipelineUser = await pipelineUserService.findOne({
+      'pipelines._id': sequence.pipelineId,
+      'sequences._id': sequence._id,
+      email: email,
+      deletedOn: { $exists: false },
+    });
 
-  const { results: [sequenceEmail] } = await sequenceEmailService.find({
-    sequenceId: sequence._id,
-    enabled: true,
-    deletedOn: { $exists: false },
-  }, { sort: { index: -1 }, limit: 1 });
+    const { results: [sequenceEmail] } = await sequenceEmailService.find({
+      sequenceId: sequence._id,
+      enabled: true,
+      deletedOn: { $exists: false },
+    }, { sort: { index: -1 }, limit: 1 });
 
-  if (!sequenceEmail) {
-    ctx.throwClientError({ sequenceEmail: 'Not found' }, 400);
-  }
+    if (!sequenceEmail) {
+      ctx.throwClientError({ sequenceEmail: 'Not found' }, 400);
+    }
 
-  const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
+    const pipeline = await pipelineService.findOne({ _id: sequence.pipelineId });
 
-  if (!pipeline) {
-    ctx.throwClientError({ pipeline: 'Not found' }, 400);
-  }
+    if (!pipeline) {
+      ctx.throwClientError({ pipeline: 'Not found' }, 400);
+    }
 
-  if (sequence.trigger?.eventKey === eventKey) {
-    handleStartEvent(user, sequence, pipelineUser, sequenceEmail, pipeline, firstName, lastName, email, application);
-  } else if (sequence.trigger?.stopEventKey === eventKey) {
-    handleStopEvent(
-      user,
-      sequence,
-      pipelineUser,
-      pipeline,
-      email,
-      application,
-    );
+    if (sequence.trigger?.eventKey === eventKey) {
+      handleStartEvent(user, sequence, pipelineUser, sequenceEmail, pipeline, firstName, lastName, email, application);
+    }
+
+    if (sequence.trigger?.stopEventKey === eventKey) {
+      handleStopEvent(
+        user,
+        sequence,
+        pipelineUser,
+        pipeline,
+        email,
+        application,
+      );
+    }
   }
 
   amplitudeService.trackEvent(userId, 'SDK Track event');

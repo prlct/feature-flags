@@ -12,6 +12,8 @@ const schema = Joi.object({
   body: Joi.string(),
   sent: Joi.number().default(0),
   index: Joi.number().integer().min(0),
+  converted: Joi.number().default(0),
+  unsubscribed: Joi.number().default(0),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),
