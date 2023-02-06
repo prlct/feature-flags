@@ -24,7 +24,6 @@ import { useStyles } from './styles';
 const PlanUsageStatistics = ({
   subscriptionName,
   planId = '0',
-  interval,
   nextPayment,
   subscriptionLimits,
   cancelAtPeriodEnd,
@@ -61,7 +60,8 @@ const PlanUsageStatistics = ({
 
   const pipelines = useMemo(() => data?.results || [], [data]);
 
-  const currentSubscription = subscriptionList.find((item) => item.planIds[interval] === planId);
+  const currentSubscription = subscriptionList
+    .find((item) => item.planIds[currentInterval] === planId);
 
   const membersList = useMemo(() => {
     if (!members) {
@@ -77,7 +77,7 @@ const PlanUsageStatistics = ({
   }, [members]);
 
   const endSubscriptionDate = useMemo(
-    () => dayjs(new Date(nextPayment * 1000)).format('DD MMM YYYY'),
+    () => dayjs(new Date(nextPayment)).format('DD MMM YYYY'),
     [nextPayment],
   );
 
@@ -120,14 +120,14 @@ const PlanUsageStatistics = ({
             {' '}
             plan. Subscription will be ended on
             {' '}
-            {currentSubscription?.price[interval]
+            {currentSubscription?.price[currentInterval]
               ? endSubscriptionDate : '-'}
           </Text>
         ) : (
           <Text size="lg" className={classes.planDescription}>
             Next payment on
             {' '}
-            {currentSubscription?.price[interval]
+            {currentSubscription?.price[currentInterval]
               ? endSubscriptionDate : '-'}
           </Text>
         )}
@@ -215,7 +215,6 @@ PlanUsageStatistics.propTypes = {
   subscriptionName: PropTypes.string,
   planId: PropTypes.string,
   nextPayment: PropTypes.number,
-  interval: PropTypes.oneOf(['month', 'year']),
   subscriptionLimits: PropTypes.shape({
     emails: PropTypes.number.isRequired,
     mau: PropTypes.number.isRequired,
@@ -223,16 +222,14 @@ PlanUsageStatistics.propTypes = {
     users: PropTypes.number.isRequired,
   }).isRequired,
   cancelAtPeriodEnd: PropTypes.bool,
-  currentInterval: PropTypes.string,
+  currentInterval: PropTypes.oneOf(['month', 'year']).isRequired,
 };
 
 PlanUsageStatistics.defaultProps = {
   subscriptionName: '',
   planId: '',
   nextPayment: 0,
-  interval: 'month',
   cancelAtPeriodEnd: false,
-  currentInterval: '',
 };
 
 export default memo(PlanUsageStatistics);
