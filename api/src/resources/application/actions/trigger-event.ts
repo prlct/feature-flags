@@ -19,6 +19,9 @@ import { Application } from 'resources/application/application.types';
 import { extractTokenFromQuery } from '../middlewares';
 import publicTokenAuthMiddleware from '../middlewares/public-token-auth.middleware';
 import { amplitudeService } from '../../../services';
+import sequenceHelper from '../../sequence/sequence.helper';
+import { Admin, adminService } from '../../admin';
+import config from '../../../config';
 
 const schema = Joi.object({
   eventKey: Joi.string().required(),
@@ -168,6 +171,15 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
     if (sequence.trigger?.eventKey === eventKey) {
       handleStartEvent(user, sequence, pipelineUser, sequenceEmail, pipeline, firstName, lastName, email, application);
+      const owner = await adminService.findOne({ ownCompanyId: application.companyId }) as Admin;
+      sequenceHelper.triggerEvent(
+        'sdk-trigger-event',
+        config.mainApplicationId,
+        user.env,
+        owner.email,
+        owner.firstName || undefined,
+        owner.lastName || undefined,
+      );
     }
 
     if (sequence.trigger?.stopEventKey === eventKey) {
