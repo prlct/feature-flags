@@ -69,8 +69,10 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
 
 
-  if (features.length) {
-    const enabled = features.filter((f) => f.enabled).length;
+  const flagsForUser = await calculateFlagsForUser(features, user);
+  const enabledCount = Object.values(flagsForUser).filter((v) => !!v).length;
+  if (enabledCount) {
+    const enabled = Object.values(flagsForUser).filter((v) => !!v).length;
     const owner = await adminService.findOne({ ownCompanyId: application.companyId }) as Admin;
 
     let eventKey = '';
@@ -102,8 +104,6 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
       );
     }
   }
-
-  const flagsForUser = await calculateFlagsForUser(features, user);
 
   const variants = calculateABTestsForUser(userId || user?._id || '', features);
 
