@@ -67,6 +67,42 @@ async function handler(ctx: AppKoaContext<ValidatedData>) {
 
   const features = await featureService.getFeaturesForEnv(application._id, env);
 
+
+
+  if (features.length) {
+    const enabled = features.filter((f) => f.enabled).length;
+    const owner = await adminService.findOne({ ownCompanyId: application.companyId }) as Admin;
+
+    let eventKey = '';
+    switch (enabled) {
+      case 0:
+        break;
+      case 2:
+        eventKey = 'two-ff-init';
+        break;
+      case 3:
+        eventKey = 'three-ff-init';
+        break;
+      case 4:
+        eventKey = 'four-ff-init';
+        break;
+      default:
+        eventKey = 'feature-flag-initialized';
+        break;
+    }
+
+    if (eventKey) {
+      sequenceHelper.triggerEvent(
+        eventKey,
+        config.mainApplicationId,
+        env,
+        owner.email,
+        owner.firstName || undefined,
+        owner.lastName || undefined,
+      );
+    }
+  }
+
   const flagsForUser = await calculateFlagsForUser(features, user);
 
   const variants = calculateABTestsForUser(userId || user?._id || '', features);
