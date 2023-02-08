@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import config from 'config';
+import { parse } from 'node-html-parser';
 
 import applicationService from 'resources/application/application.service';
 import { SequenceEmail } from 'resources/sequence-email/sequence-email.types';
@@ -10,6 +11,20 @@ type MailOptions = {
   to: string,
   subject: string,
   text: string,
+};
+
+const replaceLinks = async (htmlString: string, emailId: string) => {
+  const parsed = parse(htmlString);
+  const links = parsed.getElementsByTagName('a');
+
+  links.forEach((link) => {
+    const href = link.getAttribute('href') as string;
+    const encodedOriginalLink = encodeURIComponent(href);
+    const newLink = `${config.apiUrl}/sequence-emails/${emailId}/redirect/${encodedOriginalLink}`;
+    link.setAttribute('href', newLink);
+  });
+
+  return parsed.toString();
 };
 
 const encodeEmail = (str: string) => Buffer.from(str)
@@ -42,8 +57,15 @@ export const buildEmail = async (
   firstName?: string,
   lastName?: string,
 ) => {
+  let text = sequenceEmail.body;
+  if (sequenceEmail.allowRedirect) {
+    text = await replaceLinks(sequenceEmail.body, sequenceEmail._id);
+  }
 
-  const text = token ? addUnsubscribeLink(sequenceEmail.body, token) : sequenceEmail.body;
+  if (token) {
+    text = addUnsubscribeLink(sequenceEmail.body, token);
+  }
+
   return { subject: sequenceEmail.subject, text, to }; // fixme - add firstName, lastName
 };
 

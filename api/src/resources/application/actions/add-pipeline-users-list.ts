@@ -7,12 +7,12 @@ import { validateMiddleware } from 'middlewares';
 import sequenceService from 'resources/sequence/sequence.service';
 import pipelineService from 'resources/pipeline/pipeline.service';
 import pipelineUserService from 'resources/pipeline-user/pipeline-user.service';
-import sequenceEmailService from 'resources/sequence-email/sequence-email.service';
+import { sequenceEmailService } from 'resources/sequence-email';
 import scheduledJobService from 'resources/scheduled-job/scheduled-job.service';
 
 import applicationAuth from '../middlewares/application-auth.middleware';
 import { generateId } from '@paralect/node-mongo';
-import { amplitudeService } from '../../../services';
+import { amplitudeService } from 'services';
 
 const schema = Joi.object({
   sequenceId: Joi.string().required(),

@@ -6,6 +6,7 @@ import invitationRoutes from 'resources/invitation/invitation.routes';
 import paymentRoutes from 'resources/payment/payment.routes';
 import applicationRoutes from 'resources/application/application.routes';
 import sequenceRoutes from 'resources/sequence/sequence.routes';
+import sequenceEmailRoutes from 'resources/sequence-email/sequence-email.routes';
 
 const healthCheckRouter = new AppRouter();
 healthCheckRouter.get('/health', ctx => ctx.status = 200);
@@ -18,4 +19,5 @@ export default (app: AppKoa) => {
   app.use(mount('/payments', paymentRoutes.publicRoutes));
   app.use(mount('/applications', applicationRoutes.publicRoutes));
   app.use(mount('/sequences', sequenceRoutes.publicRoutes));
+  app.use(mount('/sequence-emails', sequenceEmailRoutes.publicRoutes));
 };

@@ -12,6 +12,8 @@ export type SequenceEmail = {
   unsubscribed: number,
   converted: number,
   index: number,
+  allowRedirect: boolean,
+  clicked: number,
 
   createdOn?: Date;
   updatedOn?: Date;
