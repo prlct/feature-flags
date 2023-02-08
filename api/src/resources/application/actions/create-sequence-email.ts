@@ -12,6 +12,7 @@ const schema = Joi.object({
   subject: Joi.string().required(),
   body: Joi.string().required(),
   delayDays: Joi.number().integer().required(),
+  allowRedirect: Joi.boolean().default(false),
 });
 
 type ValidatedData = {
@@ -20,11 +21,12 @@ type ValidatedData = {
   subject: string,
   body: string,
   delayDays: number,
+  allowRedirect: boolean,
 };
 
 const handler = async (ctx: AppKoaContext<ValidatedData>) => {
   const { applicationId } = ctx.params;
-  const { name, sequenceId, subject, body, delayDays } = ctx.validatedData;
+  const { name, sequenceId, subject, body, delayDays, allowRedirect } = ctx.validatedData;
 
   const { results } = await sequenceEmailService.find({
     sequenceId,
@@ -42,6 +44,7 @@ const handler = async (ctx: AppKoaContext<ValidatedData>) => {
     subject,
     body,
     index,
+    allowRedirect,
   });
 };
 

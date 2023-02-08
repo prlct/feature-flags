@@ -14,6 +14,8 @@ const schema = Joi.object({
   index: Joi.number().integer().min(0),
   converted: Joi.number().default(0),
   unsubscribed: Joi.number().default(0),
+  clicked: Joi.number().default(0),
+  allowRedirect: Joi.boolean().default(false),
 
   createdOn: Joi.date(),
   updatedOn: Joi.date(),

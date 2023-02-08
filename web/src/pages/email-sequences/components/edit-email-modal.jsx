@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Group, NumberInput, Stack, TextInput } from '@mantine/core';
+import { Button, Group, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
 import EmailEditor from 'components/emailEditor';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 import { useAmplitude } from 'contexts/amplitude-context';
@@ -11,6 +11,7 @@ const EditEmailModal = ({ context, id, innerProps }) => {
   const { email, sequenceId } = innerProps;
   const [emailName, setEmailName] = useState(email?.name || '');
   const [delayDays, setDelayDays] = useState(email?.delayDays ?? 1);
+  const [allowRedirect, setAllowRedirect] = useState(email?.allowRedirect || false);
 
   const [subject, setSubject] = useState(email?.subject || '');
   const [body, setBody] = useState(email?.body || '');
@@ -27,7 +28,7 @@ const EditEmailModal = ({ context, id, innerProps }) => {
   const errors = updateError?.data?.errors || createError?.data?.errors;
 
   const onSave = () => {
-    const data = { ...email, delayDays, name: emailName, subject, body, sequenceId };
+    const data = { ...email, delayDays, name: emailName, subject, body, sequenceId, allowRedirect };
     if (isEdit) {
       handleEmailUpdate(data, {
         onSuccess: () => context.closeModal(id),
@@ -65,6 +66,11 @@ const EditEmailModal = ({ context, id, innerProps }) => {
         setSubject={setSubject}
         errors={errors}
       />
+      <Switch
+        checked={allowRedirect}
+        onChange={(e) => setAllowRedirect(e.currentTarget.checked)}
+        label="Allow redirect to capture email clicks"
+      />
       <Group position="apart" mt={16}>
         <Button
           variant="subtle"
@@ -92,6 +98,7 @@ EditEmailModal.propTypes = {
       delayDays: PropTypes.number,
       body: PropTypes.string,
       subject: PropTypes.string,
+      allowRedirect: PropTypes.bool,
     }),
     sequenceId: PropTypes.string,
   }).isRequired,

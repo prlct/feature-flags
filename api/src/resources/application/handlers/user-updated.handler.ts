@@ -1,6 +1,5 @@
 import { eventBus, InMemoryEvent } from '@paralect/node-mongo';
 
-import ioEmitter from 'io-emitter';
 import { DATABASE_DOCUMENTS } from 'app.constants';
 
 import { User } from 'resources/user';
