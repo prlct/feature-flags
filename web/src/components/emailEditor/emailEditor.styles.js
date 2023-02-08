@@ -60,7 +60,7 @@ export const useStyles = createStyles((theme) => ({
     width: 'calc(100% + 30px)',
     height: 300,
     minHeight: 300,
-    overflow: 'auto',
+    overflow: 'visible',
     '& button': {
       color: 'inherit',
       backgroundColor: 'inherit',
