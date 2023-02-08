@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Group, NumberInput, Stack, Switch, TextInput } from '@mantine/core';
+import { Button, Group, NumberInput, Stack, Switch, TextInput, Tooltip } from '@mantine/core';
 import EmailEditor from 'components/emailEditor';
 import * as emailSequencesApi from 'resources/email-sequence/email-sequence.api';
 import { useAmplitude } from 'contexts/amplitude-context';
 import { useGrowthFlags } from 'contexts/growth-flags-context';
+import { IconInfoCircle } from '@tabler/icons';
 
 const EditEmailModal = ({ context, id, innerProps }) => {
   const { email, sequenceId } = innerProps;
@@ -66,11 +67,17 @@ const EditEmailModal = ({ context, id, innerProps }) => {
         setSubject={setSubject}
         errors={errors}
       />
-      <Switch
-        checked={allowRedirect}
-        onChange={(e) => setAllowRedirect(e.currentTarget.checked)}
-        label="Allow redirect to capture email clicks"
-      />
+      <Group spacing={0} align="center">
+        <Switch
+          checked={allowRedirect}
+          onChange={(e) => setAllowRedirect(e.currentTarget.checked)}
+          label="Allow tracking clicks on links in email"
+        />
+        <Tooltip label="we use URL redirection to track clicks on links in emails">
+          <div><IconInfoCircle size={16} /></div>
+        </Tooltip>
+      </Group>
+
       <Group position="apart" mt={16}>
         <Button
           variant="subtle"
