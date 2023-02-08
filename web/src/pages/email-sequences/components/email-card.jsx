@@ -21,6 +21,7 @@ const EmailCard = (props) => {
     sent,
     converted = 0,
     unsubscribed = 0,
+    clicked = 0,
     delayDays,
     _id,
   } = email;
@@ -89,6 +90,12 @@ const EmailCard = (props) => {
           </Group>
           <Box>
             <EmailProgressBar converted={converted} dropped={unsubscribed} sent={sent} />
+            <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
+              <Text sx={{ alignSelf: 'flex-end' }}>
+                Clicked:&nbsp;
+                <Text component="span" weight="bold">{clicked}</Text>
+              </Text>
+            </Box>
           </Box>
         </Stack>
         {!enabled && (
@@ -109,6 +116,7 @@ EmailCard.propTypes = {
     enabled: PropTypes.bool,
     sent: PropTypes.number,
     converted: PropTypes.number,
+    clicked: PropTypes.number,
     unsubscribed: PropTypes.number,
   }).isRequired,
 };
