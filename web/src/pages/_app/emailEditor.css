@@ -4,11 +4,11 @@
 }
 .ql-container {
   border: none !important;
-  min-height: 300px !important;  
+  min-height: 300px !important;
 }
 
 .ql-snow .ql-tooltip {
-  position: static
+  z-index: 9999;
 }
 
 @media (max-width: 768px) {
@@ -17,6 +17,6 @@
   }
 
   .ql-container {
-    min-height: 150px !important;    
+    min-height: 150px !important;
   }
 }
