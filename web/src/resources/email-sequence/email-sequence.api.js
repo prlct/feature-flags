@@ -217,7 +217,6 @@ export function useEmailRemove(emailId) {
         message: 'Sequence email removed',
         color: 'green',
       });
-      console.log(item);
       queryClient.invalidateQueries([`${sequenceEmailResource}-${item.sequenceId}`]);
     },
   });

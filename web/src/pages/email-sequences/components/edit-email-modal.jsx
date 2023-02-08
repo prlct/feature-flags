@@ -67,7 +67,7 @@ const EditEmailModal = ({ context, id, innerProps }) => {
         setSubject={setSubject}
         errors={errors}
       />
-      <Group spacing={0} align="center">
+      <Group spacing={4} align="center">
         <Switch
           checked={allowRedirect}
           onChange={(e) => setAllowRedirect(e.currentTarget.checked)}
