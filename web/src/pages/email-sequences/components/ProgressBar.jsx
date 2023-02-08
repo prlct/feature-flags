@@ -20,11 +20,11 @@ const DoubleSectionProgressBar = (props) => {
   const matches = useMediaQuery('(max-width: 768px)');
 
   const primaryPercentage = useMemo(
-    () => ((primaryCount / total) * 100 || 0),
+    () => (total > 0 ? ((primaryCount / total) * 100 || 0) : 0),
     [primaryCount, total],
   );
   const secondaryPercentage = useMemo(
-    () => ((secondaryCount / total) * 100) || 0,
+    () => (total > 0 ? ((secondaryCount / total) * 100) || 0 : 0),
     [secondaryCount, total],
   );
 
