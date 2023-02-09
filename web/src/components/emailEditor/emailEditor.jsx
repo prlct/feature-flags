@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import clsx from 'clsx';
 
-import { InputBase, FileButton, Text } from '@mantine/core';
+import { InputBase, FileButton, Text, Tooltip } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import dynamic from 'next/dynamic';
@@ -168,7 +168,9 @@ const EmailEditor = ({ subject, body, setSubject, setBody, errors }) => {
           <button type="button" className="ql-align" value="center" />
           <button type="button" className="ql-align" value="right" />
           <button type="button" className="ql-align" value="justify" />
-          <button type="button" className="ql-button"><IconCirclePlus /></button>
+          <Tooltip label="Add a button">
+            <button type="button" className="ql-button"><IconCirclePlus /></button>
+          </Tooltip>
           <button type="button" className="ql-code-block" />
           <FileButton onChange={(value) => readFile(value)} accept="text/html">
             {(props) => <button type="button" {...props}><UploadHTML /></button>}
