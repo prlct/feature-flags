@@ -141,6 +141,7 @@ const EmailEditor = ({ subject, body, setSubject, setBody, errors }) => {
               minHeight: '200px !important',
             },
           }}
+          bounds={`.${classes.quillWrap}`}
         />
       </div>
       <div className={classes.separator} />
