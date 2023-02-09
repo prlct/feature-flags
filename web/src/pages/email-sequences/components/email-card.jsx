@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { IconEdit, IconPlayerPlay, IconPlayerStop, IconSend, IconTrash } from '@tabler/icons';
 import { Card, Group, Stack, Text, Menu, Box } from '@mantine/core';
 
-import { openContextModal } from '@mantine/modals';
+import { openContextModal, useModals } from '@mantine/modals';
 import { useMediaQuery } from '@mantine/hooks';
 
 import { useAmplitude } from 'contexts/amplitude-context';
@@ -26,6 +26,7 @@ const EmailCard = (props) => {
     _id,
     allowRedirect,
   } = email;
+  const modals = useModals();
 
   const matches = useMediaQuery('(max-width: 768px)');
   const amplitude = useAmplitude();
@@ -34,7 +35,21 @@ const EmailCard = (props) => {
   const textColor = enabled ? 'gray' : '#ddd';
 
   const handleEmailToggle = emailSequencesApi.useEmailToggle(_id).mutate;
-  const handleEmailRemove = emailSequencesApi.useEmailRemove(_id).mutate;
+  const handleEmailRemoveMutation = emailSequencesApi.useEmailRemove(_id).mutate;
+
+  const handleEmailRemove = () => {
+    modals.openConfirmModal({
+      title: 'Remove email',
+      children: !sent
+        ? 'Are you sure you want to remove this email?'
+        : <Text align="center">⚠️ Please, pay attention! This email has been already sent. Removing may affect analytical data. We suggest disabling it.</Text>,
+      labels: { confirm: 'Remove', cancel: 'Cancel' },
+      confirmProps: { color: 'red', variant: 'subtle' },
+      cancelProps: { variant: 'subtle' },
+      centered: true,
+      onConfirm: () => handleEmailRemoveMutation(),
+    });
+  };
 
   const enabledMenuIcon = enabled ? <IconPlayerStop size={16} /> : <IconPlayerPlay size={16} />;
 
@@ -69,6 +84,8 @@ const EmailCard = (props) => {
                     size: 800,
                     fullScreen: matches,
                     styles: { title: { fontSize: 20, fontWeight: 600 } },
+                    closeOnClickOutside: false,
+                    closeOnEscape: false,
                   })}
                 >
                   Edit
@@ -93,7 +110,7 @@ const EmailCard = (props) => {
             <EmailProgressBar converted={converted} dropped={unsubscribed} sent={sent} />
             {allowRedirect && (
             <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
-              <Text sx={{ alignSelf: 'flex-end' }}>
+              <Text sx={{ alignSelf: 'flex-end' }} size="sm">
                 Clicked:&nbsp;
                 <Text component="span" weight="bold">{clicked}</Text>
               </Text>
