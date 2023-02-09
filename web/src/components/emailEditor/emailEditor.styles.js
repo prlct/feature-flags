@@ -32,7 +32,7 @@ export const useStyles = createStyles((theme) => ({
 
   toolbar: {
     display: 'flex',
-
+    position: 'static',
   },
   quillControls: {
     border: '0 !important',
@@ -60,7 +60,7 @@ export const useStyles = createStyles((theme) => ({
     width: 'calc(100% + 30px)',
     height: 300,
     minHeight: 300,
-    overflow: 'visible',
+    overflowY: 'auto',
     '& button': {
       color: 'inherit',
       backgroundColor: 'inherit',
