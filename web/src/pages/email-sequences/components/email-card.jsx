@@ -24,6 +24,7 @@ const EmailCard = (props) => {
     clicked = 0,
     delayDays,
     _id,
+    allowRedirect,
   } = email;
 
   const matches = useMediaQuery('(max-width: 768px)');
@@ -90,12 +91,14 @@ const EmailCard = (props) => {
           </Group>
           <Box>
             <EmailProgressBar converted={converted} dropped={unsubscribed} sent={sent} />
+            {allowRedirect && (
             <Box sx={{ position: 'absolute', bottom: 16, right: 16 }}>
               <Text sx={{ alignSelf: 'flex-end' }}>
                 Clicked:&nbsp;
                 <Text component="span" weight="bold">{clicked}</Text>
               </Text>
             </Box>
+            )}
           </Box>
         </Stack>
         {!enabled && (
@@ -114,6 +117,7 @@ EmailCard.propTypes = {
     delayDays: PropTypes.number,
     name: PropTypes.string,
     enabled: PropTypes.bool,
+    allowRedirect: PropTypes.bool,
     sent: PropTypes.number,
     converted: PropTypes.number,
     clicked: PropTypes.number,
