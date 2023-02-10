@@ -20,7 +20,7 @@ const flags = GrowthFlags.create({
 flags.fetchFeatureFlags({ email: 'john.locke@example.com' })
 
 const defaultConfig = { buttonText: 'Click me' };
-const { enabled, config } = growthflags.getFeature('theFeature', { defaultConfig });
+const { enabled, config } = flags.getFeature('theFeature', { defaultConfig });
 
 const Page = () => {
   return (
