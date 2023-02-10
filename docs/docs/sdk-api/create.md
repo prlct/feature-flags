@@ -14,6 +14,9 @@ create({ publicApiKey, env })
 
 - `publicApiKey` - Your application public API key. **Required**
 - `env` - Application environment. **Required**. Possible values are `development`, `staging` and `production`
+- `defaultFeatures` - Object with feature flags that is used before actual feature flags received from the API. **Optional**. See [defaultFeatures](#defaultFeatures) section for more details.
+- `isDevelopmentApi` - Boolean flag to use development API. **Optional**. Default value is `false`. Simply sets API URL to `http://localhost:3001`
+
 
 :::info Since js-sdk version 1.4.5 
 
