@@ -6,6 +6,12 @@ const SequenceProgressBar = ({ completed, total, dropped }) => (
     total={total}
     primaryCount={completed}
     secondaryCount={dropped}
+    tooltips={{
+      enabled: true,
+      primary: 'Converted',
+      secondary: 'Dropped',
+      total: 'Total',
+    }}
   />
 );
 
