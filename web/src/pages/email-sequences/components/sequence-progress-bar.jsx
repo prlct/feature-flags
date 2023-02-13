@@ -8,9 +8,9 @@ const SequenceProgressBar = ({ completed, total, dropped }) => (
     secondaryCount={dropped}
     tooltips={{
       enabled: true,
-      primary: 'Converted',
-      secondary: 'Dropped',
-      total: 'Total',
+      primary: 'Total End event trigger conventions',
+      secondary: 'Total Unsubscriptions',
+      total: 'Total Subscribers',
     }}
   />
 );
