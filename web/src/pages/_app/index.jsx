@@ -23,7 +23,6 @@ import AddUsersModal from '../email-sequences/components/add-users-modal';
 import SendTestEmailModal from '../email-sequences/components/send-test-email-modal';
 
 import PageConfig from './PageConfig';
-import CrispChat from './CrispChat';
 import Hotjar from './Hotjar';
 import GoogleTag from './GoogleTag';
 import './emailEditor.css';
@@ -44,7 +43,6 @@ const App = ({ Component, pageProps }) => {
       <Head>
         <title>Growthflags</title>
       </Head>
-      <CrispChat />
       <Hotjar />
       <GoogleTag />
       <QueryClientProvider client={queryClient}>
